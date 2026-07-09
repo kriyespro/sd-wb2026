@@ -1,0 +1,36 @@
+# Winning Blueprints — Dev Plan (Phased)
+
+## Completed
+- Phase 0–2: Scaffold, public site, auth, RBAC
+- Phase 3: Academy portal + student dashboard
+- Phase 4: Client dashboard
+- Phase 5: Ops portal (quality check, pipeline, allocation)
+- Phase 6: Sales lead pipeline (status, assign, convert, handoff notes, HTMX)
+- Phase 7: Billing MVP (Invoice model, client + ops views, seed)
+- Production config: env-based settings, Whitenoise, Gunicorn, PostgreSQL support
+- Password reset flow
+- Automated smoke tests
+- Dashboard brand alignment (navy + gold)
+
+## Optional next
+- Phase 8: Analytics exports, ROI dashboards
+- Razorpay/Stripe payment integration
+- Blog / CMS
+- Compiled Tailwind (replace CDN)
+- CI/CD pipeline
+
+## Seed order
+```
+python manage.py seed_users
+python manage.py seed_academy
+python manage.py seed_clients
+python manage.py seed_ops
+python manage.py seed_billing
+```
+
+## Deploy checklist
+- [ ] Set DJANGO_ENV=prod and strong DJANGO_SECRET_KEY
+- [ ] Configure PostgreSQL
+- [ ] Set EMAIL_* and LEAD_NOTIFICATION_EMAIL
+- [ ] Set DJANGO_ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS
+- [ ] collectstatic + Gunicorn behind HTTPS reverse proxy

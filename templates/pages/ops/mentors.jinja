@@ -1,0 +1,44 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="grid gap-6 lg:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="font-semibold text-brand-950">Allocate Mentor</h2>
+        <form method="post" action="{{ url('operations:mentor_allocate') }}" class="mt-4 space-y-4">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Student</label>
+                {{ form.student }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Mentor</label>
+                {{ form.mentor }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Notes</label>
+                {{ form.notes }}
+            </div>
+            <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+                Allocate
+            </button>
+        </form>
+    </div>
+
+    <div class="space-y-3 lg:col-span-2">
+        <h2 class="font-semibold text-brand-950">Current Allocations</h2>
+        {% if allocations %}
+        {% for alloc in allocations %}
+        <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div>
+                <p class="text-sm font-medium text-slate-700">{{ alloc.student.get_full_name() or alloc.student.username }}</p>
+                <p class="text-xs text-slate-500">Mentor: {{ alloc.mentor.get_full_name() or alloc.mentor.username }}</p>
+            </div>
+            <span class="text-xs text-slate-400">{{ alloc.allocated_at.strftime('%d %b %Y') }}</span>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-sm text-slate-500">No mentor allocations yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

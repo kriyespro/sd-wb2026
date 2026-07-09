@@ -1,0 +1,48 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+{% set hero_eyebrow = 'Portfolio' %}
+{% set hero_title = 'Our work' %}
+{% set hero_text = 'Client projects across websites, SEO, lead generation, AI, and automation.' %}
+{% include "components/page_hero.jinja" %}
+
+<section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 class="font-display text-2xl font-bold text-ink-900">Recent projects</h2>
+        <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for project in projects %}
+            <div class="group overflow-hidden rounded-3xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+                <img src="{{ project.image }}" alt="{{ project.title }}" class="h-36 w-full object-cover">
+                <div class="p-6">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-brand-600">{{ project.category }}</span>
+                    <h3 class="mt-2 font-display font-semibold text-ink-900">{{ project.title }}</h3>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2 class="mt-16 font-display text-2xl font-bold text-ink-900">Featured case studies</h2>
+        <div class="mt-8 grid gap-6 md:grid-cols-2">
+            {% for study in case_studies %}
+            <a href="{{ url('website:case_study_detail', kwargs={'slug': study.slug}) }}" class="group overflow-hidden rounded-3xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl">
+                <img src="{{ study.image }}" alt="{{ study.title }}" class="h-44 w-full object-cover">
+                <div class="p-7">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-brand-600">{{ study.category }}</span>
+                    <h3 class="mt-2 font-display font-semibold text-ink-900 group-hover:text-brand-700">{{ study.title }}</h3>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <h2 class="mt-16 font-display text-2xl font-bold text-ink-900">What we do</h2>
+        <div class="mt-8 flex flex-wrap gap-3">
+            {% for service in services %}
+            <a href="{{ url('website:service_detail', kwargs={'slug': service.slug}) }}"
+               class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:text-brand-700">
+                <span>{{ service.icon }}</span> {{ service.title }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

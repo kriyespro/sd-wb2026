@@ -1,0 +1,79 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<section class="relative overflow-hidden bg-ink-900 py-20 text-white">
+    <div class="mesh absolute inset-0 opacity-80"></div>
+    <div class="grid-lines absolute inset-0 opacity-60"></div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <a href="{{ url('website:services') }}" class="text-sm text-brand-300 transition hover:text-white">← All Services</a>
+        <div class="mt-6 flex items-center gap-5">
+            <span class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-4xl backdrop-blur">{{ service.icon }}</span>
+            <div>
+                <h1 class="font-display text-4xl font-bold sm:text-5xl">{{ service.title }}</h1>
+                <p class="mt-2 text-lg text-slate-300">{{ service.short }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-3">
+            <div class="lg:col-span-2 space-y-16">
+                <div class="grid items-center gap-8 sm:grid-cols-2">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold text-ink-900">Our Approach</h2>
+                        <p class="mt-4 text-slate-600 leading-relaxed">{{ service.description }}</p>
+                        <ul class="mt-6 space-y-3 text-slate-600">
+                            <li class="flex items-start gap-2"><span class="text-brand-600">✓</span> Strategy and planning aligned to your business goals</li>
+                            <li class="flex items-start gap-2"><span class="text-brand-600">✓</span> Expert execution by senior specialists</li>
+                        </ul>
+                    </div>
+                    <img src="{{ service.gallery[0] }}" alt="{{ service.title }}" class="aspect-[4/3] w-full rounded-3xl object-cover">
+                </div>
+                <div class="grid items-center gap-8 sm:grid-cols-2">
+                    <img src="{{ service.gallery[1] }}" alt="{{ service.title }}" class="aspect-[4/3] w-full rounded-3xl object-cover sm:order-1">
+                    <div class="sm:order-2">
+                        <h2 class="font-display text-2xl font-bold text-ink-900">What You Get</h2>
+                        <p class="mt-4 text-slate-600 leading-relaxed">A clear roadmap and measurable results, backed by a dedicated team from day one.</p>
+                        <ul class="mt-6 space-y-3 text-slate-600">
+                            <li class="flex items-start gap-2"><span class="text-brand-600">✓</span> Transparent reporting and dedicated project manager</li>
+                            <li class="flex items-start gap-2"><span class="text-brand-600">✓</span> Continuous optimization for ROI</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="rounded-2xl border border-brand-200 bg-white p-8 shadow-lg shadow-brand-900/5">
+                <span class="inline-flex rounded-full bg-gold-100 px-3 py-1 text-xs font-bold uppercase text-gold-700">Get started</span>
+                <h3 class="mt-4 font-display text-xl font-semibold text-ink-900">Ready to grow?</h3>
+                <p class="mt-2 text-sm text-slate-600">Tell us about your project and we'll respond within 24 hours.</p>
+                <div class="mt-6">
+                    {% set source_page = 'service-' ~ service.slug %}
+                    {% include "partials/_lead_form.jinja" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RELATED SERVICES -->
+<section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 class="font-display text-2xl font-bold text-ink-900">Related services</h2>
+        <div class="mt-8 grid gap-6 md:grid-cols-2">
+            {% for other in all_services if other.slug != service.slug %}
+            {% if loop.index <= 2 %}
+            <a href="{{ url('website:service_detail', kwargs={'slug': other.slug}) }}"
+               class="group flex items-center gap-5 rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-2xl transition group-hover:bg-brand-600">{{ other.icon }}</div>
+                <div>
+                    <h3 class="font-display font-semibold text-ink-900 group-hover:text-brand-700">{{ other.title }}</h3>
+                    <p class="mt-1 text-sm text-slate-600">{{ other.short }}</p>
+                </div>
+            </a>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

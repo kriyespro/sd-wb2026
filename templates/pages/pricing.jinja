@@ -1,0 +1,70 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+{% set hero_eyebrow = 'Pricing' %}
+{% set hero_title = 'Simple, transparent pricing' %}
+{% set hero_text = 'Clear packages with no hidden fees. Custom solutions for enterprise.' %}
+{% include "components/page_hero.jinja" %}
+
+<section class="py-20" x-data="{ billing: 'monthly' }">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center">
+            <div class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 p-1">
+                <button type="button" @click="billing = 'monthly'"
+                        :class="billing === 'monthly' ? 'bg-brand-600 text-white shadow' : 'text-slate-600'"
+                        class="rounded-full px-5 py-2 text-sm font-semibold transition">Monthly</button>
+                <button type="button" @click="billing = 'annual'"
+                        :class="billing === 'annual' ? 'bg-brand-600 text-white shadow' : 'text-slate-600'"
+                        class="rounded-full px-5 py-2 text-sm font-semibold transition">Annual <span class="text-xs font-normal opacity-80">(save ~10%)</span></button>
+            </div>
+        </div>
+
+        <div class="mt-12 grid items-start gap-8 lg:grid-cols-3">
+            {% for tier in pricing_tiers %}
+            <div class="relative rounded-3xl border p-8 transition hover:-translate-y-1 {% if tier.highlight %}border-brand-500 bg-white shadow-2xl shadow-brand-600/10 ring-2 ring-brand-500 lg:-mt-4 lg:pb-12{% else %}border-slate-200 bg-white hover:shadow-xl{% endif %}">
+                {% if tier.highlight %}
+                <span class="absolute -top-3 left-8 rounded-full bg-accent-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink-900">Most Popular</span>
+                {% endif %}
+                <h2 class="font-display text-xl font-bold text-ink-900">{{ tier.name }}</h2>
+                <div class="mt-4 flex items-end gap-1">
+                    <span class="font-display text-4xl font-extrabold text-ink-900"
+                          x-text="billing === 'monthly' ? '{{ tier.price_monthly }}' : '{{ tier.price_annual }}'"></span>
+                    <span class="pb-1 text-slate-500">{{ tier.period }}</span>
+                </div>
+                <ul class="mt-8 space-y-3">
+                    {% for feature in tier.features %}
+                    <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-50 text-xs text-brand-600">✓</span> {{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ url('website:contact') }}" class="mt-8 block rounded-full {% if tier.highlight %}bg-brand-600 text-white hover:bg-brand-500{% else %}border border-slate-300 text-ink-900 hover:border-brand-400 hover:text-brand-700{% endif %} px-5 py-3 text-center text-sm font-semibold transition">
+                    {% if tier.name == 'Enterprise' %}Request Quote{% else %}Get Started{% endif %}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <span class="eyebrow">FAQ</span>
+            <h2 class="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Common questions</h2>
+        </div>
+        <div class="mt-10 space-y-3">
+            {% for faq in pricing_faqs %}
+            <div x-data="{ open: false }" class="rounded-2xl border border-slate-200 bg-white">
+                <button type="button" @click="open = !open" class="flex w-full items-center justify-between gap-4 px-6 py-4 text-left">
+                    <span class="font-display font-semibold text-ink-900">{{ faq.q }}</span>
+                    <svg class="h-5 w-5 shrink-0 text-brand-600 transition" :class="open && 'rotate-45'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                </button>
+                <div x-show="open" x-transition x-cloak class="px-6 pb-4 text-sm leading-relaxed text-slate-600">{{ faq.a }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

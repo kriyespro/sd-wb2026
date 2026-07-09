@@ -1,0 +1,49 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+{% if project_rows %}
+<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-left text-slate-500">
+            <tr>
+                <th class="px-6 py-3 font-medium">Project</th>
+                <th class="px-6 py-3 font-medium">Client</th>
+                <th class="px-6 py-3 font-medium">PM</th>
+                <th class="px-6 py-3 font-medium">Status</th>
+                <th class="px-6 py-3 font-medium">Staffing</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for row in project_rows %}
+            <tr>
+                <td class="px-6 py-4 font-medium text-slate-700">{{ row.project.name }}</td>
+                <td class="px-6 py-4 text-slate-600">{{ row.project.client_account.company_name }}</td>
+                <td class="px-6 py-4 text-slate-600">
+                    {% if row.project.project_manager %}{{ row.project.project_manager.get_full_name() or row.project.project_manager.username }}{% else %}—{% endif %}
+                </td>
+                <td class="px-6 py-4">
+                    <span class="rounded-full px-2 py-0.5 text-xs font-medium
+                        {% if row.project.status == 'completed' %}bg-green-100 text-green-700
+                        {% elif row.project.status == 'active' %}bg-blue-100 text-blue-700
+                        {% else %}bg-slate-100 text-slate-600{% endif %}">
+                        {{ row.project.get_status_display() }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    {% if row.issues %}
+                    <span class="text-xs text-red-600" title="{{ row.issues|join(', ') }}">⚠ {{ row.issues|length }} issue(s)</span>
+                    {% else %}
+                    <span class="text-xs text-green-600">✓ Staffed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+    <p class="text-slate-500">No projects yet.</p>
+</div>
+{% endif %}
+{% endblock %}

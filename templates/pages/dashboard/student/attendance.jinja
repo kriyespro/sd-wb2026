@@ -1,0 +1,42 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-6 rounded-xl border border-brand-200 bg-brand-50 p-6">
+    <p class="text-sm text-brand-700">Attendance Rate</p>
+    <p class="text-3xl font-bold text-brand-950">{{ attendance_rate }}%</p>
+</div>
+
+{% if records %}
+<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-left text-slate-500">
+            <tr>
+                <th class="px-6 py-3 font-medium">Date</th>
+                <th class="px-6 py-3 font-medium">Session</th>
+                <th class="px-6 py-3 font-medium">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for record in records %}
+            <tr>
+                <td class="px-6 py-4 text-slate-700">{{ record.date }}</td>
+                <td class="px-6 py-4 text-slate-700">{{ record.session_name }}</td>
+                <td class="px-6 py-4">
+                    <span class="rounded-full px-2 py-0.5 text-xs font-medium
+                        {% if record.status == 'present' %}bg-green-100 text-green-700
+                        {% elif record.status == 'late' %}bg-yellow-100 text-yellow-700
+                        {% else %}bg-red-100 text-red-700{% endif %}">
+                        {{ record.get_status_display() }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+    <p class="text-slate-500">No attendance records yet.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+<div id="submission-{{ assignment.id }}">
+    <form hx-post="{{ url('academy_dashboard:assignment_submit', kwargs={'pk': assignment.id}) }}"
+          hx-target="#submission-{{ assignment.id }}"
+          hx-swap="outerHTML"
+          class="space-y-3">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <textarea name="content" class="wb-input" rows="3" placeholder="Write your submission..."></textarea>
+        {% if show_errors and form.content.errors %}
+        <p class="text-xs text-red-600">{{ form.content.errors[0] }}</p>
+        {% endif %}
+        <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+            Submit Assignment
+        </button>
+    </form>
+</div>

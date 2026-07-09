@@ -1,0 +1,45 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
+from users.roles import ROLE_SALES, ROLE_SUPER_ADMIN
+from website.models import Lead
+
+
+class LeadPipelineTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user('admin', 'admin@test.com', 'pass1234')
+        self.admin.profile.role = ROLE_SUPER_ADMIN
+        self.admin.profile.save()
+        self.sales = User.objects.create_user('sales1', 'sales@test.com', 'pass1234')
+        self.sales.profile.role = ROLE_SALES
+        self.sales.profile.save()
+        self.lead = Lead.objects.create(
+            name='Pipeline Lead',
+            email='pipeline@example.com',
+            company='Acme',
+            service_interest='SEO',
+        )
+        self.client.login(username='admin', password='pass1234')
+
+    def test_lead_status_update(self):
+        url = reverse('operations:lead_status', kwargs={'pk': self.lead.pk})
+        response = self.client.post(url, {'status': Lead.STATUS_QUALIFIED})
+        self.assertEqual(response.status_code, 200)
+        self.lead.refresh_from_db()
+        self.assertEqual(self.lead.status, Lead.STATUS_QUALIFIED)
+
+    def test_lead_assign(self):
+        url = reverse('operations:lead_assign', kwargs={'pk': self.lead.pk})
+        response = self.client.post(url, {'assigned_to': self.sales.pk})
+        self.assertEqual(response.status_code, 200)
+        self.lead.refresh_from_db()
+        self.assertEqual(self.lead.assigned_to_id, self.sales.pk)
+
+    def test_lead_convert(self):
+        url = reverse('operations:lead_convert', kwargs={'pk': self.lead.pk})
+        response = self.client.post(url, {'project_name': 'Acme SEO Project'})
+        self.assertEqual(response.status_code, 200)
+        self.lead.refresh_from_db()
+        self.assertTrue(self.lead.is_converted)
+        self.assertEqual(self.lead.status, Lead.STATUS_WON)

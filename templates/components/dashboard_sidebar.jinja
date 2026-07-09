@@ -1,0 +1,72 @@
+{% set dash_href = dashboard_url|default('#') %}
+
+{# Desktop sidebar #}
+<aside class="hidden w-64 shrink-0 flex-col border-r border-slate-200/80 bg-ink-900 text-white md:flex">
+    <div class="flex h-16 items-center gap-2.5 border-b border-white/10 px-5">
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-xs font-bold shadow-lg shadow-brand-600/30">WB</span>
+        <div class="leading-tight">
+            <div class="text-sm font-semibold">{{ portal_name|default('Dashboard') }}</div>
+            <div class="text-[10px] text-slate-400">Winning Blueprints</div>
+        </div>
+    </div>
+    <nav class="flex-1 overflow-y-auto p-4">
+        <a href="{{ dash_href }}"
+           class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition
+           {% if request.path == dash_href or request.path == dash_href.rstrip('/') %}bg-brand-600/25 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+            <svg class="h-4 w-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Dashboard
+        </a>
+        {% if sidebar_links %}
+        <p class="mb-2 mt-8 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Modules</p>
+        <div class="space-y-0.5">
+            {% for link in sidebar_links %}
+            {% if link.url_name %}
+            {% set link_href = url(link.url_name) %}
+            <a href="{{ link_href }}"
+               class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition
+               {% if request.path == link_href or request.path.startswith(link_href.rstrip('/') + '/') %}bg-brand-600/25 font-medium text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+                <span class="text-base leading-none">{{ link.icon }}</span>
+                <span>{{ link.title }}</span>
+            </a>
+            {% else %}
+            <span class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-slate-500">
+                <span>{{ link.icon }}</span> {{ link.title }}
+            </span>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </nav>
+    <div class="border-t border-white/10 p-4">
+        <div class="rounded-xl bg-white/5 p-3">
+            <p class="text-xs font-medium text-white">{{ user.get_full_name() or user.username }}</p>
+            <p class="text-[10px] text-slate-400">{{ user.profile.get_role_display() }}</p>
+        </div>
+    </div>
+</aside>
+
+{# Mobile drawer #}
+<div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-50 md:hidden" @keydown.escape.window="sidebarOpen = false">
+    <div class="absolute inset-0 bg-ink-900/60 backdrop-blur-sm" @click="sidebarOpen = false"></div>
+    <aside class="absolute inset-y-0 left-0 flex w-72 flex-col bg-ink-900 text-white shadow-2xl" x-transition>
+        <div class="flex h-16 items-center justify-between border-b border-white/10 px-5">
+            <span class="text-sm font-semibold">{{ portal_name|default('Dashboard') }}</span>
+            <button @click="sidebarOpen = false" class="rounded-lg p-1.5 hover:bg-white/10">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-4">
+            <a href="{{ dash_href }}" @click="sidebarOpen = false" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5">🏠 Dashboard</a>
+            {% if sidebar_links %}
+            <p class="mb-2 mt-6 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Modules</p>
+            {% for link in sidebar_links %}
+            {% if link.url_name %}
+            <a href="{{ url(link.url_name) }}" @click="sidebarOpen = false" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5">
+                <span>{{ link.icon }}</span> {{ link.title }}
+            </a>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </nav>
+    </aside>
+</div>

@@ -1,0 +1,97 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<section class="relative overflow-hidden bg-ink-900 py-16 text-white">
+    <div class="mesh absolute inset-0 opacity-80"></div>
+    <div class="grid-lines absolute inset-0 opacity-60"></div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <a href="{{ url('website:case_studies') }}" class="text-sm text-brand-300 transition hover:text-white">← All Case Studies</a>
+        <div class="mt-6">
+            <span class="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-brand-200">{{ study.category }}</span>
+            <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl">{{ study.title }}</h1>
+            <p class="mt-2 text-lg text-slate-300">{{ study.client }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- META STRIP -->
+<section class="border-b border-slate-200 bg-slate-50 py-10">
+    <div class="mx-auto grid max-w-7xl gap-6 px-4 sm:grid-cols-3 sm:px-6 lg:px-8">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Client</p>
+            <p class="mt-1 font-display font-semibold text-ink-900">{{ study.client }}</p>
+        </div>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Impact Areas</p>
+            <p class="mt-1 font-display font-semibold text-ink-900">{{ study.impact_areas|join(', ') }}</p>
+        </div>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Category</p>
+            <p class="mt-1 font-display font-semibold text-ink-900">{{ study.category }}</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="rounded-2xl bg-brand-50 p-8 text-center">
+            <p class="text-3xl font-bold text-brand-700">{{ study.result }}</p>
+            <p class="mt-2 text-sm text-slate-600">Key outcome</p>
+        </div>
+        <div class="mt-10">
+            <h2 class="font-display text-2xl font-bold text-ink-900">Overview</h2>
+            <p class="mt-4 text-slate-600 leading-relaxed">{{ study.summary }}</p>
+        </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="mx-auto mt-14 max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
+        {% for img in study.gallery %}
+        <img src="{{ img }}" alt="{{ study.title }} gallery" class="w-full rounded-3xl object-cover">
+        {% endfor %}
+    </div>
+
+    <!-- NARRATIVE -->
+    <div class="mx-auto mt-16 max-w-5xl space-y-16 px-4 sm:px-6 lg:px-8">
+        {% for block in study.narrative %}
+        <div class="grid items-center gap-8 sm:grid-cols-2">
+            <img src="{{ study.gallery[loop.index0 % study.gallery|length] }}" alt="{{ block.heading }}"
+                 class="aspect-[4/3] w-full rounded-3xl object-cover {% if loop.index is even %}sm:order-2{% endif %}">
+            <div class="{% if loop.index is even %}sm:order-1{% endif %}">
+                <span class="font-display text-sm font-bold text-brand-600">0{{ loop.index }}</span>
+                <h3 class="mt-2 font-display text-xl font-semibold text-ink-900">{{ block.heading }}</h3>
+                <p class="mt-2 text-slate-600 leading-relaxed">{{ block.body }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mx-auto mt-16 max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+        <a href="{{ url('website:contact') }}" class="inline-flex rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700">
+            Get Similar Results
+        </a>
+    </div>
+</section>
+
+<!-- RELATED CASE STUDIES -->
+{% if related %}
+<section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 class="font-display text-2xl font-bold text-ink-900">Related case studies</h2>
+        <div class="mt-8 grid gap-6 md:grid-cols-2">
+            {% for other in related %}
+            <a href="{{ url('website:case_study_detail', kwargs={'slug': other.slug}) }}"
+               class="group overflow-hidden rounded-3xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl">
+                <img src="{{ other.image }}" alt="{{ other.title }}" class="h-44 w-full object-cover">
+                <div class="p-7">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-brand-600">{{ other.category }}</span>
+                    <h3 class="mt-2 font-display font-semibold text-ink-900 group-hover:text-brand-700">{{ other.title }}</h3>
+                    <p class="mt-2 text-sm text-slate-600">{{ other.summary }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

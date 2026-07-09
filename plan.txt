@@ -1,0 +1,407 @@
+# Winning Blueprints — Development Plan
+# Source: durga.txt
+# Goal: Build one platform with three isolated experiences sharing the same backend
+
+================================================================================
+BRAND POSITIONING (NON-NEGOTIABLE)
+================================================================================
+
+Primary identity: Professional Digital Growth Company (AI Growth Partner)
+Secondary identity: Internal Industry Academy (talent pipeline — NOT the headline)
+
+Client-facing message:
+  "Grow Your Business with AI, Digital Marketing & Web Technology"
+
+Student-facing message (Academy pages only):
+  "Become an Industry Ready Digital Marketing Professional"
+
+Model reference: TCS / Infosys / Zoho — company first, training internal.
+
+================================================================================
+PLATFORM ARCHITECTURE
+================================================================================
+
+Three isolated experiences, one Django backend:
+
+1. PUBLIC AGENCY WEBSITE (primary brand)
+   - Audience: Business owners
+   - Goal: Leads → sales → projects
+   - No student/training emphasis on homepage
+
+2. ACADEMY PORTAL (secondary brand)
+   - Audience: Students, career switchers
+   - Goal: Admissions, learning, internship, placement
+   - URL: /academy/ or academy.winningblueprints.in
+
+3. INTERNAL OPERATIONS PORTAL
+   - Audience: Staff, mentors, PMs, interns
+   - Goal: Client delivery + student training pipeline
+   - URL: /ops/ or internal subdomain (staff-only)
+
+Shared backend:
+  - Single user model with RBAC
+  - Shared project/client data
+  - Strict permission boundaries per portal
+
+================================================================================
+WEBSITE NAVIGATION (PUBLIC)
+================================================================================
+
+HOME
+SERVICES
+OUR WORK
+CASE STUDIES
+INDUSTRIES
+PRICING
+ABOUT
+CAREERS
+ACADEMY          ← de-emphasized in nav order
+CONTACT
+
+================================================================================
+PHASE 0 — PROJECT SETUP
+================================================================================
+
+[ ] Initialize Django 5 project (Python 3.12)
+[ ] App structure:
+      core/           — settings, base config
+      users/          — auth, profile, RBAC
+      website/        — public agency pages
+      academy/        — student portal
+      operations/     — internal ops portal
+      clients/        — client dashboard
+      projects/       — project management
+      billing/        — invoices (later phase)
+[ ] Jinja2 as primary template engine (.jinja)
+[ ] Django Templates ONLY for admin (/sd/)
+[ ] Tailwind CSS (CDN for MVP, compile later)
+[ ] HTMX + minimal Alpine.js
+[ ] SQLite (dev) → PostgreSQL (prod)
+[ ] durga.py dev runner
+[ ] requirements.txt
+[ ] test_user.txt (test credentials)
+[ ] dev.txt (progress tracker)
+[ ] Add folder plan to .gitignore if needed
+
+================================================================================
+PHASE 1 — MVP PUBLIC WEBSITE (REVENUE FIRST)
+================================================================================
+
+Priority: Ship agency site fast. Academy is a link in footer/nav only.
+
+Pages to build:
+
+1. HOME
+   [ ] Hero: "Grow Your Business with AI, Digital Marketing & Web Technology"
+   [ ] CTA: "Book Free Strategy Call"
+   [ ] Services grid: SEO, Google Ads, Meta Ads, Web Dev, Automation, CRM, Branding, Content
+   [ ] Why Choose Us: Experienced Team, Transparent Reporting, ROI Focused, Dedicated PM, Industry Experts
+   [ ] Recent Projects: Website, SEO, Lead Gen, AI Chatbot, Automation (client work only)
+   [ ] How We Deliver: Research → Planning → Execution → Quality Review → Delivery → Optimization
+   [ ] Meet Our Team: PMs, SEO, Developers, Designers, Media Buyers (no intern/student labels)
+   [ ] Careers teaser near footer: "Join Our Internship Program"
+   [ ] NO student/training language above the fold
+
+2. SERVICES
+   [ ] Individual service detail pages or expandable sections
+   [ ] Lead capture CTA on each service
+
+3. OUR WORK / CASE STUDIES
+   [ ] Portfolio grid with filters (Website, SEO, Ads, Automation)
+   [ ] Case study detail template
+
+4. INDUSTRIES
+   [ ] Industry-specific landing sections (optional MVP: single page with cards)
+
+5. PRICING
+   [ ] Package tiers or "Request Quote" model
+   [ ] HTMX contact/quote form
+
+6. ABOUT
+   [ ] Company story as digital growth agency
+   [ ] Leadership team
+   [ ] Academy mentioned briefly as internal talent system (not headline)
+
+7. CAREERS
+   [ ] Internship program overview
+   [ ] Link to Academy portal for applications
+
+8. CONTACT
+   [ ] Contact form (HTMX)
+   [ ] Book strategy call CTA
+   [ ] Lead stored in DB + email notification
+
+9. BLOG (optional MVP — can defer)
+   [ ] List + detail pages
+   [ ] SEO meta per post
+
+Templates:
+  templates/base.jinja
+  templates/layouts/
+  templates/components/  (button, card, input, nav, footer)
+  templates/pages/
+  templates/partials/    (HTMX fragments)
+
+Lead model (MVP):
+  - name, email, phone, company, service_interest, message, source_page, created_at
+
+================================================================================
+PHASE 2 — AUTH + RBAC FOUNDATION
+================================================================================
+
+User system with role-based access control.
+
+Agency roles:
+  - Super Admin, Director, Sales Executive, Project Manager, Account Manager
+  - SEO Specialist, Google Ads Specialist, Meta Ads Specialist
+  - Web Developer, UI/UX Designer, Content Writer, QA Specialist
+
+Academy roles:
+  - Academy Admin, Mentor, Trainer, Student, Intern, Placement Coordinator
+
+Client roles:
+  - Business Owner, Team Member (optional)
+
+Implementation:
+  [ ] Extend User via Profile model
+  [ ] Role model (or Django groups + custom permissions)
+  [ ] Portal access middleware (redirect by role)
+  [ ] Separate dashboard URL namespaces:
+        /dashboard/client/
+        /dashboard/student/
+        /dashboard/ops/
+  [ ] Permission decorators / mixins per view
+  [ ] Login, logout, password reset (Jinja2 templates)
+
+================================================================================
+PHASE 3 — ACADEMY PORTAL
+================================================================================
+
+Audience: Students only. Separate visual identity acceptable but same backend.
+
+Pages:
+  [ ] Academy home hero: "Become an Industry Ready Digital Marketing Professional"
+  [ ] Process flow: Admission → Training → Assessment → Internal Internship →
+      Client Project → Portfolio → Placement
+  [ ] Programs / courses overview
+  [ ] Admission application form
+  [ ] Student login → student dashboard
+
+Student dashboard modules:
+  [ ] Courses
+  [ ] Assignments
+  [ ] Tasks
+  [ ] Projects (assigned, not client-facing)
+  [ ] Mentor
+  [ ] Attendance
+  [ ] Portfolio
+  [ ] Certificates
+  [ ] Interview Prep
+  [ ] Placement
+
+Student workflow (system):
+  Enroll → Training → Practice → Mock Projects → Internal Team →
+  Real Project → Portfolio → Certification → Placement
+
+Models (MVP):
+  - Course, Module, Lesson
+  - Enrollment, Assignment, Submission
+  - Attendance
+  - Certificate
+  - PlacementApplication
+
+================================================================================
+PHASE 4 — CLIENT DASHBOARD
+================================================================================
+
+Clients see professional delivery only. No student/intern info.
+
+Modules:
+  [ ] Projects (status, milestones)
+  [ ] Reports (SEO, ads, analytics summaries)
+  [ ] Invoices (link to billing phase)
+  [ ] Meetings (scheduled calls)
+  [ ] Files (deliverables — mentor-approved only)
+  [ ] Support (tickets/messages to PM)
+  [ ] Analytics (read-only metrics)
+  [ ] Goals
+  [ ] ROI summary
+
+Rules:
+  - Deliverables visible to client ONLY after mentor/QA approval
+  - Students never appear in client UI
+  - All client communication goes through PM / Account Manager
+
+Models:
+  - ClientAccount (linked to user)
+  - Project, Milestone, Deliverable
+  - Report, Meeting, SupportTicket
+  - File (with approval_status field)
+
+================================================================================
+PHASE 5 — INTERNAL OPERATIONS PORTAL
+================================================================================
+
+Hidden from public. Staff-only talent pipeline + project delivery.
+
+Agency delivery workflow:
+  Lead → Sales → Business Consultant → Project Manager → Senior Expert →
+  Student Team → Quality Check → Delivery
+
+Talent pipeline module:
+  [ ] Applications
+  [ ] Assessments
+  [ ] Training progress
+  [ ] Mentor allocation
+  [ ] Project allocation (student/intern to project)
+  [ ] Performance tracking
+  [ ] Graduation
+  [ ] Hiring (intern → employee)
+
+Project assignment rules (enforce in code):
+  - Every project: 1 PM (owner), 1 Senior Specialist (tech lead)
+  - Optional interns/students for execution
+  - Students CANNOT message clients unless explicitly authorized
+  - All deliverables require mentor approval before client visibility
+
+Team structure (internal view):
+  CEO → COO → Agency Director
+  Teams: SEO, Google Ads, Meta Ads, Development, AI Automation, Content, Design
+  Each team: Senior → Executive → Intern → Student
+
+Models:
+  - Team, TeamMember
+  - ProjectAssignment (user, project, role: pm|senior|intern|student)
+  - MentorAllocation
+  - PerformanceReview
+  - Application, Assessment
+
+================================================================================
+PHASE 6 — SALES & LEAD PIPELINE
+================================================================================
+
+[ ] Lead inbox (from contact forms, strategy calls)
+[ ] Lead status: New → Contacted → Qualified → Proposal → Won / Lost
+[ ] Assign to Sales Executive
+[ ] Convert lead → ClientAccount + Project
+[ ] Business Consultant handoff notes
+[ ] HTMX-powered lead management UI in ops portal
+
+================================================================================
+PHASE 7 — BILLING (POST-MVP)
+================================================================================
+
+[ ] Invoice generation
+[ ] Payment status tracking
+[ ] Client invoice view in client dashboard
+[ ] Razorpay / Stripe integration (when ready)
+
+================================================================================
+PHASE 8 — ANALYTICS & REPORTING
+================================================================================
+
+[ ] Client-facing ROI dashboards
+[ ] Internal team performance metrics
+[ ] Academy placement stats (internal only)
+[ ] Export PDF reports
+
+================================================================================
+TECH STACK CHECKLIST
+================================================================================
+
+Backend:     Django 5, Python 3.12
+Templates:   Jinja2 (.jinja) primary, Django templates for /sd/ admin only
+Frontend:    Tailwind CSS, HTMX, Alpine.js (toggles/modals only)
+DB:          SQLite dev → PostgreSQL prod
+Auth:        Django auth + Profile + RBAC
+Deploy:      TBD (Phase 9)
+
+================================================================================
+FOLDER STRUCTURE (TARGET)
+================================================================================
+
+sd-wb2026/
+  manage.py
+  durga.py
+  requirements.txt
+  plan.txt
+  dev.txt
+  dev_plan.txt
+  test_user.txt
+  core/
+  users/
+  website/
+  academy/
+  operations/
+  clients/
+  projects/
+  billing/
+  templates/
+    base.jinja
+    layouts/
+    components/
+    partials/
+    pages/
+  static/
+
+================================================================================
+EXECUTION ORDER (RECOMMENDED)
+================================================================================
+
+Week 1-2:  Phase 0 + Phase 1 (public site + lead capture) → LAUNCH
+Week 3:    Phase 2 (auth + RBAC skeleton)
+Week 4-5:  Phase 3 (academy portal MVP)
+Week 6-7:  Phase 4 (client dashboard)
+Week 8-10: Phase 5 (ops portal + talent pipeline)
+Week 11+:  Phase 6, 7, 8 as needed
+
+MVP launch criterion:
+  - Public agency site live with all main pages
+  - Contact/lead forms working
+  - Academy page exists (marketing + application form)
+  - Admin can view leads in Django admin (/sd/)
+
+================================================================================
+KEY BUSINESS RULES (ENFORCE IN CODE)
+================================================================================
+
+1. Homepage = agency only. No student language above fold.
+2. Academy is nav item #9, not #1.
+3. Client dashboard never exposes student/intern identities.
+4. Deliverables require mentor approval before client sees them.
+5. Students do not communicate with clients by default.
+6. All data scoped to request.user (multi-tenant safety).
+7. Revenue features (leads, projects, client portal) before academy depth.
+
+================================================================================
+SUCCESS METRICS
+================================================================================
+
+Public site:
+  - Strategy call bookings / month
+  - Lead form submissions
+  - Bounce rate on homepage
+
+Academy:
+  - Applications / month
+  - Enrollment conversion rate
+  - Placement rate
+
+Operations:
+  - Projects delivered on time
+  - Client satisfaction (NPS or simple rating)
+  - Intern → employee conversion rate
+
+================================================================================
+PHILOSOPHY (KEEP VISIBLE DURING BUILD)
+================================================================================
+
+"Clients buy expertise. Students earn experience. Winning Blueprints connects
+the two through a controlled, mentor-led delivery process."
+
+Winning Blueprints IS:
+  Digital Growth Company → Internal Talent Development → Skilled Professionals
+  → Better Quality → Lower Hiring Cost → Higher Client Satisfaction
+
+Winning Blueprints IS NOT:
+  Training Institute + Agency (wrong order, weak positioning)

@@ -1,0 +1,44 @@
+# Admin (ops portal)
+username: admin
+email: admin@winningblueprints.in
+password: admin1234
+portal: /ops/
+
+# Client portal
+username: client1
+email: client@example.com
+password: client1234
+portal: /dashboard/client/
+
+# Student portal
+username: student1
+email: student@example.com
+password: student1234
+portal: /dashboard/student/
+
+# Intern portal (student dashboard)
+username: intern1
+email: intern@example.com
+password: intern1234
+portal: /dashboard/student/
+
+# Project manager (ops portal)
+username: pm1
+email: pm@winningblueprints.in
+password: pm1234
+portal: /ops/
+
+# Mentor (ops portal)
+username: mentor1
+email: mentor@winningblueprints.in
+password: mentor1234
+portal: /ops/
+
+# Sales executive (ops portal — lead assignment)
+username: sales1
+email: sales@winningblueprints.in
+password: sales1234
+portal: /ops/
+
+# Login URL
+http://127.0.0.1:8000/auth/login/

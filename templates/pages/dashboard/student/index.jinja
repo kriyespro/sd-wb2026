@@ -1,0 +1,48 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% set label = 'Enrolled Courses' %}{% set value = stats.courses_count %}{% set value_color = 'text-ink-900' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Pending Assignments' %}{% set value = stats.pending_assignments %}{% set value_color = 'text-orange-600' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Open Tasks' %}{% set value = stats.open_tasks %}{% set value_color = 'text-brand-600' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Active Projects' %}{% set value = stats.active_projects %}{% set value_color = 'text-emerald-600' %}{% include "partials/dashboard/_stat_card.jinja" %}
+</div>
+
+<div class="grid gap-6 lg:grid-cols-2">
+    <div class="dash-panel">
+        {% set title = 'Quick links' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="grid gap-2 p-5 sm:grid-cols-2 sm:p-6">
+            {% for link in sidebar_links[:6] %}
+            <a href="{{ url(link.url_name) }}" class="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-sm transition hover:border-brand-200 hover:bg-brand-50">
+                <span>{{ link.icon }}</span>
+                <span class="font-medium text-slate-700">{{ link.title }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        {% set title = 'Recent tasks' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if recent_tasks %}
+            <ul class="space-y-3">
+                {% for task in recent_tasks %}
+                <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3 py-2.5 text-sm">
+                    <span class="text-slate-700">{{ task.title }}</span>
+                    <span class="dash-badge bg-slate-100 text-slate-600">{{ task.get_status_display() }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">No tasks assigned yet.</p>
+            {% endif %}
+            {% if mentor %}
+            <div class="mt-6 rounded-xl bg-brand-50/60 p-4">
+                <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Your mentor</p>
+                <p class="mt-1 font-display font-semibold text-ink-900">{{ mentor.get_full_name() or mentor.username }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

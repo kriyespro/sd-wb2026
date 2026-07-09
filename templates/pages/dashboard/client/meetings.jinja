@@ -1,0 +1,27 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+{% if meetings %}
+<div class="space-y-3">
+    {% for meeting in meetings %}
+    <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div>
+            <h3 class="font-medium text-brand-950">{{ meeting.title }}</h3>
+            <p class="mt-1 text-xs text-slate-500">{{ meeting.scheduled_at.strftime('%A, %d %b %Y · %H:%M') }}</p>
+            {% if meeting.notes %}<p class="mt-1 text-sm text-slate-600">{{ meeting.notes }}</p>{% endif %}
+        </div>
+        <span class="rounded-full px-3 py-1 text-xs font-medium
+            {% if meeting.status == 'completed' %}bg-green-100 text-green-700
+            {% elif meeting.status == 'cancelled' %}bg-red-100 text-red-700
+            {% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ meeting.get_status_display() }}
+        </span>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+    <p class="text-slate-500">No meetings scheduled.</p>
+</div>
+{% endif %}
+{% endblock %}

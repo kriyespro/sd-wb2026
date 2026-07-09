@@ -1,0 +1,45 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<section class="bg-brand-900 py-16 text-white sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <span class="eyebrow !text-gold-300 before:!bg-gold-400">Winning Blueprints Academy · Job-ready programs</span>
+        <h1 class="mt-6 font-display text-4xl font-bold sm:text-5xl">Courses</h1>
+        <p class="mt-4 max-w-2xl text-lg text-slate-300">
+            Explore practical, outcome-focused programs — clear pricing, duration, and career paths on every course page.
+        </p>
+    </div>
+</section>
+
+<section class="py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {% if featured_courses %}
+        <p class="text-xs font-semibold uppercase tracking-widest text-gold-600">Featured</p>
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
+            {% for course in featured_courses %}
+            {% include "partials/academy/_course_card.jinja" %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {% for course in courses %}
+            {% if not course.featured %}
+            {% include "partials/academy/_course_card.jinja" %}
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="bg-slate-50 py-16">
+    <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
+        <h2 class="font-display text-2xl font-bold text-ink-900">Ready to start learning?</h2>
+        <p class="mt-3 text-slate-600">Apply to the academy or book a free call to find the right program.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+            <a href="{{ url('academy:apply') }}" class="btn-gold">Apply to Academy →</a>
+            <a href="{{ url('website:contact') }}" class="btn-outline">Book Free Call</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

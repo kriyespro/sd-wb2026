@@ -1,0 +1,62 @@
+# Winning Blueprints — Dev Progress
+# Updated: All core phases complete
+
+## Done
+[x] Phase 0–5: Scaffold, public site, auth, RBAC, academy, client, ops portals
+[x] Phase 6: Sales lead pipeline
+    - Lead status workflow (New → Contacted → Qualified → Proposal → Won/Lost)
+    - Assign to sales executive (HTMX)
+    - Handoff notes
+    - Convert lead → ClientAccount + Project
+    - Lead email notifications (console in dev)
+[x] Phase 7: Billing MVP
+    - Invoice model + admin
+    - Client invoices view
+    - Ops invoices view
+    - seed_billing command
+[x] Production readiness
+    - Env-based settings (dev/prod)
+    - Whitenoise + Gunicorn + PostgreSQL support
+    - .env.example + README
+    - Password reset flow
+    - Automated tests (website, operations, billing)
+[x] UI polish
+    - Dashboard navy/gold theme aligned with public site
+    - Home why-choose + featured case study
+
+## Ops Portal Modules (/ops/)
+- /ops/                       Overview + stats
+- /ops/quality-check/         Approve/reject deliverables
+- /ops/projects/              Project staffing validation
+- /ops/pipeline/              Talent pipeline
+- /ops/allocation/            Staff/student assignment
+- /ops/mentors/               Mentor allocation
+- /ops/team/                  Team org
+- /ops/performance/           Performance reviews
+- /ops/leads/                 Lead pipeline (HTMX)
+- /ops/invoices/              Invoice overview
+
+## Seed Data
+python manage.py seed_users
+python manage.py seed_academy
+python manage.py seed_clients
+python manage.py seed_ops
+python manage.py seed_billing
+
+## Test Logins
+See test_user.txt
+
+## Run
+source venv/bin/activate
+python durga.py
+
+## Optional Next
+[ ] Phase 8: Analytics exports, advanced ROI dashboards
+[ ] Payment gateway (Razorpay/Stripe)
+[ ] Blog/CMS
+[ ] CI/CD
+
+## Production Deploy
+See deploy/DEPLOY.md and .env.prod
+docker compose --env-file .env.prod up -d --build
+Live: https://winningblueprints.com/ | https://159.195.52.197/

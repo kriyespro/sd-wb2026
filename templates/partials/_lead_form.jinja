@@ -1,0 +1,60 @@
+<div id="lead-form-container">
+    <form hx-post="{{ url('website:lead_submit') }}"
+          hx-target="#lead-form-container"
+          hx-swap="outerHTML"
+          class="space-y-4">
+        {% if csrf_token is defined %}{% endif %}
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <input type="hidden" name="source_page" value="{{ source_page|default('contact') }}">
+
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Name *</label>
+                {{ form.name }}
+                {% if show_errors and form.name.errors %}
+                <p class="mt-1 text-xs text-red-600">{{ form.name.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Email *</label>
+                {{ form.email }}
+                {% if show_errors and form.email.errors %}
+                <p class="mt-1 text-xs text-red-600">{{ form.email.errors[0] }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Phone</label>
+                {{ form.phone }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Company</label>
+                {{ form.company }}
+            </div>
+        </div>
+
+        <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Service Interest</label>
+            {{ form.service_interest }}
+        </div>
+
+        <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Message</label>
+            {{ form.message }}
+        </div>
+
+        <button type="submit"
+                class="btn-primary w-full sm:w-auto">
+            <span class="htmx-indicator inline-flex items-center gap-2">
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Sending...
+            </span>
+            <span class="htmx-request-hide">Send Message</span>
+        </button>
+    </form>
+</div>

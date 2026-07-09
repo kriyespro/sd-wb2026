@@ -1,0 +1,19 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-6 rounded-2xl border border-brand-200 bg-brand-50 px-5 py-4 text-sm text-brand-800">
+    Deliverables become visible to clients <strong>only after approval</strong> here.
+</div>
+
+{% if deliverables %}
+<div class="space-y-3">
+    {% for deliverable in deliverables %}
+    {% include "partials/_deliverable_row.jinja" %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="dash-panel border-dashed p-12 text-center">
+    <p class="text-slate-500">No deliverables awaiting review.</p>
+</div>
+{% endif %}
+{% endblock %}

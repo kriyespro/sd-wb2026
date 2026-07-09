@@ -1,0 +1,28 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+{% if enrollments %}
+<div class="grid gap-6 md:grid-cols-2">
+    {% for enrollment in enrollments %}
+    <a href="{{ url('academy_dashboard:course_detail', kwargs={'slug': enrollment.course.slug}) }}"
+       class="dash-stat block hover:border-brand-300">
+        <h3 class="font-display text-lg font-semibold text-ink-900">{{ enrollment.course.title }}</h3>
+        <p class="mt-2 text-sm text-slate-600 line-clamp-2">{{ enrollment.course.description }}</p>
+        <div class="mt-4 flex items-center justify-between">
+            <span class="text-xs text-slate-500">{{ enrollment.course.duration_weeks }} weeks</span>
+            <div class="flex items-center gap-2">
+                <div class="h-2 w-24 rounded-full bg-slate-100">
+                    <div class="h-2 rounded-full bg-brand-600" style="width: {{ enrollment.progress_percent }}%"></div>
+                </div>
+                <span class="text-xs font-medium text-brand-600">{{ enrollment.progress_percent }}%</span>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="dash-panel border-dashed p-12 text-center">
+    <p class="text-slate-500">You are not enrolled in any courses yet.</p>
+</div>
+{% endif %}
+{% endblock %}

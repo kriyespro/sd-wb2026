@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Digital Agency – ITactics</title>
+<meta name="description" content="Creative solutions. Digital Excellence, Redefined. Innovative minds delivering branding, storytelling, and content daily."/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{outfit:['Outfit','sans-serif'],dm:['DM Sans','sans-serif']},colors:{brand:'#B83DDA','brand-h':'#9A33B6',ttl:'#181621',bdy:'#706C7A',meta:'#A09CB1',bdr:'#E0DFE6',bg2:'#F6F8FB',dk:'#16111D','dk2':'#020002','dkbd':'#34313B','dkttl':'#FFFEFE','dktxt':'#A09BAF',ac:'#0066D9'}}}}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;color:#706C7A;background:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,h5,h6{font-family:'Outfit',sans-serif;color:#181621;line-height:1.1}
+
+/* Marquee */
+.mq{display:flex;width:max-content;will-change:transform}
+.mq-fwd{animation:mqf 32s linear infinite}
+.mq-rev{animation:mqr 32s linear infinite}
+@keyframes mqf{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes mqr{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+
+/* BG watermark */
+.wm{position:absolute;font-family:'Outfit',sans-serif;font-weight:800;text-transform:uppercase;pointer-events:none;user-select:none;white-space:nowrap;line-height:.82;z-index:0}
+
+/* Nav */
+#nav{transition:background .3s,box-shadow .3s}
+#nav.up{background:rgba(255,255,255,.97)!important;box-shadow:0 2px 40px rgba(24,22,33,.08)}
+
+/* Scroll mouse */
+.smouse{width:26px;height:44px;border:2px solid #181621;border-radius:13px;display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+.sdot{width:4px;height:8px;background:#181621;border-radius:2px;animation:sd 1.8s ease-in-out infinite}
+@keyframes sd{0%,100%{opacity:1;transform:translateY(0)}75%{opacity:0;transform:translateY(13px)}}
+
+/* Buttons */
+.bb{background:#B83DDA;color:#fff;font-family:'Outfit',sans-serif;font-weight:500;transition:background .25s,transform .2s}
+.bb:hover{background:#9A33B6;transform:translateY(-2px)}
+.bd{background:#181621;color:#fff;font-family:'Outfit',sans-serif;font-weight:500;transition:background .25s,transform .2s}
+.bd:hover{background:#B83DDA;transform:translateY(-2px)}
+.bo{border:2px solid #181621;color:#181621;font-family:'Outfit',sans-serif;font-weight:500;transition:all .25s}
+.bo:hover{background:#181621;color:#fff}
+.bow{border:2px solid rgba(255,255,255,.35);color:#fff;font-family:'Outfit',sans-serif;font-weight:500;transition:all .25s}
+.bow:hover{background:#fff;color:#181621}
+
+/* Cards */
+.sc{transition:transform .3s ease,box-shadow .3s ease}
+.sc:hover{transform:translateY(-8px);box-shadow:0 30px 70px rgba(184,61,218,.13)!important}
+
+/* Portfolio */
+.pc .po{opacity:0;transition:opacity .35s}
+.pc:hover .po{opacity:1}
+.pc img,.tc img,.bc img{transition:transform .5s ease}
+.pc:hover img,.tc:hover img,.bc:hover img{transform:scale(1.06)}
+
+/* Image accordion */
+.ia{flex:1 1 0%;transition:flex .55s ease;position:relative;overflow:hidden;cursor:pointer;border-radius:20px}
+.ia.on{flex:3 1 0%}
+.ia-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .55s ease}
+.ia:hover .ia-bg{transform:scale(1.04)}
+.ia-lbl{position:absolute;bottom:0;left:0;right:0;padding:20px 24px;background:linear-gradient(to top,rgba(22,17,29,.9) 0%,transparent 100%);transition:opacity .3s}
+.ia:not(.on) .ia-lbl{opacity:0}
+.ia.on .ia-lbl{opacity:1}
+
+/* FAQ */
+.fb{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.fb.op{max-height:280px}
+.fi2{transition:transform .3s}
+.fq.op .fi2{transform:rotate(45deg)}
+.fq.op{border-color:#B83DDA!important}
+
+/* Testimonial */
+.ts{display:none}
+.ts.on{display:block;animation:tsa .4s ease}
+@keyframes tsa{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Tab */
+.tb.on{color:#181621!important;border-bottom-color:#B83DDA!important}
+
+/* Logo opacity */
+.lg{opacity:.28;filter:grayscale(1);transition:opacity .3s,filter .3s}
+.lg:hover{opacity:1;filter:none}
+
+/* Fade in */
+.fi{opacity:0;transform:translateY(26px);transition:opacity .65s ease,transform .65s ease}
+.fi.v{opacity:1;transform:none}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#F6F8FB}
+::-webkit-scrollbar-thumb{background:#B83DDA;border-radius:3px}
+
+/* Back to top */
+#btt{opacity:0;pointer-events:none;transition:opacity .3s}
+#btt.show{opacity:1;pointer-events:auto}
+
+/* Service grid transition */
+#sg{transition:opacity .18s,transform .18s}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav id="nav" class="fixed top-0 inset-x-0 z-50 bg-white">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10 h-[76px] flex items-center justify-between gap-6">
+    <a href="#" class="flex items-center gap-2 font-outfit font-semibold text-[22px] text-ttl shrink-0">
+      <svg width="28" height="28" viewBox="0 0 32 32"><rect width="14" height="14" rx="3" fill="#B83DDA"/><rect x="18" width="14" height="14" rx="3" fill="#181621"/><rect y="18" width="14" height="14" rx="3" fill="#181621"/><rect x="18" y="18" width="14" height="14" rx="3" fill="#B83DDA"/></svg>
+      ITactics
+    </a>
+    <ul class="hidden lg:flex items-center gap-7 font-dm text-[15px] text-bdy">
+      <li><a href="#services" class="hover:text-ttl transition-colors">Services</a></li>
+      <li><a href="#about" class="hover:text-ttl transition-colors">About</a></li>
+      <li class="relative group">
+        <a href="#portfolio" class="hover:text-ttl transition-colors flex items-center gap-1">Portfolio<i class="fa fa-chevron-down text-[9px] ml-0.5 mt-px"></i></a>
+        <div class="hidden group-hover:block absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-bdr py-3 w-48">
+          <a href="#" class="block px-5 py-2.5 text-sm hover:text-brand hover:bg-bg2 transition-colors">Web Design</a>
+          <a href="#" class="block px-5 py-2.5 text-sm hover:text-brand hover:bg-bg2 transition-colors">Branding</a>
+          <a href="#" class="block px-5 py-2.5 text-sm hover:text-brand hover:bg-bg2 transition-colors">Motion Design</a>
+        </div>
+      </li>
+      <li><a href="#pricing" class="hover:text-ttl transition-colors">Pricing</a></li>
+      <li><a href="#blog" class="hover:text-ttl transition-colors">Blog</a></li>
+      <li><a href="#contact" class="hover:text-ttl transition-colors">Contact</a></li>
+    </ul>
+    <div class="hidden lg:flex items-center gap-5 shrink-0">
+      <a href="tel:+15552345678" class="font-dm text-sm text-bdy hover:text-brand transition-colors flex items-center gap-1.5"><i class="fa fa-phone text-brand text-xs"></i>+1 555 234-5678</a>
+      <a href="#contact" class="bb px-6 py-3 rounded-full text-sm flex items-center gap-2">Get in Touch <i class="fa fa-arrow-right text-xs"></i></a>
+    </div>
+    <button id="mbtn" class="lg:hidden text-ttl p-2"><i id="mic" class="fa fa-bars text-xl"></i></button>
+  </div>
+  <div id="mm" class="hidden lg:hidden bg-white border-t border-bdr px-6 pb-6 shadow-lg">
+    <ul class="flex flex-col gap-1 pt-4 font-dm text-bdy text-[15px]">
+      <li><a href="#services" class="block py-2.5 hover:text-brand">Services</a></li>
+      <li><a href="#about" class="block py-2.5 hover:text-brand">About</a></li>
+      <li><a href="#portfolio" class="block py-2.5 hover:text-brand">Portfolio</a></li>
+      <li><a href="#pricing" class="block py-2.5 hover:text-brand">Pricing</a></li>
+      <li><a href="#blog" class="block py-2.5 hover:text-brand">Blog</a></li>
+      <li><a href="#contact" class="block py-2.5 hover:text-brand">Contact</a></li>
+      <li class="pt-3"><a href="#contact" class="bb w-full py-3.5 rounded-full text-sm text-center block">Get in Touch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="relative min-h-screen bg-white flex items-end pt-[76px] overflow-hidden">
+  <!-- Large watermark bg text -->
+  <span class="wm text-[#9CB7C933]" style="font-size:15.64vw;bottom:26%;left:-0.8vw;letter-spacing:-0.03em">DIGITAL</span>
+  <span class="wm text-[#9CB7C922]" style="font-size:10.5vw;bottom:4%;right:-0.5vw;letter-spacing:-0.03em">AGENCY</span>
+
+  <div class="max-w-[1290px] mx-auto w-full px-6 lg:px-10 relative z-10">
+    <div class="flex flex-col lg:flex-row items-end min-h-[calc(100vh-76px)] gap-0">
+
+      <!-- LEFT: copy -->
+      <div class="flex flex-col justify-end pb-20 lg:pb-28 pt-16 lg:w-[50%] shrink-0">
+        <!-- Label -->
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-7">
+          <span class="block w-8 h-px bg-brand"></span>Creative solutions
+        </span>
+        <!-- H1 -->
+        <h1 class="font-outfit leading-[.88] text-ttl mb-7" style="font-size:clamp(56px,5.25vw+12px,96px);font-weight:500;letter-spacing:-0.01em">
+          Digital Excellence,<br/><span class="text-brand">Redefined</span>
+        </h1>
+        <p class="font-dm text-bdy text-[16px] leading-[1.65] mb-10 max-w-[420px]">
+          Innovative minds delivering branding, storytelling, and content daily. We empower businesses through creative digital experiences.
+        </p>
+        <!-- CTA row -->
+        <div class="flex flex-wrap items-center gap-4 mb-12">
+          <a href="#services" class="bb px-8 py-4 rounded-full text-[15px] flex items-center gap-2">Discover Services <i class="fa fa-arrow-right text-xs"></i></a>
+          <a href="#portfolio" class="bo px-8 py-4 rounded-full text-[15px] flex items-center gap-2">View Portfolio</a>
+        </div>
+        <!-- Ratings -->
+        <div class="flex flex-wrap gap-4">
+          <div class="flex items-center gap-3 bg-white rounded-2xl border border-bdr shadow-[0_4px_24px_rgba(0,0,0,0.07)] px-5 py-3.5">
+            <i class="fab fa-google text-[#4285F4] text-xl"></i>
+            <div>
+              <div class="flex gap-0.5 mb-1">
+                <i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i>
+              </div>
+              <p class="font-outfit font-semibold text-ttl text-xs">4.9 <span class="font-dm font-normal text-meta">/5 · 120+ reviews</span></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 bg-white rounded-2xl border border-bdr shadow-[0_4px_24px_rgba(0,0,0,0.07)] px-5 py-3.5">
+            <span class="font-outfit font-extrabold text-[#ef4335] text-sm tracking-tight">clutch</span>
+            <div>
+              <div class="flex gap-0.5 mb-1">
+                <i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i><i class="fa fa-star text-amber-400 text-[11px]"></i>
+              </div>
+              <p class="font-outfit font-semibold text-ttl text-xs">5.0 <span class="font-dm font-normal text-meta">/5 · 85+ reviews</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: hero image -->
+      <div class="relative lg:flex-1 flex justify-end items-end self-end">
+        <!-- bg blob -->
+        <div class="absolute bottom-0 right-0 w-[55%] h-[90%] bg-gradient-to-br from-bg2 via-[#ead5f7]/30 to-bg2 rounded-tl-[60px]"></div>
+        <!-- Person -->
+        <div class="relative z-10 w-[340px] lg:w-[430px]">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=85&auto=format&fit=crop&crop=top"
+               alt="Digital Agency Expert" class="w-full object-cover object-top" style="max-height:640px" loading="eager"/>
+        </div>
+        <!-- Float card: growth -->
+        <div class="absolute top-[26%] left-0 lg:-left-6 z-20 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-4 py-3.5 border border-bdr/60 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center shrink-0"><i class="fa fa-chart-line text-brand text-sm"></i></div>
+          <div><p class="font-outfit font-bold text-ttl text-sm leading-none">+248%</p><p class="font-dm text-meta text-[11px] mt-0.5">Revenue Growth</p></div>
+        </div>
+        <!-- Float card: clients -->
+        <div class="absolute bottom-40 -left-2 lg:-left-8 z-20 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-4 py-3.5 border border-bdr/60 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-ac/10 flex items-center justify-center shrink-0"><i class="fa fa-users text-ac text-sm"></i></div>
+          <div><p class="font-outfit font-bold text-ttl text-sm leading-none">840+</p><p class="font-dm text-meta text-[11px] mt-0.5">Happy Clients</p></div>
+        </div>
+        <!-- Float badge: award -->
+        <div class="absolute top-[45%] right-4 lg:right-6 z-20 bg-brand rounded-2xl shadow-xl px-4 py-3.5 flex items-center gap-3">
+          <i class="fa fa-trophy text-white/80 text-sm"></i>
+          <div><p class="font-outfit font-bold text-white text-sm leading-none">Award 2025</p><p class="font-dm text-white/70 text-[11px] mt-0.5">Best Digital Agency</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
+    <div class="smouse"><div class="sdot"></div></div>
+    <span class="text-[10px] font-dm tracking-[3px] uppercase text-meta">Scroll Down</span>
+  </div>
+</section>
+
+<!-- ══════════ LOGOS STRIP ══════════ -->
+<section class="py-14 border-y border-bdr overflow-hidden bg-white">
+  <p class="text-center font-dm text-[11px] tracking-[3px] text-meta uppercase mb-8">Trusted by leading companies worldwide</p>
+  <div class="overflow-hidden">
+    <div class="mq mq-fwd gap-0">
+      <div class="flex items-center gap-14 px-7">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" class="lg h-7 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="lg h-8 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" class="lg h-8 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" class="lg h-7 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" class="lg h-6 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg" alt="Slack" class="lg h-7 w-auto"/>
+      </div>
+      <div class="flex items-center gap-14 px-7" aria-hidden="true">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="" class="lg h-7 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="" class="lg h-8 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="" class="lg h-8 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="" class="lg h-7 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="" class="lg h-6 w-auto"/>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg" alt="" class="lg h-7 w-auto"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SERVICES (tabs + 4 icon-box cards) ══════════ -->
+<section id="services" class="py-24 lg:py-36 bg-white">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 mb-12 fi">
+      <div class="max-w-xl">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Tailored service offerings</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight" style="font-size:clamp(28px,2.5vw+10px,47px);letter-spacing:-0.01em">Select the ideal plan for you</h2>
+      </div>
+      <p class="font-dm text-bdy text-[15px] leading-relaxed max-w-sm lg:text-right">At ITactics, we offer customized service packages designed to meet your unique business requirements.</p>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="flex gap-1 border-b border-bdr mb-10 fi">
+      <button id="tab-s" onclick="tab('s')" class="tb on pb-4 px-1 font-outfit font-medium text-bdy text-[15px] border-b-2 border-transparent mr-7 transition-colors whitespace-nowrap">Creative solutions</button>
+      <button id="tab-i" onclick="tab('i')" class="tb pb-4 px-1 font-outfit font-medium text-bdy text-[15px] border-b-2 border-transparent mr-7 transition-colors whitespace-nowrap">IT solutions</button>
+      <button id="tab-m" onclick="tab('m')" class="tb pb-4 px-1 font-outfit font-medium text-bdy text-[15px] border-b-2 border-transparent transition-colors whitespace-nowrap">Marketing</button>
+    </div>
+
+    <!-- 2-column service cards (icon-box style matching original) -->
+    <div id="sg" class="grid grid-cols-1 sm:grid-cols-2 gap-5"></div>
+    <div class="text-center mt-12 fi">
+      <a href="#contact" class="bo px-9 py-4 rounded-full text-[15px] inline-flex items-center gap-2">View All Services <i class="fa fa-arrow-right text-sm"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ABOUT ══════════ -->
+<section id="about" class="py-24 lg:py-36 bg-bg2">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row gap-14 lg:gap-20 items-start">
+      <!-- Left -->
+      <div class="lg:w-[48%] fi">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Who We Are</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight mb-7" style="font-size:clamp(28px,2.5vw+10px,47px);letter-spacing:-0.01em">
+          We empower businesses<br/>through innovative solutions.
+        </h2>
+        <p class="font-dm text-bdy text-[16px] leading-[1.65] mb-5">At ITactics, we empower businesses to build exceptional websites with ease. Our solutions simplify the web design journey, making it accessible for all — from early-stage startups to established enterprises.</p>
+        <p class="font-dm text-bdy text-[16px] leading-[1.65] mb-10">Our creatives, technologists and strategists are committed to impactful digital products that connect with your audience at every touchpoint.</p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#contact" class="bd px-8 py-4 rounded-full text-[15px] flex items-center gap-2">Ready to get started? <i class="fa fa-arrow-right text-xs"></i></a>
+          <a href="#services" class="bo px-8 py-4 rounded-full text-[15px]">Our Services</a>
+        </div>
+      </div>
+      <!-- Right: stats -->
+      <div class="lg:flex-1 fi">
+        <div class="grid grid-cols-2 gap-5">
+          <div class="bg-white rounded-[28px] p-8 border border-bdr">
+            <div class="flex items-end gap-1 mb-2">
+              <span class="font-outfit font-bold text-ttl leading-none cn" style="font-size:52px" data-t="840">0</span>
+              <span class="font-outfit font-bold text-brand text-2xl mb-1">+</span>
+            </div>
+            <p class="font-dm text-bdy text-sm">Happy Clients Worldwide</p>
+          </div>
+          <div class="bg-ttl rounded-[28px] p-8">
+            <div class="flex items-end gap-1 mb-2">
+              <span class="font-outfit font-bold text-white leading-none cn" style="font-size:52px" data-t="12">0</span>
+              <span class="font-outfit font-bold text-brand text-2xl mb-1">+</span>
+            </div>
+            <p class="font-dm text-white/60 text-sm">Years of Excellence</p>
+          </div>
+          <div class="bg-brand rounded-[28px] p-8 relative overflow-hidden">
+            <div class="absolute -top-5 -right-5 w-20 h-20 bg-white/10 rounded-full"></div>
+            <div class="flex items-end gap-1 mb-2">
+              <span class="font-outfit font-bold text-white leading-none cn" style="font-size:52px" data-t="320">0</span>
+              <span class="font-outfit font-bold text-white/70 text-2xl mb-1">+</span>
+            </div>
+            <p class="font-dm text-white/80 text-sm">Projects Delivered</p>
+          </div>
+          <div class="bg-white rounded-[28px] p-8 border border-bdr">
+            <div class="flex items-end gap-1 mb-2">
+              <span class="font-outfit font-bold text-ttl leading-none cn" style="font-size:52px" data-t="98">0</span>
+              <span class="font-outfit font-bold text-brand text-2xl mb-1">%</span>
+            </div>
+            <p class="font-dm text-bdy text-sm">Client Satisfaction Rate</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MARQUEE TICKER ══════════ -->
+<div class="py-5 bg-ttl overflow-hidden">
+  <div class="mq mq-fwd">
+    <div class="flex items-center gap-8 pr-8 shrink-0">
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Branding</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Web Design</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">SEO Strategy</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">UI/UX Design</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Motion Design</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Content Strategy</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Mobile Apps</span><span class="text-brand text-xl">✦</span>
+    </div>
+    <div class="flex items-center gap-8 pr-8 shrink-0" aria-hidden="true">
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Branding</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Web Design</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">SEO Strategy</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">UI/UX Design</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Motion Design</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Content Strategy</span><span class="text-brand text-xl">✦</span>
+      <span class="font-outfit font-semibold text-white text-[26px] uppercase tracking-tight whitespace-nowrap">Mobile Apps</span><span class="text-brand text-xl">✦</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ WHY US / INNOVATIVE BRANDING ══════════ -->
+<section class="py-24 lg:py-36 bg-white overflow-hidden">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row gap-14 lg:gap-20 items-center">
+      <!-- Left image collage -->
+      <div class="lg:w-1/2 relative fi">
+        <div class="grid grid-cols-2 gap-4">
+          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&q=80&auto=format&fit=crop" class="rounded-3xl w-full h-64 object-cover" alt="Team"/>
+          <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&q=80&auto=format&fit=crop" class="rounded-3xl w-full h-64 object-cover mt-10" alt="Creative"/>
+          <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&q=80&auto=format&fit=crop" class="rounded-3xl w-full h-52 object-cover" alt="Design"/>
+          <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&q=80&auto=format&fit=crop" class="rounded-3xl w-full h-52 object-cover mt-4" alt="Strategy"/>
+        </div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand text-white rounded-2xl px-7 py-5 text-center shadow-2xl z-10">
+          <p class="font-outfit font-bold text-4xl leading-none">12+</p>
+          <p class="font-dm text-white/80 text-xs mt-1.5">Years Experience</p>
+        </div>
+      </div>
+      <!-- Right -->
+      <div class="lg:w-1/2 fi">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Why ITactics</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight mb-10" style="font-size:clamp(26px,2.3vw+10px,44px)">
+          Innovative branding that<br/>clients <span class="text-brand">trust!</span>
+        </h2>
+        <div class="flex flex-col gap-7">
+          <div class="flex gap-5 items-start group">
+            <div class="w-[52px] h-[52px] shrink-0 rounded-2xl bg-brand/10 flex items-center justify-center group-hover:bg-brand transition-colors"><i class="fa fa-lightbulb text-brand group-hover:text-white transition-colors text-lg"></i></div>
+            <div><h4 class="font-outfit font-semibold text-ttl text-[17px] mb-1.5">Creative-First Approach</h4><p class="font-dm text-bdy text-sm leading-relaxed">Every project starts with deep creative exploration to find unique, memorable solutions.</p></div>
+          </div>
+          <div class="flex gap-5 items-start group">
+            <div class="w-[52px] h-[52px] shrink-0 rounded-2xl bg-ac/10 flex items-center justify-center group-hover:bg-ac transition-colors"><i class="fa fa-chart-bar text-ac group-hover:text-white transition-colors text-lg"></i></div>
+            <div><h4 class="font-outfit font-semibold text-ttl text-[17px] mb-1.5">Data-Driven Results</h4><p class="font-dm text-bdy text-sm leading-relaxed">Every decision is backed by analytics to ensure measurable business outcomes and real ROI.</p></div>
+          </div>
+          <div class="flex gap-5 items-start group">
+            <div class="w-[52px] h-[52px] shrink-0 rounded-2xl bg-amber-400/10 flex items-center justify-center group-hover:bg-amber-400 transition-colors"><i class="fa fa-headset text-amber-500 group-hover:text-white transition-colors text-lg"></i></div>
+            <div><h4 class="font-outfit font-semibold text-ttl text-[17px] mb-1.5">Dedicated Support</h4><p class="font-dm text-bdy text-sm leading-relaxed">We stay with you post-launch, providing ongoing partnership and iteration for long-term success.</p></div>
+          </div>
+        </div>
+        <a href="#contact" class="bb px-8 py-4 rounded-full text-[15px] inline-flex items-center gap-2 mt-10">Start a Project <i class="fa fa-arrow-right text-sm"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIAL (large quote style) ══════════ -->
+<section class="py-20 lg:py-32 bg-bg2">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row gap-12 items-start">
+      <!-- Left label + nav -->
+      <div class="lg:w-72 shrink-0 fi">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Testimonials</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight mb-8" style="font-size:clamp(24px,2vw+10px,40px)">What clients say about us</h2>
+        <div class="flex gap-3">
+          <button onclick="pT()" class="w-12 h-12 rounded-full border-2 border-bdr hover:border-brand hover:text-brand text-ttl transition-colors flex items-center justify-center"><i class="fa fa-arrow-left text-sm"></i></button>
+          <button onclick="nT()" class="w-12 h-12 rounded-full bg-ttl hover:bg-brand text-white transition-colors flex items-center justify-center"><i class="fa fa-arrow-right text-sm"></i></button>
+        </div>
+      </div>
+      <!-- Right slide -->
+      <div class="flex-1 fi">
+        <div class="ts on">
+          <div class="bg-white rounded-3xl p-10 lg:p-12 border border-bdr shadow-[0_4px_40px_rgba(0,0,0,0.05)]">
+            <div class="flex gap-1 mb-6"><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i></div>
+            <p class="font-dm text-ttl text-[20px] leading-relaxed mb-8 italic">"Partnering with ITactics was an exceptional journey. They invested effort to grasp our goals and exceeded our expectations with every deliverable throughout the project."</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80&auto=format&fit=crop&crop=face" class="w-14 h-14 rounded-full object-cover" alt="Jenifer Wang"/>
+                <div><p class="font-outfit font-semibold text-ttl text-base">Jenifer Wang</p><p class="font-dm text-meta text-sm">CEO · Silicon Valley, CA</p></div>
+              </div>
+              <i class="fa fa-quote-right text-brand/15 text-5xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="ts">
+          <div class="bg-white rounded-3xl p-10 lg:p-12 border border-bdr shadow-[0_4px_40px_rgba(0,0,0,0.05)]">
+            <div class="flex gap-1 mb-6"><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i></div>
+            <p class="font-dm text-ttl text-[20px] leading-relaxed mb-8 italic">"The team took our complex brief and turned it into a sleek, intuitive platform our users absolutely love. Transparent, professional and genuinely exciting to work with."</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&auto=format&fit=crop&crop=face" class="w-14 h-14 rounded-full object-cover" alt="James Carter"/>
+                <div><p class="font-outfit font-semibold text-ttl text-base">James Carter</p><p class="font-dm text-meta text-sm">CEO · Nexus Technologies</p></div>
+              </div>
+              <i class="fa fa-quote-right text-brand/15 text-5xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="ts">
+          <div class="bg-white rounded-3xl p-10 lg:p-12 border border-bdr shadow-[0_4px_40px_rgba(0,0,0,0.05)]">
+            <div class="flex gap-1 mb-6"><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i><i class="fa fa-star text-amber-400"></i></div>
+            <p class="font-dm text-ttl text-[20px] leading-relaxed mb-8 italic">"ITactics drove our organic traffic up by 520%. The new website design increased our conversion rate dramatically. Simply the best digital partner we've ever worked with."</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&q=80&auto=format&fit=crop&crop=face" class="w-14 h-14 rounded-full object-cover" alt="David Chen"/>
+                <div><p class="font-outfit font-semibold text-ttl text-base">David Chen</p><p class="font-dm text-meta text-sm">Director · Pacific Commerce</p></div>
+              </div>
+              <i class="fa fa-quote-right text-brand/15 text-5xl"></i>
+            </div>
+          </div>
+        </div>
+        <!-- Dots -->
+        <div class="flex gap-2 mt-5" id="tds">
+          <button onclick="gT(0)" class="td h-1.5 rounded-full bg-ttl w-8 transition-all"></button>
+          <button onclick="gT(1)" class="td h-1.5 rounded-full bg-bdr w-4 transition-all"></button>
+          <button onclick="gT(2)" class="td h-1.5 rounded-full bg-bdr w-4 transition-all"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ COUNTERS BAND ══════════ -->
+<section class="py-20 bg-white border-y border-bdr">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4 fi">
+      <div class="text-center">
+        <div class="flex items-end justify-center gap-1 mb-2">
+          <span class="font-outfit font-bold text-ttl leading-none cn" style="font-size:clamp(48px,6vw,80px)" data-t="89">0</span>
+        </div>
+        <p class="font-dm text-meta text-sm">Innovative Solutions</p>
+      </div>
+      <div class="text-center">
+        <div class="flex items-end justify-center gap-1 mb-2">
+          <span class="font-outfit font-bold text-brand leading-none cn" style="font-size:clamp(48px,6vw,80px)" data-t="98">0</span>
+        </div>
+        <p class="font-dm text-meta text-sm">Happy Customers</p>
+      </div>
+      <div class="text-center">
+        <div class="flex items-end justify-center gap-1 mb-2">
+          <span class="font-outfit font-bold text-ttl leading-none cn" style="font-size:clamp(48px,6vw,80px)" data-t="29">0</span>
+        </div>
+        <p class="font-dm text-meta text-sm">Tailored Services</p>
+      </div>
+      <div class="text-center">
+        <div class="flex items-end justify-center gap-1 mb-2">
+          <span class="font-outfit font-bold text-brand leading-none cn" style="font-size:clamp(48px,6vw,80px)" data-t="97">0</span>
+        </div>
+        <p class="font-dm text-meta text-sm">Unique Designs</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TRANSFORMING INTO REALITY + IMAGE ACCORDION ══════════ -->
+<section class="py-24 lg:py-36 bg-white">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row gap-10 lg:gap-16 items-end mb-12 fi">
+      <div class="lg:w-1/2">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Transforming into Reality</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight" style="font-size:clamp(26px,2.3vw+10px,44px)">We craft &amp; enhance your<br/>digital presence</h2>
+      </div>
+      <div class="lg:w-1/2">
+        <p class="font-dm text-bdy text-[15px] leading-relaxed mb-5">At ITactics, we empower businesses to build exceptional websites with ease. Our solutions simplify the web design journey, making it accessible for all.</p>
+        <a href="#contact" class="inline-flex items-center gap-2 text-brand font-outfit font-semibold text-sm hover:gap-4 transition-all">Ready to get started? <i class="fa fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <!-- Image Accordion -->
+    <div class="flex gap-3 h-[440px] lg:h-[500px] fi">
+      <div class="ia on" onclick="openIA(this)">
+        <div class="ia-bg" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=80&auto=format&fit=crop')"></div>
+        <div class="ia-lbl"><p class="font-dm text-white/70 text-[11px] uppercase tracking-widest mb-1">IT Solutions</p><h4 class="font-outfit font-semibold text-white text-xl">Innovative IT solutions</h4></div>
+      </div>
+      <div class="ia" onclick="openIA(this)">
+        <div class="ia-bg" style="background-image:url('https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=80&auto=format&fit=crop')"></div>
+        <div class="ia-lbl"><p class="font-dm text-white/70 text-[11px] uppercase tracking-widest mb-1">Brand Development</p><h4 class="font-outfit font-semibold text-white text-xl">Brand identity</h4></div>
+      </div>
+      <div class="ia" onclick="openIA(this)">
+        <div class="ia-bg" style="background-image:url('https://images.unsplash.com/photo-1547658719-da2b51169166?w=900&q=80&auto=format&fit=crop')"></div>
+        <div class="ia-lbl"><p class="font-dm text-white/70 text-[11px] uppercase tracking-widest mb-1">Visual Storytelling</p><h4 class="font-outfit font-semibold text-white text-xl">Design solutions</h4></div>
+      </div>
+      <div class="ia" onclick="openIA(this)">
+        <div class="ia-bg" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format&fit=crop')"></div>
+        <div class="ia-lbl"><p class="font-dm text-white/70 text-[11px] uppercase tracking-widest mb-1">Performance</p><h4 class="font-outfit font-semibold text-white text-xl">Digital marketing solutions</h4></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PORTFOLIO (dark bg) ══════════ -->
+<section id="portfolio" class="py-24 lg:py-36 bg-dk relative overflow-hidden">
+  <span class="wm" style="font-size:13vw;top:10%;right:-1%;color:rgba(255,255,255,0.03)">WORKS</span>
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10 relative z-10">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-14 gap-6 fi">
+      <div>
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Our Portfolio</span>
+        <h2 class="font-outfit font-medium text-dkttl leading-tight" style="font-size:clamp(28px,2.5vw+10px,47px)">Selected Works</h2>
+      </div>
+      <a href="#" class="bb px-7 py-3.5 rounded-full text-[14px] flex items-center gap-2 shrink-0">All Projects <i class="fa fa-arrow-right text-xs"></i></a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 fi">
+      <div class="pc rounded-3xl overflow-hidden relative group cursor-pointer">
+        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=700&q=80&auto=format&fit=crop" class="w-full h-72 object-cover" alt="Brand Identity"/>
+        <div class="po absolute inset-0 bg-dk/80 flex flex-col justify-end p-7">
+          <span class="text-brand text-[11px] font-dm uppercase tracking-widest mb-2">Branding</span>
+          <h3 class="font-outfit font-semibold text-white text-xl mb-3">Nexus Brand Identity</h3>
+          <a href="#" class="inline-flex items-center gap-2 text-white/80 text-sm hover:text-brand transition-colors">View Project <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>
+      <div class="pc rounded-3xl overflow-hidden relative group cursor-pointer">
+        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=700&q=80&auto=format&fit=crop" class="w-full h-72 object-cover" alt="Web Design"/>
+        <div class="po absolute inset-0 bg-dk/80 flex flex-col justify-end p-7">
+          <span class="text-brand text-[11px] font-dm uppercase tracking-widest mb-2">Web Design</span>
+          <h3 class="font-outfit font-semibold text-white text-xl mb-3">Lumina E-Commerce</h3>
+          <a href="#" class="inline-flex items-center gap-2 text-white/80 text-sm hover:text-brand transition-colors">View Project <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>
+      <div class="pc rounded-3xl overflow-hidden relative group cursor-pointer">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80&auto=format&fit=crop" class="w-full h-72 object-cover" alt="Analytics"/>
+        <div class="po absolute inset-0 bg-dk/80 flex flex-col justify-end p-7">
+          <span class="text-brand text-[11px] font-dm uppercase tracking-widest mb-2">UI/UX Design</span>
+          <h3 class="font-outfit font-semibold text-white text-xl mb-3">Analytics Dashboard</h3>
+          <a href="#" class="inline-flex items-center gap-2 text-white/80 text-sm hover:text-brand transition-colors">View Project <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>
+      <div class="pc rounded-3xl overflow-hidden relative group cursor-pointer md:col-span-2">
+        <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=900&q=80&auto=format&fit=crop" class="w-full h-72 object-cover" alt="Mobile App"/>
+        <div class="po absolute inset-0 bg-dk/80 flex flex-col justify-end p-7">
+          <span class="text-brand text-[11px] font-dm uppercase tracking-widest mb-2">Mobile App</span>
+          <h3 class="font-outfit font-semibold text-white text-xl mb-3">HealthTrack Mobile Application</h3>
+          <a href="#" class="inline-flex items-center gap-2 text-white/80 text-sm hover:text-brand transition-colors">View Project <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>
+      <div class="pc rounded-3xl overflow-hidden relative group cursor-pointer">
+        <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=700&q=80&auto=format&fit=crop" class="w-full h-72 object-cover" alt="Motion"/>
+        <div class="po absolute inset-0 bg-dk/80 flex flex-col justify-end p-7">
+          <span class="text-brand text-[11px] font-dm uppercase tracking-widest mb-2">Motion Design</span>
+          <h3 class="font-outfit font-semibold text-white text-xl mb-3">Aerial Campaign Film</h3>
+          <a href="#" class="inline-flex items-center gap-2 text-white/80 text-sm hover:text-brand transition-colors">View Project <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PRICING ══════════ -->
+<section id="pricing" class="py-24 lg:py-36 bg-bg2 relative overflow-hidden">
+  <span class="wm text-[#9CB7C918]" style="font-size:11vw;bottom:0;right:-1%">PLANS</span>
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10 relative z-10">
+    <div class="text-center mb-14 fi">
+      <span class="inline-flex items-center justify-center gap-3 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Pricing Plans<span class="w-8 h-px bg-brand"></span></span>
+      <h2 class="font-outfit font-medium text-ttl leading-tight mb-4" style="font-size:clamp(28px,2.5vw+10px,47px)">Tailored service offerings</h2>
+      <p class="font-dm text-bdy max-w-lg mx-auto text-[15px]">At ITactics, we offer customized service packages designed to meet your unique business requirements. Our solutions are crafted to provide exceptional value while ensuring your satisfaction.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fi">
+      <!-- Starter -->
+      <div class="bg-white rounded-[28px] p-9 border border-bdr hover:-translate-y-2 transition-transform duration-300">
+        <p class="font-dm text-meta text-[11px] uppercase tracking-[2px] mb-5">Starter</p>
+        <div class="flex items-baseline gap-1 mb-3"><span class="font-outfit font-bold text-ttl" style="font-size:48px">$499</span><span class="font-dm text-meta text-sm">/project</span></div>
+        <p class="font-dm text-bdy text-sm leading-relaxed mb-7 pb-7 border-b border-bdr">Perfect for small businesses and startups looking to establish their digital presence quickly.</p>
+        <ul class="flex flex-col gap-3.5 mb-9 text-sm">
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Brand Identity Design</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>5-Page Website</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>SEO Basics Setup</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Social Media Kit</li>
+          <li class="flex items-center gap-3 text-meta/50 font-dm"><i class="fa fa-times text-bdr w-4 text-xs shrink-0"></i>Mobile App</li>
+          <li class="flex items-center gap-3 text-meta/50 font-dm"><i class="fa fa-times text-bdr w-4 text-xs shrink-0"></i>Priority Support</li>
+        </ul>
+        <a href="#contact" class="bo w-full py-4 rounded-full text-[15px] text-center block font-outfit font-medium">Get Started</a>
+      </div>
+      <!-- Pro -->
+      <div class="bg-ttl rounded-[28px] p-9 relative overflow-hidden hover:-translate-y-2 transition-transform duration-300">
+        <div class="absolute top-5 right-5 bg-brand text-white text-[11px] font-dm font-medium px-3 py-1 rounded-full">Most Popular</div>
+        <div class="absolute -top-14 -right-14 w-44 h-44 bg-brand/15 rounded-full"></div>
+        <div class="absolute -bottom-10 -left-10 w-36 h-36 bg-brand/10 rounded-full"></div>
+        <p class="font-dm text-dktxt text-[11px] uppercase tracking-[2px] mb-5 relative z-10">Professional</p>
+        <div class="flex items-baseline gap-1 mb-3 relative z-10"><span class="font-outfit font-bold text-white" style="font-size:48px">$1,299</span><span class="font-dm text-dktxt text-sm">/project</span></div>
+        <p class="font-dm text-dktxt text-sm leading-relaxed mb-7 pb-7 border-b border-dkbd relative z-10">Ideal for growing businesses that need comprehensive digital transformation strategy.</p>
+        <ul class="flex flex-col gap-3.5 mb-9 text-sm relative z-10">
+          <li class="flex items-center gap-3 text-white/80 font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Full Brand Identity</li>
+          <li class="flex items-center gap-3 text-white/80 font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>15-Page Website + CMS</li>
+          <li class="flex items-center gap-3 text-white/80 font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Advanced SEO Strategy</li>
+          <li class="flex items-center gap-3 text-white/80 font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Social Media Kit</li>
+          <li class="flex items-center gap-3 text-white/80 font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Mobile-Responsive App</li>
+          <li class="flex items-center gap-3 text-white/30 font-dm"><i class="fa fa-times text-dkbd w-4 text-xs shrink-0"></i>Priority Support</li>
+        </ul>
+        <a href="#contact" class="bb w-full py-4 rounded-full text-[15px] text-center block font-outfit font-medium relative z-10">Get Started</a>
+      </div>
+      <!-- Enterprise -->
+      <div class="bg-white rounded-[28px] p-9 border border-bdr hover:-translate-y-2 transition-transform duration-300">
+        <p class="font-dm text-meta text-[11px] uppercase tracking-[2px] mb-5">Enterprise</p>
+        <div class="flex items-baseline gap-1 mb-3"><span class="font-outfit font-bold text-ttl text-4xl">Custom</span></div>
+        <p class="font-dm text-bdy text-sm leading-relaxed mb-7 pb-7 border-b border-bdr">Fully custom solutions for enterprises with complex digital needs and ambitious growth goals.</p>
+        <ul class="flex flex-col gap-3.5 mb-9 text-sm">
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Enterprise Brand System</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Custom Web Platform</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Full SEO &amp; PPC</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Native Mobile Apps</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>Dedicated Account Manager</li>
+          <li class="flex items-center gap-3 text-bdy font-dm"><i class="fa fa-check text-brand w-4 text-xs shrink-0"></i>24/7 Priority Support</li>
+        </ul>
+        <a href="#contact" class="bo w-full py-4 rounded-full text-[15px] text-center block font-outfit font-medium">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TEAM ══════════ -->
+<section class="py-24 lg:py-36 bg-white">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-14 gap-6 fi">
+      <div>
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Discover ITactics</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight" style="font-size:clamp(26px,2.3vw+10px,44px)">Meet the creatives<br/>behind the magic</h2>
+      </div>
+      <a href="#" class="bo px-7 py-3.5 rounded-full text-[14px] flex items-center gap-2 shrink-0">All Team Members <i class="fa fa-arrow-right text-xs"></i></a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 fi">
+      <div class="tc group">
+        <div class="overflow-hidden rounded-3xl mb-4 relative">
+          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=500&q=80&auto=format&fit=crop&crop=face" class="w-full h-72 lg:h-80 object-cover" alt="Amanda Dowson"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-dk/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-5">
+            <div class="flex gap-2">
+              <a href="#" class="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-brand transition-colors"><i class="fab fa-linkedin-in text-xs"></i></a>
+              <a href="#" class="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-brand transition-colors"><i class="fab fa-instagram text-xs"></i></a>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-outfit font-semibold text-ttl text-lg">Amanda Dowson</h4>
+        <p class="font-dm text-meta text-sm">CEO</p>
+      </div>
+      <div class="tc group">
+        <div class="overflow-hidden rounded-3xl mb-4 relative">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=500&q=80&auto=format&fit=crop&crop=face" class="w-full h-72 lg:h-80 object-cover" alt="Sophia Lee"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-dk/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-5">
+            <div class="flex gap-2">
+              <a href="#" class="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-brand transition-colors"><i class="fab fa-linkedin-in text-xs"></i></a>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-outfit font-semibold text-ttl text-lg">Sophia Lee</h4>
+        <p class="font-dm text-meta text-sm">Creative Director</p>
+      </div>
+      <div class="tc group">
+        <div class="overflow-hidden rounded-3xl mb-4 relative">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&q=80&auto=format&fit=crop&crop=face" class="w-full h-72 lg:h-80 object-cover" alt="Adam King"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-dk/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-5">
+            <div class="flex gap-2">
+              <a href="#" class="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-brand transition-colors"><i class="fab fa-linkedin-in text-xs"></i></a>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-outfit font-semibold text-ttl text-lg">Adam King</h4>
+        <p class="font-dm text-meta text-sm">Lead Developer</p>
+      </div>
+      <div class="tc group">
+        <div class="overflow-hidden rounded-3xl mb-4 relative">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&q=80&auto=format&fit=crop&crop=face" class="w-full h-72 lg:h-80 object-cover" alt="Anna Smith"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-dk/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-5">
+            <div class="flex gap-2">
+              <a href="#" class="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-brand transition-colors"><i class="fab fa-linkedin-in text-xs"></i></a>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-outfit font-semibold text-ttl text-lg">Anna Smith</h4>
+        <p class="font-dm text-meta text-sm">Sales Director</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BLOG ══════════ -->
+<section id="blog" class="py-24 lg:py-36 bg-bg2">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-14 gap-6 fi">
+      <div>
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>Flexible options</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight" style="font-size:clamp(26px,2.3vw+10px,44px)">Latest news and insights<br/>from the industry</h2>
+      </div>
+      <a href="#" class="bo px-7 py-3.5 rounded-full text-[14px] flex items-center gap-2 shrink-0">All Articles <i class="fa fa-arrow-right text-xs"></i></a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fi">
+      <article class="bc group bg-white rounded-3xl overflow-hidden border border-bdr">
+        <div class="overflow-hidden"><img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=700&q=80&auto=format&fit=crop" class="w-full h-52 object-cover" alt="Blog 1"/></div>
+        <div class="p-8">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="bg-brand/10 text-brand font-dm text-[11px] px-3 py-1 rounded-full">Startup Growth</span>
+            <span class="font-dm text-meta text-xs">May 16, 2025 · 2 Comments</span>
+          </div>
+          <h3 class="font-outfit font-semibold text-ttl text-xl leading-snug mb-3 group-hover:text-brand transition-colors"><a href="#">Creating a robust online presence through IT solutions</a></h3>
+          <p class="font-dm text-bdy text-sm leading-relaxed mb-5">Discover how innovative IT strategies can transform your digital footprint and accelerate business growth.</p>
+          <a href="#" class="inline-flex items-center gap-2 text-brand font-outfit font-semibold text-sm hover:gap-4 transition-all">Read More <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </article>
+      <article class="bc group bg-white rounded-3xl overflow-hidden border border-bdr">
+        <div class="overflow-hidden"><img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=700&q=80&auto=format&fit=crop" class="w-full h-52 object-cover" alt="Blog 2"/></div>
+        <div class="p-8">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="bg-ac/10 text-ac font-dm text-[11px] px-3 py-1 rounded-full">Startup Growth</span>
+            <span class="font-dm text-meta text-xs">May 16, 2025 · 2 Comments</span>
+          </div>
+          <h3 class="font-outfit font-semibold text-ttl text-xl leading-snug mb-3 group-hover:text-brand transition-colors"><a href="#">Effective IT solutions to elevate your startup success</a></h3>
+          <p class="font-dm text-bdy text-sm leading-relaxed mb-5">The right tech stack combined with the right strategy can launch your startup from zero to scale.</p>
+          <a href="#" class="inline-flex items-center gap-2 text-brand font-outfit font-semibold text-sm hover:gap-4 transition-all">Read More <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </article>
+      <article class="bc group bg-white rounded-3xl overflow-hidden border border-bdr">
+        <div class="overflow-hidden"><img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=700&q=80&auto=format&fit=crop" class="w-full h-52 object-cover" alt="Blog 3"/></div>
+        <div class="p-8">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="bg-amber-400/10 text-amber-600 font-dm text-[11px] px-3 py-1 rounded-full">Startup Growth</span>
+            <span class="font-dm text-meta text-xs">May 16, 2025 · 2 Comments</span>
+          </div>
+          <h3 class="font-outfit font-semibold text-ttl text-xl leading-snug mb-3 group-hover:text-brand transition-colors"><a href="#">Unlocking business potential with smart IT strategies</a></h3>
+          <p class="font-dm text-bdy text-sm leading-relaxed mb-5">Smart IT investment decisions separate companies that thrive from those that merely survive.</p>
+          <a href="#" class="inline-flex items-center gap-2 text-brand font-outfit font-semibold text-sm hover:gap-4 transition-all">Read More <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FAQ ══════════ -->
+<section class="py-24 lg:py-36 bg-white">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row gap-14 lg:gap-20">
+      <div class="lg:w-[38%] shrink-0 fi">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-5"><span class="w-8 h-px bg-brand"></span>FAQ</span>
+        <h2 class="font-outfit font-medium text-ttl leading-tight mb-5" style="font-size:clamp(26px,2.3vw+10px,44px)">Frequently asked questions</h2>
+        <p class="font-dm text-bdy text-[15px] leading-relaxed mb-8">Have more questions? Our friendly team is ready to help you find the right answers.</p>
+        <a href="#contact" class="bb px-8 py-4 rounded-full text-[15px] inline-flex items-center gap-2">Ask Us Anything <i class="fa fa-arrow-right text-sm"></i></a>
+      </div>
+      <div class="flex-1 flex flex-col gap-4 fi">
+        <div class="fq bg-bg2 border border-bdr rounded-2xl p-6 cursor-pointer" onclick="doFaq(this)">
+          <div class="flex items-center justify-between gap-4"><h4 class="font-outfit font-semibold text-ttl text-[16px]">How long does a typical project take?</h4><i class="fa fa-plus fi2 text-brand text-sm shrink-0"></i></div>
+          <div class="fb"><p class="font-dm text-bdy text-sm leading-relaxed pt-4">Project timelines vary based on scope. Brand identity: 3–4 weeks, website: 6–10 weeks, mobile app: 12–20 weeks. We provide a full timeline during the discovery call.</p></div>
+        </div>
+        <div class="fq bg-bg2 border border-bdr rounded-2xl p-6 cursor-pointer" onclick="doFaq(this)">
+          <div class="flex items-center justify-between gap-4"><h4 class="font-outfit font-semibold text-ttl text-[16px]">Do you offer post-launch support?</h4><i class="fa fa-plus fi2 text-brand text-sm shrink-0"></i></div>
+          <div class="fb"><p class="font-dm text-bdy text-sm leading-relaxed pt-4">Yes! All plans include 30-day post-launch support. Enterprise clients get 90 days. We also offer ongoing retainer packages for continuous growth and maintenance.</p></div>
+        </div>
+        <div class="fq bg-bg2 border border-bdr rounded-2xl p-6 cursor-pointer" onclick="doFaq(this)">
+          <div class="flex items-center justify-between gap-4"><h4 class="font-outfit font-semibold text-ttl text-[16px]">What industries do you specialize in?</h4><i class="fa fa-plus fi2 text-brand text-sm shrink-0"></i></div>
+          <div class="fb"><p class="font-dm text-bdy text-sm leading-relaxed pt-4">We work across technology, healthcare, e-commerce, finance, education and lifestyle. Our diverse portfolio reflects our ability to adapt to any domain or vertical.</p></div>
+        </div>
+        <div class="fq bg-bg2 border border-bdr rounded-2xl p-6 cursor-pointer" onclick="doFaq(this)">
+          <div class="flex items-center justify-between gap-4"><h4 class="font-outfit font-semibold text-ttl text-[16px]">Can I see work samples before we begin?</h4><i class="fa fa-plus fi2 text-brand text-sm shrink-0"></i></div>
+          <div class="fb"><p class="font-dm text-bdy text-sm leading-relaxed pt-4">Absolutely. Our portfolio spans multiple industries. We can share relevant case studies specific to your sector during our initial consultation call.</p></div>
+        </div>
+        <div class="fq bg-bg2 border border-bdr rounded-2xl p-6 cursor-pointer" onclick="doFaq(this)">
+          <div class="flex items-center justify-between gap-4"><h4 class="font-outfit font-semibold text-ttl text-[16px]">What is your payment structure?</h4><i class="fa fa-plus fi2 text-brand text-sm shrink-0"></i></div>
+          <div class="fb"><p class="font-dm text-bdy text-sm leading-relaxed pt-4">We work milestone-based: 40% upfront, 40% at mid-project review, 20% on final delivery. Custom arrangements are available for enterprise clients.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA / CONTACT ══════════ -->
+<section id="contact" class="py-24 lg:py-32 bg-dk relative overflow-hidden">
+  <div class="absolute inset-0 opacity-15">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-brand rounded-full blur-[130px]"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-ac rounded-full blur-[100px]"></div>
+  </div>
+  <span class="wm" style="font-size:11vw;top:50%;right:-1%;transform:translateY(-50%);color:rgba(255,255,255,0.03)">CONTACT</span>
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10 relative z-10">
+    <div class="flex flex-col lg:flex-row gap-14 lg:gap-20 items-center">
+      <!-- Left -->
+      <div class="lg:w-1/2 fi">
+        <span class="inline-flex items-center gap-2 text-[13px] font-dm font-medium uppercase tracking-[2px] text-brand mb-6"><span class="w-8 h-px bg-brand"></span>Endless opportunities await you</span>
+        <h2 class="font-outfit font-medium text-white leading-tight mb-6" style="font-size:clamp(30px,2.8vw+10px,52px)">
+          We craft &amp; enhance your<br/>digital presence. <span class="text-brand">Get started.</span>
+        </h2>
+        <p class="font-dm text-dktxt text-[16px] leading-relaxed mb-10">Join us at ITactics where we bring your ideas to life. Our commitment to excellence ensures your brand stands out in the digital realm. We respond within 24 hours.</p>
+        <div class="flex flex-col gap-5">
+          <div class="flex items-center gap-4"><div class="w-11 h-11 rounded-xl bg-brand/20 flex items-center justify-center shrink-0"><i class="fa fa-envelope text-brand text-sm"></i></div><div><p class="font-dm text-dktxt/60 text-xs uppercase tracking-widest mb-0.5">Email</p><p class="font-dm text-white text-sm">hello@itactics.com</p></div></div>
+          <div class="flex items-center gap-4"><div class="w-11 h-11 rounded-xl bg-brand/20 flex items-center justify-center shrink-0"><i class="fa fa-phone text-brand text-sm"></i></div><div><p class="font-dm text-dktxt/60 text-xs uppercase tracking-widest mb-0.5">Phone</p><p class="font-dm text-white text-sm">+1 (555) 234-5678</p></div></div>
+          <div class="flex items-center gap-4"><div class="w-11 h-11 rounded-xl bg-brand/20 flex items-center justify-center shrink-0"><i class="fa fa-map-marker-alt text-brand text-sm"></i></div><div><p class="font-dm text-dktxt/60 text-xs uppercase tracking-widest mb-0.5">Address</p><p class="font-dm text-white text-sm">42 Creative District, New York, NY 10001</p></div></div>
+        </div>
+      </div>
+      <!-- Form -->
+      <div class="lg:w-1/2 w-full fi">
+        <div class="bg-white rounded-[28px] p-8 lg:p-10">
+          <h3 class="font-outfit font-semibold text-ttl text-2xl mb-1.5">Send us a message</h3>
+          <p class="font-dm text-bdy text-sm mb-7">We'll get back to you within 24 hours.</p>
+          <form id="cf" onsubmit="doForm(event)" class="flex flex-col gap-4">
+            <div class="grid grid-cols-2 gap-4">
+              <input type="text" placeholder="First Name" required class="bg-bg2 rounded-xl px-5 py-4 font-dm text-sm text-ttl placeholder-meta border border-bdr focus:outline-none focus:border-brand transition-colors"/>
+              <input type="text" placeholder="Last Name" required class="bg-bg2 rounded-xl px-5 py-4 font-dm text-sm text-ttl placeholder-meta border border-bdr focus:outline-none focus:border-brand transition-colors"/>
+            </div>
+            <input type="email" placeholder="Email Address" required class="bg-bg2 rounded-xl px-5 py-4 font-dm text-sm text-ttl placeholder-meta border border-bdr focus:outline-none focus:border-brand transition-colors"/>
+            <select class="bg-bg2 rounded-xl px-5 py-4 font-dm text-sm text-bdy border border-bdr focus:outline-none focus:border-brand transition-colors">
+              <option value="">Select Service</option>
+              <option>Brand Identity</option><option>Web Design</option><option>Mobile App</option><option>SEO &amp; Growth</option><option>Full Package</option>
+            </select>
+            <textarea rows="4" placeholder="Tell us about your project..." class="bg-bg2 rounded-xl px-5 py-4 font-dm text-sm text-ttl placeholder-meta border border-bdr focus:outline-none focus:border-brand transition-colors resize-none"></textarea>
+            <button type="submit" class="bb w-full py-4 rounded-full text-[15px] font-outfit font-medium flex items-center justify-center gap-2">Send Message <i class="fa fa-arrow-right text-sm"></i></button>
+          </form>
+          <div id="fok" class="hidden text-center py-10">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fa fa-check text-green-500 text-2xl"></i></div>
+            <p class="font-outfit font-semibold text-ttl text-lg">Message Sent!</p>
+            <p class="font-dm text-bdy text-sm mt-1">We'll get back to you within 24 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="bg-dk2 pt-20 pb-8">
+  <div class="max-w-[1290px] mx-auto px-6 lg:px-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
+      <!-- Brand -->
+      <div class="lg:col-span-2">
+        <a href="#" class="flex items-center gap-2 font-outfit font-semibold text-[22px] text-white mb-5">
+          <svg width="28" height="28" viewBox="0 0 32 32"><rect width="14" height="14" rx="3" fill="#B83DDA"/><rect x="18" width="14" height="14" rx="3" fill="white"/><rect y="18" width="14" height="14" rx="3" fill="white"/><rect x="18" y="18" width="14" height="14" rx="3" fill="#B83DDA"/></svg>
+          ITactics
+        </a>
+        <p class="font-dm text-dktxt text-sm leading-relaxed max-w-xs mb-7">Digital Excellence, Redefined. Innovative minds delivering branding, storytelling, and content that drives measurable growth.</p>
+        <div class="flex gap-3">
+          <a href="#" class="w-10 h-10 rounded-full bg-dkbd flex items-center justify-center text-dktxt hover:bg-brand hover:text-white transition-colors"><i class="fab fa-instagram text-sm"></i></a>
+          <a href="#" class="w-10 h-10 rounded-full bg-dkbd flex items-center justify-center text-dktxt hover:bg-brand hover:text-white transition-colors"><i class="fab fa-twitter text-sm"></i></a>
+          <a href="#" class="w-10 h-10 rounded-full bg-dkbd flex items-center justify-center text-dktxt hover:bg-brand hover:text-white transition-colors"><i class="fab fa-linkedin-in text-sm"></i></a>
+          <a href="#" class="w-10 h-10 rounded-full bg-dkbd flex items-center justify-center text-dktxt hover:bg-brand hover:text-white transition-colors"><i class="fab fa-dribbble text-sm"></i></a>
+        </div>
+      </div>
+      <!-- Links -->
+      <div>
+        <h5 class="font-outfit font-semibold text-white text-[15px] mb-5">Services</h5>
+        <ul class="flex flex-col gap-3 font-dm text-dktxt text-sm">
+          <li><a href="#" class="hover:text-brand transition-colors">Brand Identity</a></li>
+          <li><a href="#" class="hover:text-brand transition-colors">Web Design</a></li>
+          <li><a href="#" class="hover:text-brand transition-colors">Mobile Apps</a></li>
+          <li><a href="#" class="hover:text-brand transition-colors">SEO &amp; Growth</a></li>
+          <li><a href="#" class="hover:text-brand transition-colors">Motion Design</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-outfit font-semibold text-white text-[15px] mb-5">Company</h5>
+        <ul class="flex flex-col gap-3 font-dm text-dktxt text-sm">
+          <li><a href="#about" class="hover:text-brand transition-colors">About Us</a></li>
+          <li><a href="#portfolio" class="hover:text-brand transition-colors">Portfolio</a></li>
+          <li><a href="#" class="hover:text-brand transition-colors">Careers</a></li>
+          <li><a href="#blog" class="hover:text-brand transition-colors">Blog</a></li>
+          <li><a href="#contact" class="hover:text-brand transition-colors">Contact</a></li>
+        </ul>
+      </div>
+      <!-- Newsletter -->
+      <div>
+        <h5 class="font-outfit font-semibold text-white text-[15px] mb-5">Newsletter</h5>
+        <p class="font-dm text-dktxt text-sm leading-relaxed mb-5">Get the latest insights delivered to your inbox weekly.</p>
+        <form onsubmit="return false" class="flex gap-2">
+          <input type="email" placeholder="Your email" class="flex-1 min-w-0 bg-dkbd text-white placeholder-dktxt text-sm px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand"/>
+          <button class="bb px-4 py-3 rounded-xl text-sm shrink-0"><i class="fa fa-arrow-right"></i></button>
+        </form>
+      </div>
+    </div>
+    <div class="border-t border-dkbd pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="font-dm text-dktxt text-sm">© 2025 ITactics. All rights reserved.</p>
+      <div class="flex gap-6 font-dm text-dktxt text-sm">
+        <a href="#" class="hover:text-brand transition-colors">Privacy Policy</a>
+        <a href="#" class="hover:text-brand transition-colors">Terms of Service</a>
+        <a href="#" class="hover:text-brand transition-colors">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button id="btt" onclick="scrollTo({top:0,behavior:'smooth'})"
+  class="fixed bottom-8 right-8 w-12 h-12 bg-brand hover:bg-brand-h text-white rounded-full shadow-xl flex items-center justify-center z-50 transition-all">
+  <i class="fa fa-arrow-up text-sm"></i>
+</button>
+
+<!-- ══════════ JS ══════════ -->
+<script>
+// ── Nav + BTT ──
+const nav=document.getElementById('nav'),btt=document.getElementById('btt');
+addEventListener('scroll',()=>{
+  nav.classList.toggle('up',scrollY>60);
+  btt.classList.toggle('show',scrollY>400);
+});
+
+// ── Mobile menu ──
+document.getElementById('mbtn').onclick=()=>{
+  const m=document.getElementById('mm'),i=document.getElementById('mic');
+  m.classList.toggle('hidden');
+  i.className=m.classList.contains('hidden')?'fa fa-bars text-xl':'fa fa-times text-xl';
+};
+
+// ── Close mobile menu on link click ──
+document.querySelectorAll('#mm a').forEach(a=>a.addEventListener('click',()=>{
+  document.getElementById('mm').classList.add('hidden');
+  document.getElementById('mic').className='fa fa-bars text-xl';
+}));
+
+// ── Fade-in ──
+const fiEls=document.querySelectorAll('.fi');
+new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');observer.unobserve(e.target)}})},{threshold:.1}).observe;
+const observer=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v')}})},{threshold:.1});
+fiEls.forEach(el=>observer.observe(el));
+
+// ── Counters ──
+const cnEls=document.querySelectorAll('.cn');
+const cnObs=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target,t=+el.dataset.t,step=t/60;
+    let c=0;const tm=setInterval(()=>{c=Math.min(c+step,t);el.textContent=Math.floor(c);if(c>=t)clearInterval(tm)},22);
+    cnObs.unobserve(el);
+  });
+},{threshold:.5});
+cnEls.forEach(el=>cnObs.observe(el));
+
+// ── Service tabs ──
+const sData={
+  s:[
+    {icon:'fa-palette',dark:false,ttl:'Creative solutions',desc:'We empower businesses through innovative creative solutions that build brand equity and drive meaningful customer engagement.'},
+    {icon:'fa-pen-nib',dark:false,ttl:'Content strategy',desc:'Compelling storytelling and content frameworks that engage, convert, and retain your target audience at every funnel stage.'},
+    {icon:'fa-film',dark:true,ttl:'Motion Design',desc:'Eye-catching animations and motion graphics that bring your brand to life across all digital touchpoints and channels.'},
+    {icon:'fa-camera',dark:false,ttl:'Photography & Art',desc:'Professional brand photography and visual direction that captures your unique identity and separates you from competitors.'},
+  ],
+  i:[
+    {icon:'fa-desktop',dark:false,ttl:'IT solutions',desc:'Creating impactful digital platforms and technology stacks that power your business operations and customer experiences.'},
+    {icon:'fa-mobile-alt',dark:false,ttl:'Mobile Apps',desc:'Native and cross-platform mobile applications engineered for peak performance and exceptional user experience.'},
+    {icon:'fa-cloud',dark:true,ttl:'Cloud Solutions',desc:'Scalable cloud architecture and DevOps practices that power your digital infrastructure reliably and securely at any scale.'},
+    {icon:'fa-shield-alt',dark:false,ttl:'Cybersecurity',desc:'Comprehensive security audits and protection strategies to keep your digital assets, data, and customers safe.'},
+  ],
+  m:[
+    {icon:'fa-search',dark:false,ttl:'Tailored marketing',desc:'At ITactics, we deliver cutting-edge marketing solutions that empower businesses and drive qualified growth at scale.'},
+    {icon:'fa-chart-line',dark:false,ttl:'Performance Ads',desc:'Results-driven paid campaigns across Google, Meta and emerging channels for maximum ROI and measurable outcomes.'},
+    {icon:'fa-hashtag',dark:true,ttl:'Social Media',desc:'Digital marketing solutions that elevate your online engagement, build community and drive meaningful audience action.'},
+    {icon:'fa-envelope-open-text',dark:false,ttl:'Email Marketing',desc:'Personalized email campaigns that nurture leads, retain customers and drive repeat revenue month over month.'},
+  ]
+};
+function tab(k){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+k).classList.add('on');
+  const sg=document.getElementById('sg');
+  sg.style.opacity='0';sg.style.transform='translateY(10px)';
+  setTimeout(()=>{
+    sg.innerHTML=sData[k].map(s=>`
+      <div class="sc ${s.dark?'bg-ttl':'bg-white border border-bdr'} rounded-3xl p-8 lg:p-10 flex gap-[4vw] items-start shadow-[0_15px_60px_0px_rgba(197,216,245,0.3)]">
+        <div class="w-[60px] h-[60px] shrink-0 ${s.dark?'bg-white/10':'bg-ac/10'} rounded-2xl flex items-center justify-center">
+          <i class="fa ${s.icon} ${s.dark?'text-white':'text-ac'} text-2xl"></i>
+        </div>
+        <div>
+          <h3 class="font-outfit font-semibold ${s.dark?'text-white':'text-ttl'} text-xl mb-3">${s.ttl}</h3>
+          <p class="font-dm ${s.dark?'text-white/60':'text-bdy'} text-sm leading-relaxed mb-5">${s.desc}</p>
+          <a href="#" class="inline-flex items-center gap-2 text-brand font-outfit font-semibold text-sm hover:gap-4 transition-all">Learn More <i class="fa fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>`).join('');
+    sg.style.opacity='1';sg.style.transform='none';
+  },150);
+}
+document.getElementById('sg').style.transition='opacity .2s,transform .2s';
+tab('s');
+
+// ── Image Accordion ──
+function openIA(el){
+  document.querySelectorAll('.ia').forEach(i=>i.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── Testimonials ──
+let tI=0;
+const tSlides=document.querySelectorAll('.ts'),tDots=document.querySelectorAll('.td');
+function upT(){
+  tSlides.forEach((s,i)=>s.classList.toggle('on',i===tI));
+  tDots.forEach((d,i)=>{d.classList.toggle('bg-ttl',i===tI);d.classList.toggle('w-8',i===tI);d.classList.toggle('bg-bdr',i!==tI);d.classList.toggle('w-4',i!==tI);});
+}
+function nT(){tI=(tI+1)%tSlides.length;upT();}
+function pT(){tI=(tI-1+tSlides.length)%tSlides.length;upT();}
+function gT(i){tI=i;upT();}
+setInterval(nT,6500);
+
+// ── FAQ ──
+function doFaq(item){
+  const body=item.querySelector('.fb'),icon=item.querySelector('.fi2'),was=item.classList.contains('op');
+  document.querySelectorAll('.fq').forEach(f=>{f.classList.remove('op');f.querySelector('.fb').classList.remove('op');f.querySelector('.fi2').classList.remove('rotate-45');});
+  if(!was){item.classList.add('op');body.classList.add('op');icon.classList.add('rotate-45');}
+}
+
+// ── Contact Form ──
+function doForm(e){
+  e.preventDefault();
+  document.getElementById('cf').classList.add('hidden');
+  document.getElementById('fok').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

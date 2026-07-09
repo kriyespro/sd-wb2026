@@ -1,0 +1,57 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+{% if account %}
+<div class="mb-6 rounded-2xl border border-brand-200/60 bg-brand-50/50 px-5 py-4">
+    <p class="font-display font-semibold text-ink-900">{{ account.company_name }}</p>
+    {% if account.industry %}<p class="mt-0.5 text-sm text-slate-600">{{ account.industry }}</p>{% endif %}
+</div>
+{% endif %}
+
+<div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% set label = 'Active Projects' %}{% set value = stats.active_projects %}{% set value_color = 'text-ink-900' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Approved Files' %}{% set value = stats.approved_files %}{% set value_color = 'text-brand-600' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Upcoming Meetings' %}{% set value = stats.upcoming_meetings %}{% set value_color = 'text-emerald-600' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Open Tickets' %}{% set value = stats.open_tickets %}{% set value_color = 'text-orange-600' %}{% include "partials/dashboard/_stat_card.jinja" %}
+</div>
+
+<div class="grid gap-6 lg:grid-cols-2">
+    <div class="dash-panel">
+        {% set title = 'Recent projects' %}{% set action_url = url('clients:projects') %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if recent_projects %}
+            <ul class="space-y-2">
+                {% for project in recent_projects %}
+                <li>
+                    <a href="{{ url('clients:project_detail', kwargs={'pk': project.id}) }}" class="flex items-center justify-between rounded-xl border border-slate-100 px-4 py-3 text-sm transition hover:border-brand-200 hover:bg-brand-50/40">
+                        <span class="font-medium text-slate-700">{{ project.name }}</span>
+                        <span class="dash-badge bg-brand-50 text-brand-700">{{ project.progress_percent }}%</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">No projects yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        {% set title = 'Upcoming meetings' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if upcoming_meetings %}
+            <ul class="space-y-3">
+                {% for meeting in upcoming_meetings %}
+                <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3 py-2.5 text-sm">
+                    <span class="text-slate-700">{{ meeting.title }}</span>
+                    <span class="text-xs text-slate-500">{{ meeting.scheduled_at.strftime('%d %b, %H:%M') }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">No meetings scheduled.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="grid gap-6 lg:grid-cols-2">
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="font-semibold text-brand-950">Add Portfolio Item</h2>
+        <form method="post" action="{{ url('academy_dashboard:portfolio_add') }}" class="mt-4 space-y-4">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Title</label>
+                {{ form.title }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Description</label>
+                {{ form.description }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Project URL</label>
+                {{ form.project_url }}
+            </div>
+            <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+                Add to Portfolio
+            </button>
+        </form>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="font-semibold text-brand-950">Your Portfolio</h2>
+        {% if items %}
+        {% for item in items %}
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-medium text-brand-950">{{ item.title }}</h3>
+            <p class="mt-1 text-sm text-slate-600">{{ item.description }}</p>
+            {% if item.project_url %}
+            <a href="{{ item.project_url }}" target="_blank" class="mt-2 inline-block text-sm text-brand-600 hover:text-brand-700">View project →</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-sm text-slate-500">No portfolio items yet. Add your first project.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

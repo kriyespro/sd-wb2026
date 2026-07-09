@@ -1,0 +1,23 @@
+{% if href %}
+<a href="{{ href }}"
+   class="inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition
+   {% if style == 'primary' %}bg-brand-500 text-white shadow-md shadow-brand-500/25 hover:bg-brand-600
+   {% elif style == 'outline' %}border border-slate-300 text-ink-900 hover:border-brand-400 hover:bg-brand-50
+   {% elif style == 'white' %}bg-white text-brand-700 hover:bg-brand-50
+   {% else %}bg-brand-500 text-white hover:bg-brand-600{% endif %}
+   {{ extra_class|default('') }}">
+    {{ label }}
+</a>
+{% else %}
+<button type="{{ type|default('button') }}"
+        class="inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition
+        {% if style == 'primary' %}bg-brand-500 text-white shadow-md shadow-brand-500/25 hover:bg-brand-600
+        {% elif style == 'outline' %}border border-slate-300 text-ink-900 hover:border-brand-400 hover:bg-brand-50
+        {% else %}bg-brand-500 text-white hover:bg-brand-600{% endif %}
+        {{ extra_class|default('') }}"
+        {% if hx_post %}hx-post="{{ hx_post }}"{% endif %}
+        {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}
+        {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %}>
+    {{ label }}
+</button>
+{% endif %}

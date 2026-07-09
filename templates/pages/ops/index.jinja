@@ -1,0 +1,42 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% set label = 'Pending QA' %}{% set value = stats.pending_deliverables %}{% set value_color = 'text-orange-600' %}{% set href = url('operations:quality_check') %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Active Projects' %}{% set value = stats.active_projects %}{% set value_color = 'text-ink-900' %}{% set href = '' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'New Applications' %}{% set value = stats.new_applications %}{% set value_color = 'text-brand-600' %}{% set href = url('operations:pipeline') %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'New Leads' %}{% set value = stats.new_leads %}{% set value_color = 'text-emerald-600' %}{% set href = url('operations:leads') %}{% include "partials/dashboard/_stat_card.jinja" %}
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+    <div class="dash-panel lg:col-span-2">
+        {% set title = 'Deliverables awaiting QA' %}{% set action_url = url('operations:quality_check') %}{% set action_label = 'Review all' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if pending_deliverables %}
+            <ul class="space-y-2">
+                {% for deliverable in pending_deliverables %}
+                <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3 text-sm">
+                    <span class="font-medium text-slate-700">{{ deliverable.title }}</span>
+                    <span class="text-xs text-slate-500">{{ deliverable.project.name }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">Nothing pending. All deliverables reviewed.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        {% set title = 'Delivery workflow' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                {% for step in ['Lead', 'Sales', 'Consultant', 'PM', 'Senior Expert', 'Student Team', 'QA', 'Delivery'] %}
+                <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 font-medium text-slate-600">{{ step }}</span>
+                {% if not loop.last %}<span class="text-slate-300">→</span>{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

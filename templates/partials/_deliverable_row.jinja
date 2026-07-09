@@ -1,0 +1,34 @@
+<div id="deliverable-{{ deliverable.id }}" class="dash-panel p-5">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h3 class="font-display font-semibold text-ink-900">{{ deliverable.title }}</h3>
+            <p class="text-xs text-slate-500">
+                {{ deliverable.project.name }} · {{ deliverable.project.client_account.company_name }}
+            </p>
+            {% if deliverable.description %}<p class="mt-2 text-sm text-slate-600">{{ deliverable.description }}</p>{% endif %}
+        </div>
+        {% if done_label %}
+        <span class="rounded-full px-3 py-1 text-xs font-medium
+            {% if deliverable.approval_status == 'approved' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+            {{ done_label }}
+        </span>
+        {% else %}
+        <div class="flex gap-2">
+            <button hx-post="{{ url('operations:deliverable_approve', kwargs={'pk': deliverable.id}) }}"
+                    hx-target="#deliverable-{{ deliverable.id }}"
+                    hx-swap="outerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    class="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700">
+                Approve
+            </button>
+            <button hx-post="{{ url('operations:deliverable_reject', kwargs={'pk': deliverable.id}) }}"
+                    hx-target="#deliverable-{{ deliverable.id }}"
+                    hx-swap="outerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    class="rounded-full border border-red-300 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50">
+                Reject
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>

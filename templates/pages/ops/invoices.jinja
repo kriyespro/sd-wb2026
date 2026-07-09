@@ -1,0 +1,46 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+{% if invoices %}
+<div class="dash-panel overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-left text-slate-500">
+            <tr>
+                <th class="px-6 py-3 font-medium">Invoice</th>
+                <th class="px-6 py-3 font-medium">Client</th>
+                <th class="px-6 py-3 font-medium">Project</th>
+                <th class="px-6 py-3 font-medium">Amount</th>
+                <th class="px-6 py-3 font-medium">Status</th>
+                <th class="px-6 py-3 font-medium">Due</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for invoice in invoices %}
+            <tr>
+                <td class="px-6 py-4">
+                    <p class="font-medium text-slate-700">{{ invoice.invoice_number }}</p>
+                    <p class="text-xs text-slate-500">{{ invoice.title }}</p>
+                </td>
+                <td class="px-6 py-4 text-slate-600">{{ invoice.client_account.company_name }}</td>
+                <td class="px-6 py-4 text-slate-600">{{ invoice.project.name if invoice.project else '—' }}</td>
+                <td class="px-6 py-4 font-display font-semibold text-ink-900">₹{{ '{:,.0f}'.format(invoice.amount) }}</td>
+                <td class="px-6 py-4">
+                    <span class="dash-badge
+                        {% if invoice.status == 'paid' %}bg-emerald-100 text-emerald-700
+                        {% elif invoice.status == 'overdue' %}bg-red-100 text-red-700
+                        {% else %}bg-brand-50 text-brand-700{% endif %}">
+                        {{ invoice.get_status_display() }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-slate-500">{{ invoice.due_date.strftime('%d %b %Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center">
+    <p class="text-slate-500">No invoices yet.</p>
+</div>
+{% endif %}
+{% endblock %}

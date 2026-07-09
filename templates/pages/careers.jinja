@@ -1,0 +1,74 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+{% set hero_eyebrow = 'Careers' %}
+{% set hero_title = 'Join our internship program' %}
+{% set hero_text = 'Become industry ready by working on real client projects with senior experts.' %}
+{% include "components/page_hero.jinja" %}
+
+<section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-2">
+            <div>
+                <h2 class="font-display text-2xl font-bold text-ink-900">Learn while you work</h2>
+                <p class="mt-4 text-slate-600 leading-relaxed">
+                    Don't learn from simulations. Work on real business projects under senior experts.
+                    Our internship program is designed to make you industry ready — with a portfolio,
+                    certifications, and placement support.
+                </p>
+                <a href="{{ url('academy:home') }}" class="btn-primary mt-8">Apply to Academy →</a>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8">
+                <h3 class="font-display font-semibold text-ink-900">Internship journey</h3>
+                <div class="mt-6 space-y-3">
+                    {% for step in academy_process %}
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">{{ loop.index }}</span>
+                        <span class="text-sm font-medium text-slate-700">{{ step }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<section class="relative overflow-hidden bg-ink-900 py-16 text-white">
+    <div class="mesh absolute inset-0 opacity-50"></div>
+    <div class="grid-lines absolute inset-0 opacity-60"></div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
+            {% for stat in stats %}
+            <div>
+                <div class="font-display text-4xl font-bold sm:text-5xl">
+                    <span class="bg-gradient-to-br from-accent-400 to-brand-400 bg-clip-text text-transparent">{{ stat.value }}</span><span class="text-accent-400">{{ stat.suffix }}</span>
+                </div>
+                <div class="mt-2 text-sm uppercase tracking-widest text-slate-400">{{ stat.label }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- TEAM -->
+<section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <span class="eyebrow">The team you'll join</span>
+            <h2 class="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Learn under real specialists</h2>
+        </div>
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            {% for member in team_roles %}
+            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white text-center transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg">
+                <img src="{{ member.image }}" alt="{{ member.role }}" class="h-32 w-full object-cover">
+                <div class="p-6">
+                    <div class="font-display text-2xl font-bold text-brand-600">{{ member.count }}</div>
+                    <h3 class="mt-2 text-sm font-semibold text-ink-900">{{ member.role }}</h3>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

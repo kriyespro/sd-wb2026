@@ -1,0 +1,8 @@
+{% if title or action_url %}
+<div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
+    {% if title %}<h2 class="font-display font-semibold text-ink-900">{{ title }}</h2>{% else %}<span></span>{% endif %}
+    {% if action_url %}
+    <a href="{{ action_url }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">{{ action_label|default('View all') }} →</a>
+    {% endif %}
+</div>
+{% endif %}
