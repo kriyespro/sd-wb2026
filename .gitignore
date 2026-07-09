@@ -9,6 +9,8 @@ db.sqlite3
 staticfiles/
 media/
 *.log
+*.txt
+*.md
 folder plan/
 .idea/
 .vscode/
