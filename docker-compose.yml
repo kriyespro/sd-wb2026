@@ -1,3 +1,5 @@
+name: winningblueprints
+
 services:
   db:
     image: postgres:16-alpine
@@ -46,11 +48,9 @@ services:
     image: nginx:1.27-alpine
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '443:443'
+      - '127.0.0.1:8888:8888'
     volumes:
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./deploy/certs:/etc/nginx/certs:ro
       - static_data:/app/staticfiles:ro
       - media_data:/app/media:ro
     depends_on:

@@ -1,28 +1,16 @@
-# SSL certificates for nginx
+# SSL certificates — HOST level (not Docker)
 
-Place your TLS certificates here before starting Docker:
+This app runs on **port 8888** inside Docker, bound to `127.0.0.1` only.
 
-- `fullchain.pem` — full certificate chain
-- `privkey.pem` — private key
+Your **host nginx** (shared with other apps) handles HTTPS on ports 80/443
+and proxies to this app at `http://127.0.0.1:8888`.
 
-## Let's Encrypt (recommended)
+Use `deploy/host-nginx-snippet.conf` on the server.
 
-On the server (with ports 80/443 open):
-
+Certbot on host:
 ```bash
-# Stop nginx container first if running
-sudo apt install certbot
-sudo certbot certonly --standalone -d winningblueprints.com -d www.winningblueprints.com
-
-# Copy certs into this folder
-sudo cp /etc/letsencrypt/live/winningblueprints.com/fullchain.pem deploy/certs/
-sudo cp /etc/letsencrypt/live/winningblueprints.com/privkey.pem deploy/certs/
-sudo chmod 644 deploy/certs/fullchain.pem
-sudo chmod 600 deploy/certs/privkey.pem
+sudo certbot certonly --nginx -d winningblueprints.com -d www.winningblueprints.com
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Renewal: set up a cron job or use certbot renew, then restart nginx container.
-
-## IP access (159.195.52.197)
-
-The nginx config includes the server IP in `server_name`. Ensure your cert covers the domain; IP-only HTTPS may need a separate cert or SAN entry.
+Do NOT place certs in this folder for Docker — they are not used anymore.

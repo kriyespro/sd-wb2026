@@ -1,5 +1,4 @@
 #!/bin/bash
-# Quick security checklist — run on server before go-live
 set -e
 echo "=== Winning Blueprints Security Check ==="
 echo ""
@@ -20,24 +19,26 @@ check_env DJANGO_SECRET_KEY || fail=1
 check_env POSTGRES_PASSWORD || fail=1
 
 echo ""
+echo "App port: 8888 (localhost only)"
 echo "Allowed hosts:"
 grep DJANGO_ALLOWED_HOSTS .env.prod
-
 echo ""
 echo "CSRF origins:"
 grep CSRF_TRUSTED_ORIGINS .env.prod
 
 echo ""
-if [[ -f deploy/certs/fullchain.pem ]] && [[ -f deploy/certs/privkey.pem ]]; then
-  echo "✅ SSL certificates found"
+if ss -tlnp 2>/dev/null | grep -q ':8888 '; then
+  echo "⚠️  Port 8888 already in use — check for conflicts"
+elif lsof -i :8888 >/dev/null 2>&1; then
+  echo "⚠️  Port 8888 already in use — check for conflicts"
 else
-  echo "❌ SSL certificates missing in deploy/certs/"
-  fail=1
+  echo "✅ Port 8888 available"
 fi
 
 echo ""
 if [[ $fail -eq 0 ]]; then
-  echo "All checks passed. Run: docker compose --env-file .env.prod up -d --build"
+  echo "Ready. Run: docker compose --env-file .env.prod up -d --build"
+  echo "Then configure host nginx using deploy/host-nginx-snippet.conf"
 else
   echo "Fix issues above before deploying."
   exit 1
