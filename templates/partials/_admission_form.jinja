@@ -2,8 +2,15 @@
     <form hx-post="{{ url('academy:apply_submit') }}"
           hx-target="#admission-form-container"
           hx-swap="outerHTML"
+          hx-disabled-elt="button[type='submit']"
           class="space-y-4">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+        {% if form_error %}
+        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ form_error }}
+        </div>
+        {% endif %}
 
         <div class="grid gap-4 sm:grid-cols-2">
             <div>
@@ -40,6 +47,15 @@
             {% if show_errors and form.motivation.errors %}<p class="mt-1 text-xs text-red-600">{{ form.motivation.errors[0] }}</p>{% endif %}
         </div>
 
-        <button type="submit" class="btn-primary w-full sm:w-auto">Submit Application</button>
+        <button type="submit" class="btn-primary w-full min-w-[180px] sm:w-auto">
+            <span class="htmx-request-hide">Submit Application</span>
+            <span class="htmx-indicator inline-flex items-center gap-2">
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Submitting…
+            </span>
+        </button>
     </form>
 </div>

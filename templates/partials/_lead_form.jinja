@@ -2,10 +2,16 @@
     <form hx-post="{{ url('website:lead_submit') }}"
           hx-target="#lead-form-container"
           hx-swap="outerHTML"
+          hx-disabled-elt="button[type='submit']"
           class="space-y-4">
-        {% if csrf_token is defined %}{% endif %}
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <input type="hidden" name="source_page" value="{{ source_page|default('contact') }}">
+
+        {% if form_error %}
+        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ form_error }}
+        </div>
+        {% endif %}
 
         <div class="grid gap-4 sm:grid-cols-2">
             <div>
@@ -45,16 +51,15 @@
             {{ form.message }}
         </div>
 
-        <button type="submit"
-                class="btn-primary w-full sm:w-auto">
+        <button type="submit" class="btn-primary w-full min-w-[180px] sm:w-auto">
+            <span class="htmx-request-hide">Send Message</span>
             <span class="htmx-indicator inline-flex items-center gap-2">
-                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
-                Sending...
+                Sending…
             </span>
-            <span class="htmx-request-hide">Send Message</span>
         </button>
     </form>
 </div>

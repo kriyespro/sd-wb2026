@@ -1,7 +1,12 @@
+import logging
+import threading
+
 from django.conf import settings
 from django.core.mail import send_mail
 
 from .models import Lead
+
+logger = logging.getLogger(__name__)
 
 
 def create_lead(form, source_page=''):
@@ -10,6 +15,13 @@ def create_lead(form, source_page=''):
     lead.save()
     notify_lead_created(lead)
     return lead
+
+
+def _send_lead_email(subject, body, from_email, recipient):
+    try:
+        send_mail(subject, body, from_email, [recipient], fail_silently=False)
+    except Exception:
+        logger.exception('Lead notification email failed for %s', recipient)
 
 
 def notify_lead_created(lead):
@@ -26,10 +38,8 @@ def notify_lead_created(lead):
     recipient = getattr(settings, 'LEAD_NOTIFICATION_EMAIL', None)
     if not recipient:
         return
-    send_mail(
-        subject,
-        body,
-        settings.DEFAULT_FROM_EMAIL,
-        [recipient],
-        fail_silently=True,
-    )
+    threading.Thread(
+        target=_send_lead_email,
+        args=(subject, body, settings.DEFAULT_FROM_EMAIL, recipient),
+        daemon=True,
+    ).start()

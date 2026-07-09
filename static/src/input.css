@@ -54,8 +54,11 @@
 }
 
 /* Non-Tailwind utilities */
-.htmx-indicator { display: none; }
-.htmx-request .htmx-indicator { display: inline-flex; }
+/* HTMX form states */
+.htmx-indicator { display: none !important; }
+.htmx-request .htmx-indicator { display: inline-flex !important; }
+.htmx-request .htmx-request-hide { display: none !important; }
+.htmx-request button[type="submit"] { opacity: 0.85; cursor: wait; }
 [x-cloak] { display: none !important; }
 
 .wm {
