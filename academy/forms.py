@@ -10,7 +10,7 @@ class AdmissionApplicationForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Full name'}),
             'email': forms.EmailInput(attrs={'class': 'wb-input', 'placeholder': 'you@email.com'}),
-            'phone': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': '+91 98765 43210'}),
+            'phone': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': '+91 90235 61533'}),
             'education': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'e.g. B.Com, BBA'}),
             'course_interest': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'e.g. Digital Marketing'}),
             'motivation': forms.Textarea(attrs={'class': 'wb-input', 'rows': 4, 'placeholder': 'Why do you want to join?'}),

@@ -101,6 +101,17 @@ class PlacementApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(AdmissionApplication)
 class AdmissionApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'course_interest', 'status', 'created_at')
-    list_filter = ('status',)
-    search_fields = ('name', 'email')
+    list_display = ('name', 'email', 'phone', 'course_interest', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('name', 'email', 'phone', 'education', 'course_interest', 'motivation')
+    readonly_fields = ('created_at',)
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+    fieldsets = (
+        ('Applicant', {
+            'fields': ('name', 'email', 'phone', 'education', 'course_interest', 'motivation'),
+        }),
+        ('Review', {
+            'fields': ('status', 'created_at'),
+        }),
+    )

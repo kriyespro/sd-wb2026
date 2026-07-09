@@ -360,9 +360,9 @@ INSTAGRAM_IMAGES = [
 ]
 
 CONTACT_INFO = {
-    'email': 'hello@winningblueprints.com',
-    'phone': '+91 98765 43210',
-    'address': 'HSR Layout, Bengaluru, India',
+    'email': 'Winningblueprints@gmail.com',
+    'phone': '+91 90235 61533',
+    'address': 'Adajan, Surat, Gujarat 395009',
     'hours': 'Mon–Fri, 9am–6pm IST',
 }
 

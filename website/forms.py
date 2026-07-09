@@ -18,7 +18,7 @@ class LeadForm(forms.ModelForm):
             }),
             'phone': forms.TextInput(attrs={
                 'class': 'wb-input',
-                'placeholder': '+91 98765 43210',
+                'placeholder': '+91 90235 61533',
             }),
             'company': forms.TextInput(attrs={
                 'class': 'wb-input',
