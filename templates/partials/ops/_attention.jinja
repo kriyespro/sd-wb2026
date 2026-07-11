@@ -1,0 +1,20 @@
+{% set tone_map = {
+    'emerald': 'border-emerald-200 bg-emerald-50 text-emerald-800',
+    'orange': 'border-orange-200 bg-orange-50 text-orange-800',
+    'brand': 'border-brand-200 bg-brand-50 text-brand-800',
+    'violet': 'border-violet-200 bg-violet-50 text-violet-800',
+} %}
+
+{% if attention_items %}
+<div class="flex flex-wrap gap-2">
+    {% for item in attention_items %}
+    <a href="{{ url(item.href_name) }}"
+       class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition hover:opacity-90 {{ tone_map.get(item.tone, 'border-slate-200 bg-slate-50 text-slate-700') }}">
+        <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
+        {{ item.label }}
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-xs text-slate-400">All clear — no urgent items right now.</p>
+{% endif %}

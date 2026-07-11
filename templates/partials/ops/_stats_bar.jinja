@@ -1,6 +1,9 @@
-<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+<div class="grid gap-4 sm:grid-cols-2 {% if include_jobs %}xl:grid-cols-5{% else %}xl:grid-cols-4{% endif %}">
     {% set label = 'New Leads' %}{% set value = stats.new_leads %}{% set value_color = 'text-emerald-600' %}{% set href = url('operations:leads') %}{% set hint = 'Awaiting first contact' %}{% include "partials/dashboard/_stat_card.jinja" %}
     {% set label = 'Pending QA' %}{% set value = stats.pending_deliverables %}{% set value_color = 'text-orange-600' %}{% set href = url('operations:quality_check') %}{% set hint = 'Deliverables to review' %}{% include "partials/dashboard/_stat_card.jinja" %}
-    {% set label = 'New Applications' %}{% set value = stats.new_applications %}{% set value_color = 'text-brand-600' %}{% set href = url('operations:pipeline') %}{% set hint = 'Academy intake' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% set label = 'Academy Apps' %}{% set value = stats.new_applications %}{% set value_color = 'text-brand-600' %}{% set href = url('operations:pipeline') %}{% set hint = 'New admissions' %}{% include "partials/dashboard/_stat_card.jinja" %}
     {% set label = 'Active Projects' %}{% set value = stats.active_projects %}{% set value_color = 'text-ink-900' %}{% set href = url('operations:projects') %}{% set hint = 'In delivery' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% if include_jobs %}
+    {% set label = 'Job Apps' %}{% set value = stats.new_job_applications %}{% set value_color = 'text-violet-600' %}{% set href = url('operations:job_applications') %}{% set hint = 'New careers applications' %}{% include "partials/dashboard/_stat_card.jinja" %}
+    {% endif %}
 </div>

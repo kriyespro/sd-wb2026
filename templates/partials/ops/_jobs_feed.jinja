@@ -1,0 +1,28 @@
+{% if recent_job_applications %}
+<ul class="divide-y divide-slate-100">
+    {% for app in recent_job_applications %}
+    <li class="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
+        <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ url('operations:job_applications') }}#job-app-{{ app.id }}"
+                   class="truncate font-medium text-ink-900 hover:text-brand-600">
+                    {{ app.name }}
+                </a>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide
+                    {% if app.status == 'new' %}bg-violet-100 text-violet-800
+                    {% elif app.status == 'hired' %}bg-emerald-100 text-emerald-800
+                    {% elif app.status == 'rejected' %}bg-slate-100 text-slate-600
+                    {% elif app.status == 'interview' %}bg-amber-100 text-amber-800
+                    {% else %}bg-sky-100 text-sky-800{% endif %}">
+                    {{ app.get_status_display() }}
+                </span>
+            </div>
+            <p class="mt-0.5 truncate text-xs text-slate-500">{{ app.role }} · {{ app.get_application_type_display() }}</p>
+        </div>
+        <time class="shrink-0 text-[10px] text-slate-400">{{ app.created_at.strftime('%d %b') }}</time>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="py-6 text-center text-sm text-slate-500">No job applications yet.</p>
+{% endif %}

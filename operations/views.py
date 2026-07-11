@@ -82,12 +82,8 @@ class OpsDashboardView(OpsBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Mission Control'
-        ctx.update(get_mission_control_context())
-        if ctx.get('is_superuser_ops'):
-            ctx['job_application_count'] = JobApplication.objects.count()
-            ctx['job_application_new'] = JobApplication.objects.filter(
-                status=JobApplication.STATUS_NEW,
-            ).count()
+        include_jobs = ctx.get('is_superuser_ops', False)
+        ctx.update(get_mission_control_context(include_jobs=include_jobs))
         return ctx
 
 
@@ -95,11 +91,10 @@ class OpsMissionLiveView(OpsPortalMixin, View):
     """HTMX poll endpoint — returns OOB fragments for mission control panels."""
 
     def get(self, request):
-        return render(
-            request,
-            'partials/ops/_mission_live.jinja',
-            get_mission_control_context(),
-        )
+        include_jobs = _is_superuser(request.user)
+        ctx = get_mission_control_context(include_jobs=include_jobs)
+        ctx['is_superuser_ops'] = include_jobs
+        return render(request, 'partials/ops/_mission_live.jinja', ctx)
 
 
 class OpsLeadsLiveView(OpsPortalMixin, View):
