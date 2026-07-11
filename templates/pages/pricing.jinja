@@ -2,8 +2,8 @@
 
 {% block content %}
 {% set hero_eyebrow = 'Pricing' %}
-{% set hero_title = 'Simple, transparent pricing' %}
-{% set hero_text = 'Clear packages with no hidden fees. Custom solutions for enterprise.' %}
+{% set hero_title = 'Flexible plans for your factory' %}
+{% set hero_text = 'We customize pricing to factory size, product category, and growth goals — so you only pay for what you need.' %}
 {% include "components/page_hero.jinja" %}
 
 <section class="py-20" x-data="{ billing: 'monthly' }">
@@ -26,6 +26,9 @@
                 <span class="absolute -top-3 left-8 rounded-full bg-accent-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink-900">Most Popular</span>
                 {% endif %}
                 <h2 class="font-display text-xl font-bold text-ink-900">{{ tier.name }}</h2>
+                {% if tier.blurb %}
+                <p class="mt-2 text-sm text-slate-500">{{ tier.blurb }}</p>
+                {% endif %}
                 <div class="mt-4 flex items-end gap-1">
                     <span class="font-display text-4xl font-extrabold text-ink-900"
                           x-text="billing === 'monthly' ? '{{ tier.price_monthly }}' : '{{ tier.price_annual }}'"></span>
@@ -39,7 +42,7 @@
                     {% endfor %}
                 </ul>
                 <a href="{{ url('website:contact') }}" class="mt-8 block rounded-full {% if tier.highlight %}bg-brand-600 text-white hover:bg-brand-500{% else %}border border-slate-300 text-ink-900 hover:border-brand-400 hover:text-brand-700{% endif %} px-5 py-3 text-center text-sm font-semibold transition">
-                    {% if tier.name == 'Enterprise' %}Request Quote{% else %}Get Started{% endif %}
+                    {% if tier.name == 'Scale' %}Contact Us{% else %}Get Started{% endif %}
                 </a>
             </div>
             {% endfor %}

@@ -10,19 +10,19 @@
             <div>
                 <span class="eyebrow">What we do</span>
                 <h1 class="mt-6 font-display text-4xl font-bold leading-tight text-ink-900 sm:text-5xl">
-                    Full-stack growth<br>
+                    Factory-to-customer<br>
                     <span class="font-serif text-gradient-gold">services</span>
                 </h1>
                 <p class="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
-                    Digital growth services engineered to drive measurable ROI — SEO, paid media,
-                    web development, automation, and more, backed by senior specialists.
+                    Store setup, Meta & Google ads, WhatsApp automation, and backoffice SOPs —
+                    built for textile manufacturers selling direct to customers.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="{{ url('website:contact') }}" class="btn-gold">Book Free Strategy Call →</a>
+                    <a href="{{ url('website:contact') }}" class="btn-gold">Book Free Consultation →</a>
                     <a href="{{ url('website:pricing') }}" class="btn-outline">View Pricing</a>
                 </div>
                 <ul class="mt-10 space-y-2.5 text-sm text-slate-600">
-                    {% for point in ['Dedicated PM on every account', 'Weekly performance reporting', 'Senior experts — not junior handoffs'] %}
+                    {% for point in ['Prepaid order systems', '30–45 day path to first orders', 'You focus on production'] %}
                     <li class="flex items-center gap-2.5">
                         <span class="flex h-5 w-5 items-center justify-center rounded-full bg-gold-100 text-xs text-gold-600">✓</span>
                         {{ point }}
@@ -51,12 +51,13 @@
 
 <!-- TRUST -->
 <section class="border-y border-slate-200 bg-slate-50 py-10">
-    <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Trusted by ambitious brands</p>
+    <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Built for manufacturers going direct</p>
     <div class="relative mt-6 overflow-hidden">
-        <div class="flex w-max animate-marquee items-center gap-16">
+        <div class="flex w-max animate-marquee items-center gap-10">
             {% for i in range(2) %}
-            {% for logo in client_logos %}
-            <img src="{{ logo.image }}" alt="{{ logo.name }}" class="h-8 w-auto opacity-50 grayscale transition hover:opacity-100 hover:grayscale-0">
+            {% for tag in audience_tags %}
+            <span class="whitespace-nowrap rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-ink-900 shadow-sm">{{ tag }}</span>
+            <span class="text-gold-400">✦</span>
             {% endfor %}
             {% endfor %}
         </div>
@@ -71,11 +72,11 @@
                 <div class="lg:sticky lg:top-28">
                     <span class="eyebrow">Our services</span>
                     <h2 class="mt-5 font-display text-3xl font-bold leading-tight text-ink-900 sm:text-4xl">
-                        Every channel you need to grow
+                        Everything you need to sell direct
                     </h2>
                     <p class="mt-6 max-w-md leading-relaxed text-slate-600">
-                        From organic search to paid ads, websites to automation — pick one channel
-                        or combine them into a full growth engine with transparent reporting.
+                        From storefront to ads to backoffice — pick one channel or combine them into a
+                        full factory-to-customer engine.
                     </p>
                     <a href="{{ url('website:contact') }}" class="btn-outline mt-8">Get a Custom Quote →</a>
                 </div>

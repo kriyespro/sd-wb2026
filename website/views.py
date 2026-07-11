@@ -3,9 +3,13 @@ from django.views.decorators.http import require_http_methods
 
 from .data import (
     ACADEMY_PROCESS,
+    AUDIENCE_TAGS,
     CASE_STUDIES,
-    CLIENT_LOGOS,
     CONTACT_INFO,
+    F2C_PIPELINE,
+    FLAGSHIP_OFFERS,
+    GENERAL_FAQS,
+    HERO_POINTS,
     INDUSTRIES,
     MODEL_STEPS,
     PRICING_FAQS,
@@ -14,6 +18,7 @@ from .data import (
     SERVICE_PROCESS,
     SERVICES,
     STATS,
+    TEAM,
     TEAM_ROLES,
     TESTIMONIALS,
     WHY_CHOOSE_US,
@@ -35,20 +40,25 @@ def home(request):
         request,
         'pages/home.jinja',
         'Home',
-        'Grow your business with AI, digital marketing, and web technology. Trusted growth partner for modern businesses.',
+        'We help textile manufacturers sell sarees, t-shirts, jeans, and kurtis directly to customers — online, prepaid, with 2x–4x higher margins.',
         form=LeadForm(),
         services=SERVICES,
         why_choose_us=WHY_CHOOSE_US,
         recent_projects=RECENT_PROJECTS,
+        team=TEAM,
         team_roles=TEAM_ROLES,
         model_steps=MODEL_STEPS,
         stats=STATS,
-        client_logos=CLIENT_LOGOS,
+        audience_tags=AUDIENCE_TAGS,
         testimonials=TESTIMONIALS,
         service_process=SERVICE_PROCESS,
+        f2c_pipeline=F2C_PIPELINE,
+        flagship_offers=FLAGSHIP_OFFERS,
         pricing_tiers=PRICING_TIERS,
         pricing_faqs=PRICING_FAQS[:4],
+        general_faqs=GENERAL_FAQS,
         industries=INDUSTRIES[:6],
+        hero_points=HERO_POINTS,
         featured_case_study=CASE_STUDIES[0],
     )
 
@@ -58,13 +68,14 @@ def services(request):
         request,
         'pages/services.jinja',
         'Services',
-        'SEO, Google Ads, Meta Ads, web development, automation, CRM, branding, and content marketing.',
+        'eCommerce setup, Meta & Google ads, WhatsApp automation, backoffice SOPs — built for textile manufacturers going D2C.',
         form=LeadForm(),
         services=SERVICES,
         why_choose_us=WHY_CHOOSE_US,
         service_process=SERVICE_PROCESS,
+        flagship_offers=FLAGSHIP_OFFERS,
         stats=STATS,
-        client_logos=CLIENT_LOGOS,
+        audience_tags=AUDIENCE_TAGS,
         recent_projects=RECENT_PROJECTS[:3],
     )
 
@@ -90,7 +101,7 @@ def our_work(request):
         request,
         'pages/our_work.jinja',
         'Our Work',
-        'Recent client projects across websites, SEO, lead generation, AI, and automation.',
+        'Factory-to-customer projects: stores, Meta ads, Google Shopping, and backoffice systems for manufacturers.',
         projects=RECENT_PROJECTS,
         case_studies=CASE_STUDIES,
         services=SERVICES,
@@ -102,7 +113,7 @@ def case_studies(request):
         request,
         'pages/case_studies.jinja',
         'Case Studies',
-        'Real results from real clients. See how we drive growth across industries.',
+        'Real manufacturers. Real prepaid orders. See how factories go direct-to-customer with Winning Blueprints.',
         case_studies=CASE_STUDIES,
     )
 
@@ -128,7 +139,7 @@ def industries(request):
         request,
         'pages/industries.jinja',
         'Industries',
-        'Digital growth solutions tailored for SaaS, e-commerce, healthcare, real estate, and more.',
+        'D2C growth systems for textile manufacturers, garment factories, saree brands, and emerging fashion labels.',
         industries=INDUSTRIES,
     )
 
@@ -138,9 +149,10 @@ def pricing(request):
         request,
         'pages/pricing.jinja',
         'Pricing',
-        'Transparent pricing packages for digital marketing and growth services.',
+        'Flexible D2C plans from ₹15K/month — store, ads, and backoffice tailored to your factory.',
         pricing_tiers=PRICING_TIERS,
         pricing_faqs=PRICING_FAQS,
+        general_faqs=GENERAL_FAQS,
     )
 
 
@@ -149,11 +161,25 @@ def about(request):
         request,
         'pages/about.jinja',
         'About',
-        'Winning Blueprints is a professional digital growth company helping businesses scale with AI and marketing.',
+        'Winning Blueprints helps textile manufacturers sell direct to customers — powered by a delivery team and internal academy.',
         why_choose_us=WHY_CHOOSE_US,
         stats=STATS,
+        team=TEAM,
         team_roles=TEAM_ROLES,
         model_steps=MODEL_STEPS,
+        f2c_pipeline=F2C_PIPELINE,
+    )
+
+
+def team(request):
+    return _page(
+        request,
+        'pages/team.jinja',
+        'Our Team',
+        'Meet the Winning Blueprints team — strategy, tech, marketing, and operations for manufacturer D2C.',
+        team=TEAM,
+        team_roles=TEAM_ROLES,
+        stats=STATS,
     )
 
 

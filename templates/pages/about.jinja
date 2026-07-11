@@ -2,8 +2,8 @@
 
 {% block content %}
 {% set hero_eyebrow = 'About us' %}
-{% set hero_title = 'About ' ~ site_name %}
-{% set hero_text = 'A professional digital growth company — not a training institute.' %}
+{% set hero_title = 'We help manufacturers sell direct' %}
+{% set hero_text = 'A D2C growth agency for textile factories — powered by a delivery team and an internal academy.' %}
 {% include "components/page_hero.jinja" %}
 
 <section class="py-20">
@@ -12,14 +12,14 @@
             <div class="order-2 lg:order-1">
                 <h2 class="font-display text-2xl font-bold text-ink-900">Who We Are</h2>
                 <p class="mt-4 text-slate-600 leading-relaxed">
-                    {{ site_name }} is an AI Growth Partner for modern businesses. We help companies grow through
-                    digital marketing, AI automation, web development, SEO, and performance marketing — delivered
-                    by an experienced team with a relentless focus on ROI.
+                    {{ site_name }} helps textile and garment manufacturers sell sarees, t-shirts, jeans, and kurtis
+                    <strong class="font-semibold text-ink-900">directly to customers</strong> — online, prepaid, and with
+                    2x–4x higher profit margins than the wholesale model.
                 </p>
                 <p class="mt-4 text-slate-600 leading-relaxed">
-                    Behind the scenes, we operate an internal Industry Academy that trains future professionals
-                    by letting them work under senior experts on real client projects. This talent pipeline ensures
-                    continuous quality and innovation — but our clients experience a professional agency, period.
+                    Clients experience a professional D2C agency: store setup, Meta & Google ads, WhatsApp automation,
+                    and backoffice SOPs. Behind the scenes, our Academy trains specialists on real client work —
+                    so delivery stays sharp without you hiring a full digital team.
                 </p>
             </div>
             <img src="{{ site_images.about_team }}" alt="Who we are"
@@ -28,7 +28,6 @@
     </div>
 </section>
 
-<!-- FEATURE STRIP -->
 <section class="bg-slate-50 py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -54,8 +53,25 @@
     </div>
 </section>
 
-<!-- OUR MODEL -->
 <section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <span class="eyebrow">The F2C pipeline</span>
+            <h2 class="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Factory to customer</h2>
+        </div>
+        <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {% for step in f2c_pipeline %}
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gold-100 font-display font-bold text-gold-700">{% if loop.last %}✓{% else %}{{ loop.index }}{% endif %}</span>
+                <h3 class="mt-4 font-display font-semibold text-ink-900">{{ step.title }}</h3>
+                <p class="mt-2 text-sm text-slate-600">{{ step.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="bg-slate-50 py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <span class="eyebrow">How we're built</span>
@@ -77,20 +93,22 @@
     </div>
 </section>
 
-<!-- TEAM -->
-<section class="bg-slate-50 py-20">
+<section class="py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <span class="eyebrow">The team</span>
-            <h2 class="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Experienced specialists, every discipline</h2>
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+            <div>
+                <span class="eyebrow">Leadership</span>
+                <h2 class="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Making your business win</h2>
+            </div>
+            <a href="{{ url('website:team') }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">View team →</a>
         </div>
-        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-            {% for member in team_roles %}
-            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white text-center transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg">
-                <img src="{{ member.image }}" alt="{{ member.role }}" class="h-32 w-full object-cover">
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {% for member in team %}
+            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white text-center">
+                <img src="{{ member.image }}" alt="{{ member.name }}" class="h-44 w-full object-cover">
                 <div class="p-6">
-                    <div class="font-display text-2xl font-bold text-brand-600">{{ member.count }}</div>
-                    <h3 class="mt-2 text-sm font-semibold text-ink-900">{{ member.role }}</h3>
+                    <h3 class="font-display font-semibold text-ink-900">{{ member.name }}</h3>
+                    <p class="mt-1 text-sm text-brand-600">{{ member.role }}</p>
                 </div>
             </div>
             {% endfor %}
@@ -98,15 +116,14 @@
     </div>
 </section>
 
-<!-- CTA -->
-<section class="py-20">
+<section class="pb-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="relative overflow-hidden rounded-[2rem] bg-ink-900 p-10 text-center text-white sm:p-14">
             <div class="mesh absolute inset-0 opacity-70"></div>
             <div class="relative">
-                <h2 class="font-display text-2xl font-bold sm:text-3xl">Ready to work with us?</h2>
-                <p class="mt-3 text-slate-300">Book a free strategy call and let's map your growth blueprint.</p>
-                <a href="{{ url('website:contact') }}" class="btn-accent mt-8 inline-flex">Work With Us →</a>
+                <h2 class="font-display text-2xl font-bold sm:text-3xl">Ready to start selling directly?</h2>
+                <p class="mt-3 text-slate-300">Book a free consultation — we'll map your factory-to-customer path.</p>
+                <a href="{{ url('website:contact') }}" class="btn-accent mt-8 inline-flex">Book Free Consultation →</a>
             </div>
         </div>
     </div>

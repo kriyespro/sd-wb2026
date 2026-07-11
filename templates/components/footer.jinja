@@ -2,10 +2,10 @@
     <div class="border-b border-white/10 bg-brand-800">
         <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-12 sm:px-6 md:flex-row lg:px-8">
             <div>
-                <h3 class="font-display text-2xl font-bold text-white sm:text-3xl">Ready to build your growth blueprint?</h3>
-                <p class="mt-2 text-sm text-slate-400">Book a free strategy call — we'll map the fastest path to measurable results.</p>
+                <h3 class="font-display text-2xl font-bold text-white sm:text-3xl">Ready to start selling directly?</h3>
+                <p class="mt-2 text-sm text-slate-400">Book a free consultation — store, ads, and prepaid orders for your factory.</p>
             </div>
-            <a href="{{ url('website:contact') }}" class="btn-gold shrink-0">Book Free Strategy Call →</a>
+            <a href="{{ url('website:contact') }}" class="btn-gold shrink-0">Book Free Consultation →</a>
         </div>
     </div>
 
@@ -14,8 +14,8 @@
             <div class="lg:col-span-2">
                 <img src="{{ static('img/logo.png') }}" alt="{{ site_name }}" class="h-9 w-auto">
                 <p class="mt-5 max-w-md text-sm leading-relaxed text-slate-400">
-                    {{ site_tagline }}. We help businesses grow through SEO, paid media, web development,
-                    automation, and performance marketing — with transparent reporting every step of the way.
+                    {{ site_tagline }}. We help textile manufacturers set up their online store, run ads,
+                    manage logistics, and get real prepaid orders — with an Academy that keeps delivery sharp.
                 </p>
                 {% if contact_info is defined %}
                 <div class="mt-6 space-y-2 text-sm">
@@ -32,6 +32,7 @@
                 <h4 class="text-xs font-semibold uppercase tracking-widest text-gold-400">Company</h4>
                 <ul class="mt-4 space-y-2.5 text-sm">
                     <li><a href="{{ url('website:about') }}" class="text-slate-400 transition hover:text-white">About</a></li>
+                    <li><a href="{{ url('website:team') }}" class="text-slate-400 transition hover:text-white">Our Team</a></li>
                     <li><a href="{{ url('website:careers') }}" class="text-slate-400 transition hover:text-white">Careers</a></li>
                     <li><a href="{{ url('website:contact') }}" class="text-slate-400 transition hover:text-white">Contact</a></li>
                     <li><a href="{{ url('academy:courses') }}" class="text-slate-400 transition hover:text-white">Academy</a></li>

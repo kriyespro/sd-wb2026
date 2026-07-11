@@ -134,7 +134,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_NAME = 'Winning Blueprints'
-SITE_TAGLINE = 'AI Growth Partner for Modern Businesses'
+SITE_TAGLINE = 'We Help Manufacturers Sell Direct to Customers'
 
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'users:dashboard_redirect'

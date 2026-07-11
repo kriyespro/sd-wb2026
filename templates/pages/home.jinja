@@ -3,29 +3,30 @@
 {% block content %}
 <!-- ANNOUNCEMENT -->
 <div class="border-b border-gold-600/30 bg-brand-900 py-2.5 text-center text-sm text-white">
-    <span class="text-slate-300">AI Growth Partner for modern businesses —</span>
-    <a href="{{ url('website:contact') }}" class="ml-1 font-semibold text-gold-300 hover:text-gold-200">Book a free strategy call today →</a>
+    <span class="text-slate-300">We help textile manufacturers sell direct to customers —</span>
+    <a href="{{ url('website:contact') }}" class="ml-1 font-semibold text-gold-300 hover:text-gold-200">Book a free call today →</a>
 </div>
 
 <!-- HERO -->
 <section class="relative min-h-[calc(100vh-76px)] overflow-hidden bg-white">
-    <span class="wm text-brand-100" style="font-size:14vw;bottom:22%;left:-1%;letter-spacing:-0.03em">GROWTH</span>
-    <span class="wm text-brand-50" style="font-size:9vw;bottom:2%;right:0;letter-spacing:-0.03em">BLUEPRINT</span>
+    <span class="wm text-brand-100" style="font-size:14vw;bottom:22%;left:-1%;letter-spacing:-0.03em">DIRECT</span>
+    <span class="wm text-brand-50" style="font-size:9vw;bottom:2%;right:0;letter-spacing:-0.03em">PROFIT</span>
 
     <div class="relative mx-auto flex min-h-[calc(100vh-76px)] max-w-7xl flex-col px-4 sm:px-6 lg:flex-row lg:items-end lg:px-8">
         <div class="flex flex-col justify-center pb-12 pt-10 lg:w-[52%] lg:pb-24 lg:pt-16">
-            <span class="eyebrow animate-fade-up">AI Growth Partner</span>
+            <span class="eyebrow animate-fade-up">We help manufacturers sell direct to customers</span>
             <h1 class="mt-7 font-display text-[clamp(2.75rem,5vw+1rem,4.5rem)] font-semibold leading-[0.92] tracking-tight text-ink-900 animate-fade-up" style="animation-delay:.05s">
-                Your strategy.<br>
-                Your systems.<br>
-                <span class="font-serif text-gradient-gold">Your blueprint.</span>
+                Your product.<br>
+                Your price.<br>
+                <span class="font-serif text-gradient-gold">Your profit.</span>
             </h1>
             <p class="mt-6 max-w-md text-base leading-relaxed text-slate-600 animate-fade-up" style="animation-delay:.1s">
-                We partner with ambitious businesses to scale through SEO, paid media, web development,
-                and automation — backed by senior specialists and transparent, ROI-focused reporting.
+                At Winning Blueprints, we help textile manufacturers sell sarees, t-shirts, jeans, and kurtis
+                <strong class="font-semibold text-ink-900">directly to customers</strong> — online, prepaid, and with
+                <strong class="font-semibold text-ink-900">2x–4x higher profit margins.</strong>
             </p>
             <div class="mt-9 flex flex-wrap gap-4 animate-fade-up" style="animation-delay:.15s">
-                <a href="{{ url('website:contact') }}" class="btn-gold">Book Free Strategy Call →</a>
+                <a href="{{ url('website:contact') }}" class="btn-gold">Book Free Consultation →</a>
                 <a href="{{ url('website:services') }}" class="btn-outline">Explore Services</a>
             </div>
 
@@ -38,20 +39,20 @@
                         <div class="flex gap-0.5 text-gold-500">
                             {% for _ in range(5) %}<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.538 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.783.57-1.838-.196-1.538-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/></svg>{% endfor %}
                         </div>
-                        <p class="text-xs font-semibold text-ink-900">4.9 <span class="font-normal text-slate-500">/ 5 · Client rated</span></p>
+                        <p class="text-xs font-semibold text-ink-900">98% <span class="font-normal text-slate-500">satisfied clients</span></p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
                     <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-100 font-display text-xs font-bold text-gold-700">WB</span>
                     <div>
-                        <p class="text-xs font-semibold text-ink-900">{{ stats[0].value }}{{ stats[0].suffix }} Projects</p>
-                        <p class="text-[11px] text-slate-500">{{ stats[1].value }}{{ stats[1].suffix }} client retention</p>
+                        <p class="text-xs font-semibold text-ink-900">{{ stats[0].value }}{{ stats[0].suffix }} Years</p>
+                        <p class="text-[11px] text-slate-500">{{ stats[1].value }}{{ stats[1].suffix }} profit margins</p>
                     </div>
                 </div>
             </div>
 
             <ul class="mt-8 space-y-2.5 text-sm text-slate-600 animate-fade-up" style="animation-delay:.2s">
-                {% for point in ['Dedicated project manager on every account', 'Weekly performance reporting', 'Senior experts — not junior handoffs'] %}
+                {% for point in hero_points %}
                 <li class="flex items-center gap-2.5">
                     <span class="flex h-5 w-5 items-center justify-center rounded-full bg-gold-100 text-xs text-gold-600">✓</span>
                     {{ point }}
@@ -68,8 +69,8 @@
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                     </span>
                     <div>
-                        <p class="font-display text-sm font-bold text-ink-900">+240%</p>
-                        <p class="text-[11px] text-slate-500">Revenue growth</p>
+                        <p class="font-display text-sm font-bold text-ink-900">+60%</p>
+                        <p class="text-[11px] text-slate-500">Profit margin lift</p>
                     </div>
                 </div>
                 <div class="absolute -left-2 bottom-36 z-20 hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-xl sm:flex sm:items-center sm:gap-3">
@@ -78,12 +79,12 @@
                     </span>
                     <div>
                         <p class="font-display text-sm font-bold text-ink-900">{{ stats[0].value }}{{ stats[0].suffix }}</p>
-                        <p class="text-[11px] text-slate-500">Projects delivered</p>
+                        <p class="text-[11px] text-slate-500">Years experience</p>
                     </div>
                 </div>
                 <div class="absolute right-6 top-[42%] z-20 hidden rounded-2xl bg-brand-700 px-4 py-3 shadow-xl lg:block">
-                    <p class="font-display text-sm font-bold text-white">Award-Ready</p>
-                    <p class="text-[11px] text-gold-200">Growth systems</p>
+                    <p class="font-display text-sm font-bold text-white">Prepaid Orders</p>
+                    <p class="text-[11px] text-gold-200">No credit risk</p>
                 </div>
                 <div class="relative z-10 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-brand-900/10">
                     <img src="{{ site_images.about_team }}" alt="Winning Blueprints team" class="h-56 w-full object-cover object-top sm:h-72">
@@ -103,12 +104,13 @@
 
 <!-- TRUST MARQUEE -->
 <section class="border-y border-slate-200 bg-slate-50 py-10">
-    <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Trusted by ambitious brands</p>
+    <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Built for manufacturers going direct</p>
     <div class="relative mt-6 overflow-hidden">
-        <div class="flex w-max animate-marquee items-center gap-16">
+        <div class="flex w-max animate-marquee items-center gap-10">
             {% for i in range(2) %}
-            {% for logo in client_logos %}
-            <img src="{{ logo.image }}" alt="{{ logo.name }}" class="h-8 w-auto opacity-50 grayscale transition hover:opacity-100 hover:grayscale-0">
+            {% for tag in audience_tags %}
+            <span class="whitespace-nowrap rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-ink-900 shadow-sm">{{ tag }}</span>
+            <span class="text-gold-400">✦</span>
             {% endfor %}
             {% endfor %}
         </div>
@@ -122,21 +124,22 @@
             <div class="relative">
                 <img src="{{ site_images.about_team }}" alt="Our team at work" class="aspect-[4/3] w-full rounded-3xl object-cover shadow-xl">
                 <div class="absolute -bottom-6 -right-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:-right-6">
-                    <p class="font-display text-3xl font-bold text-brand-700">{{ stats[2].value }}{{ stats[2].suffix }}</p>
-                    <p class="text-sm text-slate-600">{{ stats[2].label }}</p>
+                    <p class="font-display text-3xl font-bold text-brand-700">{{ stats[0].value }}{{ stats[0].suffix }}</p>
+                    <p class="text-sm text-slate-600">{{ stats[0].label }}</p>
                 </div>
             </div>
             <div>
                 <span class="eyebrow">Who we are</span>
                 <h2 class="mt-5 font-display text-3xl font-bold leading-tight text-ink-900 sm:text-4xl">
-                    We empower businesses through <span class="text-gradient-gold">measurable growth</span>
+                    Designed to take factories <span class="text-gradient-gold">directly to consumers</span>
                 </h2>
                 <p class="mt-6 leading-relaxed text-slate-600">
-                    {{ site_name }} is a professional digital growth partner — not a training institute on the surface.
-                    We deliver SEO, paid media, web development, and automation with senior specialists and ROI-focused reporting.
+                    We build factory-to-customer (F2C) pipelines — store, ads, prepaid orders, and backoffice —
+                    so you control your brand, your prices, and your profit.
                 </p>
                 <p class="mt-4 leading-relaxed text-slate-600">
-                    Behind the scenes, our internal academy trains future experts on real client work — so you get agency-quality delivery at scale.
+                    Behind the scenes, our internal Academy trains specialists on real client work — so you get
+                    agency-quality delivery at scale, without hiring a full digital team yourself.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-4">
                     <a href="{{ url('website:about') }}" class="btn-primary">About Us →</a>
@@ -158,8 +161,8 @@
                         Select the ideal plan for you
                     </h2>
                     <p class="mt-6 max-w-md leading-relaxed text-slate-600">
-                        Customized growth packages for your business stage — from focused channel
-                        execution to full-stack digital transformation with measurable ROI.
+                        From eCommerce and Meta ads to backoffice SOPs — packages built for manufacturers
+                        ready to sell direct and keep the margin.
                     </p>
                     <a href="{{ url('website:services') }}" class="btn-outline mt-8">All Services →</a>
                 </div>
@@ -202,22 +205,22 @@
 <section class="bg-slate-50 py-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-2xl text-center">
-            <span class="eyebrow justify-center">Why choose us</span>
-            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Built for measurable business outcomes</h2>
-            <p class="mt-4 text-slate-600">Not vanity metrics — every engagement ties back to revenue, retention, and scalable growth.</p>
+            <span class="eyebrow justify-center">Why manufacturers choose us</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Bypass wholesale. Own the customer.</h2>
+            <p class="mt-4 text-slate-600">Proven systems that take factories directly to consumers — prepaid, branded, and profitable.</p>
         </div>
 
         <div class="mt-12 overflow-hidden rounded-3xl bg-brand-900 text-white shadow-xl shadow-brand-900/20">
             <div class="grid gap-8 p-8 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-12">
                 <div>
                     <span class="inline-flex rounded-full bg-gold-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold-300">Core promise</span>
-                    <h3 class="mt-5 font-display text-2xl font-bold sm:text-3xl">A senior team focused on your ROI</h3>
+                    <h3 class="mt-5 font-display text-2xl font-bold sm:text-3xl">Factory → Customer. Direct.</h3>
                     <p class="mt-4 max-w-lg text-sm leading-relaxed text-slate-300 sm:text-base">
-                        We combine strategy, execution, and reporting under one roof — so you always know what's working and what to scale next.
+                        Store setup, traffic & ads, prepaid orders, then scale — so you keep the margin traders used to take.
                     </p>
                 </div>
                 <ul class="grid gap-3 sm:grid-cols-1">
-                    {% for point in ['Senior specialists across every channel', 'Real projects, real reporting, real ROI', 'Dedicated PM from kickoff to delivery'] %}
+                    {% for point in ['Prepaid orders — no credit risk', '2x–4x margins vs wholesale', 'Your brand, your data, your tribe'] %}
                     <li class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-slate-200">
                         <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-500 text-xs font-bold text-ink-900">✓</span>
                         {{ point }}
@@ -244,15 +247,15 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="grid items-center gap-12 lg:grid-cols-2">
             <div>
-                <span class="eyebrow">How we work</span>
-                <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">A proven delivery framework</h2>
-                <p class="mt-4 max-w-md text-slate-600">From discovery to scale — a structured approach that keeps strategy, execution, and reporting aligned.</p>
-                <img src="{{ site_images.hero }}" alt="Growth analytics" class="mt-8 hidden aspect-video w-full rounded-2xl object-cover shadow-lg lg:block">
+                <span class="eyebrow">The F2C pipeline</span>
+                <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">From factory floor to prepaid orders</h2>
+                <p class="mt-4 max-w-md text-slate-600">A clear path: store → ads → prepaid checkout → scale. You focus on production; we handle the digital side.</p>
+                <img src="{{ site_images.hero }}" alt="Textile D2C growth" class="mt-8 hidden aspect-video w-full rounded-2xl object-cover shadow-lg lg:block">
             </div>
             <div class="space-y-4">
-                {% for step in service_process %}
+                {% for step in f2c_pipeline %}
                 <div class="flex gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-100 font-display font-bold text-gold-700">{{ loop.index }}</span>
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-100 font-display font-bold text-gold-700">{% if loop.last %}✓{% else %}{{ loop.index }}{% endif %}</span>
                     <div>
                         <h3 class="font-display font-semibold text-ink-900">{{ step.title }}</h3>
                         <p class="mt-1 text-sm text-slate-600">{{ step.desc }}</p>
@@ -371,8 +374,8 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-2xl text-center">
             <span class="eyebrow justify-center">Pricing</span>
-            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Flexible plans that fit your business</h2>
-            <p class="mt-4 text-slate-600">Clear packages with no hidden fees. Custom solutions for enterprise.</p>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Flexible plans for your factory</h2>
+            <p class="mt-4 text-slate-600">Priced for factory size and growth goals — from first D2C store to full-scale ads & ops.</p>
         </div>
         <div class="mt-14 grid gap-6 lg:grid-cols-3">
             {% for tier in pricing_tiers %}
@@ -404,7 +407,7 @@
             <div class="lg:col-span-1">
                 <span class="eyebrow">Client stories</span>
                 <h2 class="mt-5 font-display text-3xl font-bold text-ink-900">What our clients say</h2>
-                <p class="mt-4 text-slate-600">Real businesses. Real results. Transparent reporting every step of the way.</p>
+                <p class="mt-4 text-slate-600">Manufacturers who went direct — and kept the margin.</p>
             </div>
             <div class="grid gap-6 sm:grid-cols-2 lg:col-span-2">
                 {% for t in testimonials %}
@@ -459,20 +462,33 @@
 <section class="py-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-2xl text-center">
-            <span class="eyebrow justify-center">The team</span>
-            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Senior specialists across every discipline</h2>
+            <span class="eyebrow justify-center">Our team</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Making your business win</h2>
+            <p class="mt-4 text-slate-600">Strategy, tech, ads, and operations — the people behind your F2C pipeline.</p>
         </div>
-        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-            {% for member in team_roles %}
-            <div class="section-card overflow-hidden p-0">
-                <img src="{{ member.image }}" alt="{{ member.role }}" class="h-36 w-full object-cover">
-                <div class="p-6 text-center">
-                    <div class="font-display text-2xl font-bold text-brand-700">{{ member.count }}</div>
-                    <h3 class="mt-2 text-sm font-semibold text-ink-900">{{ member.role }}</h3>
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {% for member in team %}
+            <div class="section-card overflow-hidden p-0 text-center">
+                {% if member.image %}
+                <img src="{{ member.image }}" alt="{{ member.name }}" class="h-44 w-full object-cover">
+                {% else %}
+                <div class="flex h-44 items-center justify-center bg-brand-900 font-display text-3xl font-bold text-gold-300">{{ member.initials }}</div>
+                {% endif %}
+                <div class="p-6">
+                    <h3 class="font-display text-lg font-semibold text-ink-900">{{ member.name }}</h3>
+                    <p class="mt-1 text-sm font-medium text-brand-600">{{ member.role }}</p>
+                    <div class="mt-3 flex flex-wrap justify-center gap-1.5">
+                        {% for tag in member.tags %}
+                        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+        <p class="mt-8 text-center">
+            <a href="{{ url('website:team') }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">Meet the full team →</a>
+        </p>
     </div>
 </section>
 
@@ -499,7 +515,7 @@
             <h2 class="mt-5 font-display text-3xl font-bold text-ink-900">Common questions</h2>
         </div>
         <div class="mt-10 space-y-3" x-data="{ open: 0 }">
-            {% for faq in pricing_faqs %}
+            {% for faq in general_faqs %}
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <button type="button" @click="open = open === {{ loop.index }} ? 0 : {{ loop.index }}"
                         class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left">
@@ -521,10 +537,10 @@
         <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-brand-900/5">
             <div class="grid lg:grid-cols-5">
                 <div class="bg-brand-900 p-10 text-white lg:col-span-2">
-                    <h2 class="font-display text-2xl font-bold sm:text-3xl">Let's build your growth blueprint</h2>
-                    <p class="mt-4 text-sm text-slate-300">Tell us your goals. We'll respond within 24 hours with a tailored plan — no obligation.</p>
+                    <h2 class="font-display text-2xl font-bold sm:text-3xl">Ready to start selling directly?</h2>
+                    <p class="mt-4 text-sm text-slate-300">Tell us about your factory. We'll map a D2C plan — store, ads, prepaid orders — within 24 hours.</p>
                     <div class="mt-8 space-y-3 text-sm">
-                        {% for point in ['Free strategy session', 'ROI-focused roadmap', 'Dedicated project manager'] %}
+                        {% for point in ['Free consultation', '30–45 day path to first orders', 'You focus on production'] %}
                         <div class="flex items-center gap-2 text-slate-200">
                             <span class="text-gold-400">✓</span> {{ point }}
                         </div>
