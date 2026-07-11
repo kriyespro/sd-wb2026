@@ -3,10 +3,6 @@
     {% include "partials/ops/_stats_bar.jinja" %}
 </div>
 
-<div id="ops-attention" hx-swap-oob="true">
-    {% include "partials/ops/_attention.jinja" %}
-</div>
-
 <div id="ops-leads-feed" hx-swap-oob="true">
     {% include "partials/ops/_leads_feed.jinja" %}
 </div>
@@ -32,11 +28,4 @@
 <div id="ops-dgc-apps-feed" hx-swap-oob="true">
     {% include "partials/ops/_dgc_apps_feed.jinja" %}
 </div>
-<span id="ops-jobs-badge" hx-swap-oob="true">
-    {% if job_application_new %} ({{ job_application_new }}){% endif %}
-</span>
 {% endif %}
-
-<span id="ops-live-timestamp" hx-swap-oob="true" class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600">
-    {{ updated_at.strftime('%H:%M:%S') }}
-</span>

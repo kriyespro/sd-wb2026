@@ -1,10 +1,10 @@
-{# Light attention chips for the mission toolbar #}
+{# Attention chips — light theme #}
 {% set tone_map = {
     'emerald': 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100',
     'amber': 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100',
     'orange': 'border-orange-200 bg-orange-50 text-orange-800 hover:bg-orange-100',
     'rose': 'border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100',
-    'brand': 'border-brand-200 bg-brand-50 text-brand-800 hover:bg-brand-100',
+    'brand': 'border-sky-200 bg-sky-50 text-sky-800 hover:bg-sky-100',
     'violet': 'border-violet-200 bg-violet-50 text-violet-800 hover:bg-violet-100',
     'teal': 'border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100',
 } %}
@@ -13,7 +13,7 @@
 <div class="flex flex-wrap gap-1.5">
     {% for item in attention_items %}
     <a href="{{ url(item.href_name) }}"
-       class="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition {{ tone_map.get(item.tone, 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100') }}">
+       class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition {{ tone_map.get(item.tone, 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100') }}">
         <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
         {{ item.label }}
     </a>

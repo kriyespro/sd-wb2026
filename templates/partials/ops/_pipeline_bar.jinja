@@ -1,4 +1,4 @@
-{# Compact pipeline — single strip, no tall panel #}
+{# Compact pipeline strip — light theme companion to KPI card #}
 {% set pipeline_labels = {
     'new': 'New',
     'contacted': 'Contacted',
@@ -30,7 +30,7 @@
         <span class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Pipeline</span>
         <span class="text-[10px] font-medium text-slate-400">{{ stats.open_pipeline }} open · {{ stats.hot_leads }} hot</span>
     </div>
-    <div class="flex h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100">
+    <div class="flex h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-200">
         {% for status, count in lead_pipeline.items() %}
         {% if count %}
         <div class="h-full {{ pipeline_colors.get(status, 'bg-slate-400') }}" style="width: {{ (count / total * 100)|round(1) }}%" title="{{ pipeline_labels.get(status, status) }}: {{ count }}"></div>
