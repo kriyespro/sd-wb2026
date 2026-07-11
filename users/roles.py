@@ -24,6 +24,9 @@ ROLE_PLACEMENT = 'placement_coordinator'
 ROLE_CLIENT_OWNER = 'client_owner'
 ROLE_CLIENT_MEMBER = 'client_member'
 
+# Partner / DGC
+ROLE_PARTNER = 'partner'
+
 ROLE_CHOICES = [
     (ROLE_SUPER_ADMIN, 'Super Admin'),
     (ROLE_DIRECTOR, 'Director'),
@@ -45,10 +48,12 @@ ROLE_CHOICES = [
     (ROLE_PLACEMENT, 'Placement Coordinator'),
     (ROLE_CLIENT_OWNER, 'Business Owner'),
     (ROLE_CLIENT_MEMBER, 'Team Member'),
+    (ROLE_PARTNER, 'DGC (Digital Growth Consultant)'),
 ]
 
 CLIENT_ROLES = {ROLE_CLIENT_OWNER, ROLE_CLIENT_MEMBER}
 STUDENT_ROLES = {ROLE_STUDENT, ROLE_INTERN}
+PARTNER_ROLES = {ROLE_PARTNER}
 OPS_ROLES = {
     ROLE_SUPER_ADMIN, ROLE_DIRECTOR, ROLE_SALES, ROLE_PM, ROLE_ACCOUNT_MANAGER,
     ROLE_SEO, ROLE_GOOGLE_ADS, ROLE_META_ADS, ROLE_WEB_DEV, ROLE_DESIGNER,
@@ -59,15 +64,18 @@ OPS_ROLES = {
 PORTAL_CLIENT = 'client'
 PORTAL_STUDENT = 'student'
 PORTAL_OPS = 'ops'
+PORTAL_PARTNER = 'partner'
 
 PORTAL_URL_NAMES = {
     PORTAL_CLIENT: 'clients:dashboard',
     PORTAL_STUDENT: 'academy_dashboard:dashboard',
     PORTAL_OPS: 'operations:dashboard',
+    PORTAL_PARTNER: 'partners:dashboard',
 }
 
 PORTAL_PATHS = {
     PORTAL_CLIENT: '/dashboard/client/',
     PORTAL_STUDENT: '/dashboard/student/',
     PORTAL_OPS: '/ops/',
+    PORTAL_PARTNER: '/dashboard/dgc/',
 }

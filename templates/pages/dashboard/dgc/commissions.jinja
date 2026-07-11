@@ -1,0 +1,47 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-5 grid gap-2 sm:grid-cols-3">
+    <div class="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3">
+        <p class="text-[10px] font-bold uppercase text-violet-700">Pending</p>
+        <p class="font-display text-2xl font-bold text-violet-900">₹{{ summary.pending }}</p>
+    </div>
+    <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+        <p class="text-[10px] font-bold uppercase text-amber-700">Requested</p>
+        <p class="font-display text-2xl font-bold text-amber-900">₹{{ summary.requested }}</p>
+    </div>
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+        <p class="text-[10px] font-bold uppercase text-emerald-700">Paid</p>
+        <p class="font-display text-2xl font-bold text-emerald-900">₹{{ summary.paid }}</p>
+    </div>
+</div>
+
+<div class="dash-panel overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[720px] text-left text-sm">
+            <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
+                <tr>
+                    <th class="px-4 py-3">Amount</th>
+                    <th class="px-4 py-3">Source</th>
+                    <th class="px-4 py-3">Note</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Date</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for c in commissions %}
+                <tr>
+                    <td class="px-4 py-3 font-semibold text-ink-900">₹{{ c.amount }}</td>
+                    <td class="px-4 py-3">{{ c.get_source_display() }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-500">{{ c.note or '—' }}</td>
+                    <td class="px-4 py-3 text-xs">{{ c.get_status_display() }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-500">{{ c.created_at.strftime('%d %b %Y') }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">No commissions yet. Place an order or win a lead.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

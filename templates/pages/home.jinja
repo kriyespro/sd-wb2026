@@ -61,7 +61,7 @@
             </ul>
         </div>
 
-        <div class="relative flex flex-1 items-end justify-center pb-12 lg:justify-end lg:pb-20">
+        <div class="relative flex flex-1 items-end justify-center pb-12 lg:-translate-y-[200px] lg:justify-end lg:pb-20">
             <div class="absolute bottom-32 right-0 hidden h-[70%] w-[55%] rounded-tl-[3rem] bg-gradient-to-br from-slate-50 via-gold-50/40 to-brand-50 lg:block"></div>
             <div class="relative w-full max-w-md lg:max-w-lg">
                 <div class="absolute -right-4 top-16 z-20 hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-xl sm:flex sm:items-center sm:gap-3">
@@ -455,41 +455,6 @@
             </div>
             {% endfor %}
         </div>
-    </div>
-</section>
-
-<!-- TEAM -->
-<section class="py-24">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl text-center">
-            <span class="eyebrow justify-center">Our team</span>
-            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Making your business win</h2>
-            <p class="mt-4 text-slate-600">Strategy, tech, ads, and operations — the people behind your F2C pipeline.</p>
-        </div>
-        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {% for member in team %}
-            <div class="section-card overflow-hidden p-0 text-center">
-                {% if member.image %}
-                {% set src = member.image %}{% set alt = member.name %}{% set class = 'h-44 w-full object-cover' %}
-                {% include "partials/_img.jinja" %}
-                {% else %}
-                <div class="flex h-44 items-center justify-center bg-brand-900 font-display text-3xl font-bold text-gold-300">{{ member.initials }}</div>
-                {% endif %}
-                <div class="p-6">
-                    <h3 class="font-display text-lg font-semibold text-ink-900">{{ member.name }}</h3>
-                    <p class="mt-1 text-sm font-medium text-brand-600">{{ member.role }}</p>
-                    <div class="mt-3 flex flex-wrap justify-center gap-1.5">
-                        {% for tag in member.tags %}
-                        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{{ tag }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <p class="mt-8 text-center">
-            <a href="{{ url('website:team') }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">Meet the full team →</a>
-        </p>
     </div>
 </section>
 

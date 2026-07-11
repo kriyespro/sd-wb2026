@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 
-from .roles import CLIENT_ROLES, OPS_ROLES, STUDENT_ROLES
+from .roles import CLIENT_ROLES, OPS_ROLES, PARTNER_ROLES, STUDENT_ROLES
 from .services import get_dashboard_url_for_user
 
 
@@ -24,6 +24,10 @@ class ClientPortalMixin(RoleRequiredMixin):
 
 class StudentPortalMixin(RoleRequiredMixin):
     allowed_roles = STUDENT_ROLES
+
+
+class PartnerPortalMixin(RoleRequiredMixin):
+    allowed_roles = PARTNER_ROLES
 
 
 class OpsPortalMixin(RoleRequiredMixin):

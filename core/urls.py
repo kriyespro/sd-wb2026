@@ -13,6 +13,8 @@ urlpatterns = [
     path('auth/', include('users.urls')),
     path('dashboard/client/', include('clients.urls')),
     path('dashboard/student/', include('academy.dashboard_urls')),
+    path('dashboard/dgc/', include('partners.urls')),
+    path('dgc/', include('partners.public_urls')),
     path('ops/', include('operations.urls')),
     path('', include('website.urls')),
     path('academy/', include('academy.urls')),

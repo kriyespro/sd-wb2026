@@ -1,44 +1,52 @@
 # Admin (ops portal)
 username: admin
-email: admin@winningblueprints.in
+email: winningblueprints@gmail.com
 password: admin1234
 portal: /ops/
 
 # Client portal
 username: client1
-email: client@example.com
+email: winningblueprints@gmail.com
 password: client1234
 portal: /dashboard/client/
 
 # Student portal
 username: student1
-email: student@example.com
+email: winningblueprints@gmail.com
 password: student1234
 portal: /dashboard/student/
 
 # Intern portal (student dashboard)
 username: intern1
-email: intern@example.com
+email: winningblueprints@gmail.com
 password: intern1234
 portal: /dashboard/student/
 
 # Project manager (ops portal)
 username: pm1
-email: pm@winningblueprints.in
+email: winningblueprints@gmail.com
 password: pm1234
 portal: /ops/
 
 # Mentor (ops portal)
 username: mentor1
-email: mentor@winningblueprints.in
+email: winningblueprints@gmail.com
 password: mentor1234
 portal: /ops/
 
 # Sales executive (ops portal — lead assignment)
 username: sales1
-email: sales@winningblueprints.in
+email: winningblueprints@gmail.com
 password: sales1234
 portal: /ops/
+
+# DGC partner (Digital Growth Consultant)
+username: dgc1
+email: winningblueprints@gmail.com
+password: dgc1234
+portal: /dashboard/dgc/
+public apply: /dgc/
+seed: python manage.py seed_partners
 
 # Login URL
 http://127.0.0.1:8000/auth/login/

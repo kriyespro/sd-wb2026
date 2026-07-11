@@ -13,13 +13,13 @@ from users.roles import (
 )
 
 TEST_USERS = [
-    ('admin', 'admin@winningblueprints.in', 'admin1234', ROLE_SUPER_ADMIN, 'Super', 'Admin'),
-    ('client1', 'client@example.com', 'client1234', ROLE_CLIENT_OWNER, 'Test', 'Client'),
-    ('student1', 'student@example.com', 'student1234', ROLE_STUDENT, 'Test', 'Student'),
-    ('intern1', 'intern@example.com', 'intern1234', ROLE_INTERN, 'Test', 'Intern'),
-    ('pm1', 'pm@winningblueprints.in', 'pm1234', ROLE_PM, 'Test', 'PM'),
-    ('mentor1', 'mentor@winningblueprints.in', 'mentor1234', ROLE_MENTOR, 'Test', 'Mentor'),
-    ('sales1', 'sales@winningblueprints.in', 'sales1234', ROLE_SALES, 'Test', 'Sales'),
+    ('admin', 'winningblueprints@gmail.com', 'admin1234', ROLE_SUPER_ADMIN, 'Super', 'Admin'),
+    ('client1', 'winningblueprints@gmail.com', 'client1234', ROLE_CLIENT_OWNER, 'Test', 'Client'),
+    ('student1', 'winningblueprints@gmail.com', 'student1234', ROLE_STUDENT, 'Test', 'Student'),
+    ('intern1', 'winningblueprints@gmail.com', 'intern1234', ROLE_INTERN, 'Test', 'Intern'),
+    ('pm1', 'winningblueprints@gmail.com', 'pm1234', ROLE_PM, 'Test', 'PM'),
+    ('mentor1', 'winningblueprints@gmail.com', 'mentor1234', ROLE_MENTOR, 'Test', 'Mentor'),
+    ('sales1', 'winningblueprints@gmail.com', 'sales1234', ROLE_SALES, 'Test', 'Sales'),
 ]
 
 

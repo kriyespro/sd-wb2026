@@ -7,6 +7,8 @@ from projects.models import Deliverable, Project
 from users.mixins import DashboardContextMixin, OpsPortalMixin
 from users.roles import ROLE_SUPER_ADMIN
 from users.services import get_dashboard_url_for_user
+from partners.models import DgcApplication
+from partners.services import approve_dgc_application
 from website.models import JobApplication, Lead
 
 from .forms import (
@@ -352,3 +354,51 @@ class JobApplicationStatusUpdateView(SuperAdminRequiredMixin, View):
             'app': application,
             'status_choices': JobApplication.STATUS_CHOICES,
         })
+
+
+class DgcApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/dgc_applications.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        applications = DgcApplication.objects.all()
+        ctx['page_title'] = 'DGC Applications'
+        ctx['applications'] = applications
+        ctx['status_choices'] = DgcApplication.STATUS_CHOICES
+        ctx['status_counts'] = {
+            status: applications.filter(status=status).count()
+            for status, _ in DgcApplication.STATUS_CHOICES
+        }
+        ctx['total_count'] = applications.count()
+        return ctx
+
+
+class DgcApplicationApproveView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        from django.contrib import messages
+
+        application = get_object_or_404(DgcApplication, pk=pk)
+        try:
+            user, temp_password = approve_dgc_application(application, request.user)
+            messages.success(
+                request,
+                f'Approved {application.name}. Login: {user.username} / temp password: {temp_password}',
+            )
+        except ValueError as exc:
+            messages.error(request, str(exc))
+        return redirect('operations:dgc_applications')
+
+
+class DgcApplicationRejectView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        from django.contrib import messages
+
+        application = get_object_or_404(DgcApplication, pk=pk)
+        if application.status != DgcApplication.STATUS_APPROVED:
+            application.status = DgcApplication.STATUS_REJECTED
+            application.reviewed_by = request.user
+            application.save(update_fields=['status', 'reviewed_by', 'updated_at'])
+            messages.success(request, f'Rejected {application.name}.')
+        else:
+            messages.error(request, 'Already approved — cannot reject.')
+        return redirect('operations:dgc_applications')

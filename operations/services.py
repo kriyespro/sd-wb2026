@@ -25,6 +25,7 @@ OPS_NAV = [
 # Superuser-only nav items (appended in OpsBaseMixin)
 OPS_NAV_SUPERUSER = [
     {'title': 'Job Applications', 'icon': '💼', 'url_name': 'operations:job_applications'},
+    {'title': 'DGC Applications', 'icon': '🤝', 'url_name': 'operations:dgc_applications'},
 ]
 
 

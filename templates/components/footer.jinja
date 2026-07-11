@@ -19,8 +19,17 @@
                 </p>
                 {% if contact_info is defined %}
                 <div class="mt-6 space-y-2 text-sm">
+                    {% if contact_info.address %}
+                    <p class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gold-400">📍</span>
+                        <span>{{ contact_info.address }}</span>
+                    </p>
+                    {% endif %}
                     {% if contact_info.phone %}
-                    <p class="flex items-center gap-2"><span class="text-gold-400">📞</span> {{ contact_info.phone }}</p>
+                    <p class="flex items-center gap-2">
+                        <span class="text-gold-400">📞</span>
+                        <a href="tel:{{ contact_info.phone|replace(' ', '') }}" class="transition hover:text-white">{{ contact_info.phone }}</a>
+                    </p>
                     {% endif %}
                     {% if contact_info.email %}
                     <p class="flex items-center gap-2"><span class="text-gold-400">✉️</span> {{ contact_info.email }}</p>
@@ -35,6 +44,7 @@
                     <li><a href="{{ url('website:startup') }}" class="text-slate-400 transition hover:text-white">Startup Plan</a></li>
                     <li><a href="{{ url('website:team') }}" class="text-slate-400 transition hover:text-white">Our Team</a></li>
                     <li><a href="{{ url('website:careers') }}" class="text-slate-400 transition hover:text-white">Careers</a></li>
+                    <li><a href="{{ url('partners_public:landing') }}" class="text-slate-400 transition hover:text-white">Join as DGC</a></li>
                     <li><a href="{{ url('website:contact') }}" class="text-slate-400 transition hover:text-white">Contact</a></li>
                     <li><a href="{{ url('academy:courses') }}" class="text-slate-400 transition hover:text-white">Academy</a></li>
                 </ul>

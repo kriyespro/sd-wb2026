@@ -3,8 +3,10 @@ from django.urls import reverse
 from .roles import (
     CLIENT_ROLES,
     OPS_ROLES,
+    PARTNER_ROLES,
     PORTAL_CLIENT,
     PORTAL_OPS,
+    PORTAL_PARTNER,
     PORTAL_STUDENT,
     PORTAL_URL_NAMES,
     STUDENT_ROLES,
@@ -16,6 +18,8 @@ def get_portal_for_role(role):
         return PORTAL_CLIENT
     if role in STUDENT_ROLES:
         return PORTAL_STUDENT
+    if role in PARTNER_ROLES:
+        return PORTAL_PARTNER
     if role in OPS_ROLES:
         return PORTAL_OPS
     return PORTAL_OPS

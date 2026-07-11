@@ -31,4 +31,15 @@ urlpatterns = [
         views.JobApplicationStatusUpdateView.as_view(),
         name='job_application_status',
     ),
+    path('dgc-applications/', views.DgcApplicationsView.as_view(), name='dgc_applications'),
+    path(
+        'dgc-applications/<int:pk>/approve/',
+        views.DgcApplicationApproveView.as_view(),
+        name='dgc_application_approve',
+    ),
+    path(
+        'dgc-applications/<int:pk>/reject/',
+        views.DgcApplicationRejectView.as_view(),
+        name='dgc_application_reject',
+    ),
 ]

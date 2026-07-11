@@ -1058,9 +1058,9 @@ INSTAGRAM_IMAGES = [
 ]
 
 CONTACT_INFO = {
-    'email': 'win@winningblueprints.com',
-    'phone': '+91 90235 61533',
-    'address': 'Adajan, Surat, Gujarat 395009',
+    'email': 'winningblueprints@gmail.com',
+    'phone': '090235 61533',
+    'address': 'Adajan Gam, Adajan, Surat, Gujarat 395009',
     'hours': 'Mon–Fri, 9am–6pm IST',
 }
 

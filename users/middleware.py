@@ -1,12 +1,13 @@
 from django.shortcuts import redirect
 
-from .roles import CLIENT_ROLES, OPS_ROLES, PORTAL_PATHS, STUDENT_ROLES
+from .roles import CLIENT_ROLES, OPS_ROLES, PARTNER_ROLES, STUDENT_ROLES
 from .services import get_dashboard_url_for_user
 
 
 PORTAL_RULES = (
     ('/dashboard/client/', CLIENT_ROLES),
     ('/dashboard/student/', STUDENT_ROLES),
+    ('/dashboard/dgc/', PARTNER_ROLES),
     ('/ops/', OPS_ROLES),
 )
 

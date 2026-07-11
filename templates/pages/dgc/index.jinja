@@ -1,0 +1,64 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<section class="relative overflow-hidden bg-brand-900 py-20 text-white sm:py-24">
+    <div class="mesh absolute inset-0 opacity-60"></div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <span class="eyebrow !text-gold-300 before:!bg-gold-400">Marketing Partner</span>
+        <h1 class="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight sm:text-5xl">
+            Join as a<br>
+            <span class="font-serif text-gradient-gold">DGC</span>
+        </h1>
+        <p class="mt-4 text-lg font-medium text-gold-200">Digital Growth Consultant</p>
+        <p class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">
+            Partner with Winning Blueprints. Resell D2C growth packages, submit factory leads,
+            earn commission, and request payouts on the 21st of every month.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4">
+            <a href="#apply" class="btn-gold">Apply as DGC →</a>
+            <a href="{{ url('users:login') }}" class="btn-outline !border-white/30 !text-white hover:!bg-white/10">Partner login</a>
+        </div>
+    </div>
+</section>
+
+<section class="border-b border-slate-200 bg-slate-50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {% set perks = [
+                {'title': 'Reseller offers', 'desc': 'Access ready packages for manufacturers and place partner orders.'},
+                {'title': 'Submit leads', 'desc': 'Send factory / D2C leads and track status from your portal.'},
+                {'title': 'Earn commission', 'desc': 'Automatic commission on orders and won leads.'},
+                {'title': 'Monthly payout', 'desc': 'Request payout on the 21st of each month.'},
+            ] %}
+            {% for perk in perks %}
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-100 font-display text-sm font-bold text-gold-700">0{{ loop.index }}</span>
+                <h2 class="mt-4 font-display text-lg font-semibold text-ink-900">{{ perk.title }}</h2>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ perk.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="apply" class="py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-8 text-center">
+            <span class="eyebrow justify-center">Application</span>
+            <h2 class="mt-4 font-display text-3xl font-bold text-ink-900">Become a DGC</h2>
+            <p class="mt-3 text-slate-600">Anyone can apply as a marketing partner. We review and create your portal access.</p>
+        </div>
+
+        {% if submitted %}
+        <div class="rounded-3xl border border-emerald-200 bg-emerald-50 p-8 text-center">
+            <p class="font-display text-xl font-bold text-emerald-900">Application received</p>
+            <p class="mt-2 text-sm text-emerald-800">Our team will review and contact you with login details.</p>
+        </div>
+        {% else %}
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            {% include "partials/dgc/_apply_form.jinja" %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

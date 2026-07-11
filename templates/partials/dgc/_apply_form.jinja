@@ -1,0 +1,60 @@
+<div id="dgc-apply-form-container">
+    <form action="{{ url('partners_public:apply') }}"
+          method="post"
+          hx-post="{{ url('partners_public:apply') }}"
+          hx-target="#dgc-apply-form-container"
+          hx-swap="outerHTML"
+          hx-disabled-elt="find button[type='submit']"
+          novalidate
+          class="space-y-4">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+        {% if show_errors and form.errors %}
+        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            Please fix the highlighted fields and try again.
+        </div>
+        {% endif %}
+
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Full name *</label>
+                {{ form.name }}
+                {% if show_errors and form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Email *</label>
+                {{ form.email }}
+                {% if show_errors and form.email.errors %}<p class="mt-1 text-xs text-red-600">{{ form.email.errors[0] }}</p>{% endif %}
+            </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Phone *</label>
+                {{ form.phone }}
+                {% if show_errors and form.phone.errors %}<p class="mt-1 text-xs text-red-600">{{ form.phone.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">City</label>
+                {{ form.city }}
+            </div>
+        </div>
+
+        <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Experience</label>
+            {{ form.experience }}
+        </div>
+
+        <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Why join as DGC? *</label>
+            {{ form.why }}
+            {% if show_errors and form.why.errors %}<p class="mt-1 text-xs text-red-600">{{ form.why.errors[0] }}</p>{% endif %}
+        </div>
+
+        <button type="submit" class="btn-gold w-full sm:w-auto">
+            <span class="htmx-request-hide">Submit DGC application</span>
+            <span class="htmx-indicator">Submitting…</span>
+        </button>
+        <p class="text-xs text-slate-500">This is a marketing partner application — not an Academy or careers job form.</p>
+    </form>
+</div>

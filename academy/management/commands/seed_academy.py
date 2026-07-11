@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
         mentor, _ = User.objects.get_or_create(
             username='mentor1',
-            defaults={'email': 'mentor@winningblueprints.in', 'first_name': 'Raj', 'last_name': 'Mentor'},
+            defaults={'email': 'winningblueprints@gmail.com', 'first_name': 'Raj', 'last_name': 'Mentor'},
         )
         mentor.set_password('mentor1234')
         mentor.save()

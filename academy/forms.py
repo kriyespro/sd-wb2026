@@ -9,7 +9,7 @@ class AdmissionApplicationForm(forms.ModelForm):
         fields = ['name', 'email', 'phone', 'education', 'course_interest', 'motivation']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Full name'}),
-            'email': forms.EmailInput(attrs={'class': 'wb-input', 'placeholder': 'you@email.com'}),
+            'email': forms.EmailInput(attrs={'class': 'wb-input', 'placeholder': 'you@company.com'}),
             'phone': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': '+91 90235 61533'}),
             'education': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'e.g. B.Com, BBA'}),
             'course_interest': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'e.g. Digital Marketing'}),

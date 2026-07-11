@@ -1,0 +1,22 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<p class="mb-4 text-sm text-slate-600">Active reseller packages you can sell / order.</p>
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {% for offer in offers %}
+    <article class="dash-panel p-5">
+        <h3 class="font-display text-lg font-semibold text-ink-900">{{ offer.title }}</h3>
+        <p class="mt-2 text-sm text-slate-600">{{ offer.description or '—' }}</p>
+        <div class="mt-4 flex items-end justify-between gap-2">
+            <div>
+                <p class="font-display text-2xl font-bold text-brand-700">₹{{ offer.price }}</p>
+                <p class="text-[11px] font-semibold text-emerald-700">{{ offer.commission_percent }}% commission</p>
+            </div>
+            <a href="{{ url('partners:orders') }}" class="rounded-xl bg-gold-500 px-3 py-2 text-[11px] font-bold text-ink-900 hover:bg-gold-400">Order →</a>
+        </div>
+    </article>
+    {% else %}
+    <div class="dash-panel col-span-full p-10 text-center text-slate-500">No offers published yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<section class="relative mb-6 overflow-hidden rounded-[1.75rem] bg-ink-900 px-6 py-7 text-white sm:px-8">
+    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Partner desk</span>
+            <h2 class="mt-2 font-display text-2xl font-bold">DGC Applications</h2>
+            <p class="mt-1 max-w-xl text-sm text-slate-300">
+                Marketing partner applications from /dgc/. Approve to create portal login.
+            </p>
+            <p class="mt-2 text-xs text-slate-400">Total: {{ total_count }}</p>
+        </div>
+        <a href="{{ url('partners_public:landing') }}" target="_blank" rel="noopener"
+           class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:bg-white/10">
+            View /dgc/
+        </a>
+    </div>
+</section>
+
+<div class="mb-5 flex flex-wrap gap-2">
+    {% for value, label in status_choices %}
+    <span class="ops-chip">
+        <span class="text-slate-400">{{ label }}</span>
+        <span class="font-bold text-ink-900">{{ status_counts[value] }}</span>
+    </span>
+    {% endfor %}
+</div>
+
+{% if applications %}
+<div class="dash-panel overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[900px] text-left text-sm">
+            <thead class="border-b border-slate-100 bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
+                <tr>
+                    <th class="px-4 py-3">Applicant</th>
+                    <th class="px-4 py-3">City</th>
+                    <th class="px-4 py-3">Experience</th>
+                    <th class="px-4 py-3">Why</th>
+                    <th class="px-4 py-3">Applied</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for app in applications %}
+                <tr class="align-top">
+                    <td class="px-4 py-4">
+                        <p class="font-semibold text-ink-900">{{ app.name }}</p>
+                        <a href="mailto:{{ app.email }}" class="text-xs text-brand-600">{{ app.email }}</a>
+                        <p class="text-xs text-slate-500">{{ app.phone }}</p>
+                    </td>
+                    <td class="px-4 py-4 text-slate-600">{{ app.city or '—' }}</td>
+                    <td class="px-4 py-4 text-xs text-slate-600">{{ app.experience or '—' }}</td>
+                    <td class="px-4 py-4 max-w-xs text-xs text-slate-600">
+                        <details>
+                            <summary class="cursor-pointer font-medium text-brand-600">View</summary>
+                            <p class="mt-2 whitespace-pre-wrap">{{ app.why }}</p>
+                        </details>
+                    </td>
+                    <td class="px-4 py-4 text-xs text-slate-500">{{ app.created_at.strftime('%d %b %Y') }}</td>
+                    <td class="px-4 py-4 text-xs font-semibold">{{ app.get_status_display() }}</td>
+                    <td class="px-4 py-4">
+                        {% if app.status != 'approved' and app.status != 'rejected' %}
+                        <div class="flex flex-col gap-2">
+                            <form method="post" action="{{ url('operations:dgc_application_approve', kwargs={'pk': app.id}) }}">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <button type="submit" class="w-full rounded-lg bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-emerald-500">Approve</button>
+                            </form>
+                            <form method="post" action="{{ url('operations:dgc_application_reject', kwargs={'pk': app.id}) }}">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <button type="submit" class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">Reject</button>
+                            </form>
+                        </div>
+                        {% elif app.partner_user %}
+                        <p class="text-xs text-emerald-700">User: {{ app.partner_user.username }}</p>
+                        {% else %}
+                        <span class="text-xs text-slate-400">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center text-slate-500">No DGC applications yet.</div>
+{% endif %}
+{% endblock %}
