@@ -1,10 +1,14 @@
+from datetime import timedelta
+
+from django.db.models import Count
 from django.utils import timezone
 
-from academy.models import AdmissionApplication, MentorAllocation
+from academy.models import AdmissionApplication
+from billing.models import Invoice
 from projects.models import Deliverable, Project
 from website.models import JobApplication, Lead
 
-from .models import ProjectAssignment, Team, TeamMember
+from .models import ProjectAssignment, Team
 
 OPS_NAV = [
     {'title': 'Quality Check', 'icon': '✔️', 'url_name': 'operations:quality_check'},
@@ -44,18 +48,55 @@ def reject_deliverable(deliverable, approver):
     return deliverable
 
 
+def _local_day_start():
+    now = timezone.localtime()
+    return now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
 def get_ops_stats():
+    day_start = _local_day_start()
+    week_start = day_start - timedelta(days=7)
+    month_start = day_start.replace(day=1)
+    open_lead_statuses = [
+        Lead.STATUS_NEW,
+        Lead.STATUS_CONTACTED,
+        Lead.STATUS_QUALIFIED,
+        Lead.STATUS_PROPOSAL,
+    ]
+
+    job_counts = {
+        row['status']: row['c']
+        for row in JobApplication.objects.values('status').annotate(c=Count('id'))
+    }
+
     return {
         'pending_deliverables': get_pending_deliverables().count(),
         'active_projects': Project.objects.filter(status=Project.STATUS_ACTIVE).count(),
+        'planning_projects': Project.objects.filter(status=Project.STATUS_PLANNING).count(),
         'new_applications': AdmissionApplication.objects.filter(
             status=AdmissionApplication.STATUS_NEW,
         ).count(),
         'new_leads': Lead.objects.filter(status=Lead.STATUS_NEW).count(),
-        'new_job_applications': JobApplication.objects.filter(
-            status=JobApplication.STATUS_NEW,
+        'leads_today': Lead.objects.filter(created_at__gte=day_start).count(),
+        'leads_week': Lead.objects.filter(created_at__gte=week_start).count(),
+        'unassigned_leads': Lead.objects.filter(
+            assigned_to__isnull=True,
+            status__in=open_lead_statuses,
         ).count(),
-        'total_job_applications': JobApplication.objects.count(),
+        'hot_leads': Lead.objects.filter(
+            status__in=[Lead.STATUS_QUALIFIED, Lead.STATUS_PROPOSAL],
+        ).count(),
+        'won_month': Lead.objects.filter(
+            status=Lead.STATUS_WON,
+            updated_at__gte=month_start,
+        ).count(),
+        'open_pipeline': Lead.objects.filter(status__in=open_lead_statuses).count(),
+        'overdue_invoices': Invoice.objects.filter(status=Invoice.STATUS_OVERDUE).count(),
+        'sent_invoices': Invoice.objects.filter(status=Invoice.STATUS_SENT).count(),
+        'new_job_applications': job_counts.get(JobApplication.STATUS_NEW, 0),
+        'job_review': job_counts.get(JobApplication.STATUS_REVIEW, 0),
+        'job_interview': job_counts.get(JobApplication.STATUS_INTERVIEW, 0),
+        'total_job_applications': sum(job_counts.values()),
     }
 
 
@@ -91,11 +132,23 @@ def get_attention_items(stats, include_jobs=False):
             'href_name': 'operations:leads',
             'tone': 'emerald',
         })
+    if stats['unassigned_leads']:
+        items.append({
+            'label': f"{stats['unassigned_leads']} unassigned",
+            'href_name': 'operations:leads',
+            'tone': 'amber',
+        })
     if stats['pending_deliverables']:
         items.append({
             'label': f"{stats['pending_deliverables']} pending QA",
             'href_name': 'operations:quality_check',
             'tone': 'orange',
+        })
+    if stats['overdue_invoices']:
+        items.append({
+            'label': f"{stats['overdue_invoices']} overdue invoice{'s' if stats['overdue_invoices'] != 1 else ''}",
+            'href_name': 'operations:invoices',
+            'tone': 'rose',
         })
     if stats['new_applications']:
         items.append({
@@ -105,7 +158,7 @@ def get_attention_items(stats, include_jobs=False):
         })
     if include_jobs and stats['new_job_applications']:
         items.append({
-            'label': f"{stats['new_job_applications']} job application{'s' if stats['new_job_applications'] != 1 else ''}",
+            'label': f"{stats['new_job_applications']} job app{'s' if stats['new_job_applications'] != 1 else ''}",
             'href_name': 'operations:job_applications',
             'tone': 'violet',
         })
@@ -114,18 +167,21 @@ def get_attention_items(stats, include_jobs=False):
 
 def get_mission_control_context(include_jobs=False):
     stats = get_ops_stats()
+    pipeline = get_lead_pipeline_counts()
+    pipeline_total = sum(pipeline.values()) or 1
     ctx = {
         'stats': stats,
-        'recent_leads': get_recent_leads(10),
-        'pending_deliverables': get_pending_deliverables()[:5],
-        'lead_pipeline': get_lead_pipeline_counts(),
+        'recent_leads': get_recent_leads(8),
+        'pending_deliverables': get_pending_deliverables()[:6],
+        'lead_pipeline': pipeline,
+        'pipeline_total': pipeline_total,
         'recent_applications': get_recent_applications(5),
         'attention_items': get_attention_items(stats, include_jobs=include_jobs),
         'updated_at': timezone.localtime(),
         'include_jobs': include_jobs,
     }
     if include_jobs:
-        ctx['recent_job_applications'] = get_recent_job_applications(8)
+        ctx['recent_job_applications'] = get_recent_job_applications(6)
         ctx['job_application_new'] = stats['new_job_applications']
         ctx['job_application_count'] = stats['total_job_applications']
     return ctx

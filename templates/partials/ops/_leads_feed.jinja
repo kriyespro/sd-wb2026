@@ -1,33 +1,38 @@
+{% set status_border = {
+    'new': 'border-l-emerald-500',
+    'contacted': 'border-l-sky-500',
+    'qualified': 'border-l-violet-500',
+    'proposal': 'border-l-amber-500',
+    'won': 'border-l-brand-600',
+    'lost': 'border-l-slate-400',
+} %}
 {% if recent_leads %}
 <ul class="divide-y divide-slate-100">
     {% for lead in recent_leads %}
-    <li class="flex items-start gap-3 py-3.5 first:pt-0 last:pb-0">
-        <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-900 font-display text-xs font-bold text-gold-300">
-            {{ lead.name[:1]|upper }}
-        </span>
+    <li class="flex items-start gap-2.5 border-l-4 py-2.5 pl-2.5 {{ status_border.get(lead.status, 'border-l-slate-300') }}">
         <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
                 <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}"
-                   class="truncate font-semibold text-ink-900 hover:text-brand-600">
+                   class="truncate text-sm font-semibold text-ink-900 hover:text-brand-600">
                     {{ lead.name }}
                 </a>
                 {% include "partials/ops/_status_badge.jinja" %}
+                {% if not lead.assigned_to_id and lead.status not in ['won', 'lost'] %}
+                <span class="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-800">Unassigned</span>
+                {% endif %}
             </div>
-            <p class="mt-0.5 truncate text-xs text-slate-500">
-                {{ lead.email }}
-                {% if lead.service_interest %} · {{ lead.service_interest }}{% endif %}
+            <p class="mt-0.5 truncate text-[11px] text-slate-500">
+                {% if lead.company %}{{ lead.company }} · {% endif %}
+                {{ lead.service_interest or 'General' }}
+                {% if lead.assigned_to %} · {{ lead.assigned_to.get_full_name() or lead.assigned_to.username }}{% endif %}
             </p>
-            {% if lead.source_page %}
-            <p class="mt-0.5 text-[10px] text-slate-400">via {{ lead.source_page }}</p>
-            {% endif %}
         </div>
-        <time class="shrink-0 rounded-lg bg-slate-50 px-2 py-1 text-[10px] font-medium text-slate-500"
-              datetime="{{ lead.created_at.isoformat() }}">
-            {{ lead.created_at.strftime('%H:%M') }}
+        <time class="shrink-0 text-[10px] font-medium text-slate-400" title="{{ lead.created_at }}">
+            {{ timesince(lead.created_at) }}
         </time>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="py-8 text-center text-sm text-slate-500">No inbound leads yet. Public form submissions appear here instantly.</p>
+<p class="py-6 text-center text-xs text-slate-500">No inbound leads yet.</p>
 {% endif %}

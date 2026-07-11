@@ -1,15 +1,15 @@
 {% if recent_applications %}
-<ul class="space-y-2">
+<ul class="divide-y divide-slate-100">
     {% for app in recent_applications %}
-    <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3 text-sm">
-        <div>
-            <p class="font-medium text-slate-700">{{ app.name }}</p>
-            <p class="text-xs text-slate-500">{{ app.course_interest or 'General application' }}</p>
+    <li class="flex items-center justify-between gap-2 border-l-4 border-l-brand-500 py-2.5 pl-2.5">
+        <div class="min-w-0">
+            <p class="truncate text-sm font-semibold text-ink-900">{{ app.name }}</p>
+            <p class="truncate text-[11px] text-slate-500">{{ app.course_interest or 'General application' }}</p>
         </div>
-        <time class="text-[10px] text-slate-400">{{ app.created_at.strftime('%d %b') }}</time>
+        <time class="shrink-0 text-[10px] font-medium text-slate-400">{{ timesince(app.created_at) }}</time>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="text-sm text-slate-500">No new academy applications.</p>
+<p class="py-5 text-center text-xs text-slate-500">No new academy applications.</p>
 {% endif %}
