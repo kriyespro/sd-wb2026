@@ -3,22 +3,20 @@
 {% block dashboard_content %}
 <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
     <p class="text-sm text-slate-600">Manage inbound leads from the public site. Update status, assign sales, add handoff notes, and convert won leads to clients.</p>
-    <div class="flex flex-wrap gap-2 text-xs">
-        {% for value, label in status_choices %}
-        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">{{ label }}: {{ status_counts[value] }}</span>
-        {% endfor %}
+    <div class="flex items-center gap-2">
+        <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+        </span>
+        <span class="text-xs font-medium text-emerald-700">Live</span>
     </div>
 </div>
 
-{% if leads %}
-<div class="space-y-4">
-    {% for lead in leads %}
-    {% include "partials/_lead_row.jinja" %}
-    {% endfor %}
+<div id="ops-leads-list"
+     hx-get="{{ url('operations:live_leads') }}"
+     hx-trigger="load, every 15s"
+     hx-swap="innerHTML"
+     hx-sync="this:drop">
+    {% include "partials/ops/_leads_list.jinja" %}
 </div>
-{% else %}
-<div class="dash-panel p-12 text-center">
-    <p class="text-slate-500">No leads yet. Leads from contact forms and strategy calls appear here.</p>
-</div>
-{% endif %}
 {% endblock %}

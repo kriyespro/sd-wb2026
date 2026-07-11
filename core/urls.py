@@ -17,3 +17,5 @@ urlpatterns = [
     path('', include('website.urls')),
     path('academy/', include('academy.urls')),
 ]
+
+handler404 = 'core.views.page_not_found'

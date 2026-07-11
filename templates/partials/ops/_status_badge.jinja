@@ -1,0 +1,11 @@
+{% set badge_map = {
+    'new': 'bg-emerald-100 text-emerald-800',
+    'contacted': 'bg-sky-100 text-sky-800',
+    'qualified': 'bg-violet-100 text-violet-800',
+    'proposal': 'bg-amber-100 text-amber-800',
+    'won': 'bg-brand-100 text-brand-800',
+    'lost': 'bg-slate-100 text-slate-600',
+} %}
+<span class="inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide {{ badge_map.get(lead.status, 'bg-slate-100 text-slate-600') }}">
+    {{ lead.get_status_display() }}
+</span>

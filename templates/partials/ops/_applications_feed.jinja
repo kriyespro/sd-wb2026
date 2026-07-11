@@ -1,0 +1,15 @@
+{% if recent_applications %}
+<ul class="space-y-2">
+    {% for app in recent_applications %}
+    <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3 text-sm">
+        <div>
+            <p class="font-medium text-slate-700">{{ app.name }}</p>
+            <p class="text-xs text-slate-500">{{ app.course_interest or 'General application' }}</p>
+        </div>
+        <time class="text-[10px] text-slate-400">{{ app.created_at.strftime('%d %b') }}</time>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-sm text-slate-500">No new academy applications.</p>
+{% endif %}

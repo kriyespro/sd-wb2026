@@ -1,0 +1,20 @@
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex flex-wrap gap-2 text-xs">
+        {% for value, label in status_choices %}
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">{{ label }}: {{ status_counts[value] }}</span>
+        {% endfor %}
+    </div>
+    <span class="text-[10px] text-slate-400">Auto-refreshes every 15s</span>
+</div>
+
+{% if leads %}
+<div class="space-y-4">
+    {% for lead in leads %}
+    {% include "partials/_lead_row.jinja" %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center">
+    <p class="text-slate-500">No leads yet. Leads from contact forms and strategy calls appear here.</p>
+</div>
+{% endif %}

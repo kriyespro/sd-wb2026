@@ -19,8 +19,10 @@ from .lead_services import (
 from .services import (
     OPS_NAV,
     approve_deliverable,
+    get_mission_control_context,
     get_ops_stats,
     get_pending_deliverables,
+    get_recent_leads,
     get_teams,
     reject_deliverable,
     validate_project_staffing,
@@ -35,6 +37,7 @@ class OpsBaseMixin(DashboardContextMixin, OpsPortalMixin):
         ctx['portal_name'] = self.portal_name
         ctx['sidebar_links'] = OPS_NAV
         ctx['dashboard_url'] = get_dashboard_url_for_user(self.request.user)
+        ctx['dashboard_label'] = 'Mission Control'
         return ctx
 
 
@@ -43,10 +46,27 @@ class OpsDashboardView(OpsBaseMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['page_title'] = 'Operations'
-        ctx['stats'] = get_ops_stats()
-        ctx['pending_deliverables'] = get_pending_deliverables()[:5]
+        ctx['page_title'] = 'Mission Control'
+        ctx.update(get_mission_control_context())
         return ctx
+
+
+class OpsMissionLiveView(OpsPortalMixin, View):
+    """HTMX poll endpoint — returns OOB fragments for mission control panels."""
+
+    def get(self, request):
+        return render(
+            request,
+            'partials/ops/_mission_live.jinja',
+            get_mission_control_context(),
+        )
+
+
+class OpsLeadsLiveView(OpsPortalMixin, View):
+    """HTMX poll endpoint — refreshes the full leads list on /ops/leads/."""
+
+    def get(self, request):
+        return render(request, 'partials/ops/_leads_list.jinja', _leads_list_context())
 
 
 class QualityCheckView(OpsBaseMixin, TemplateView):
@@ -191,21 +211,25 @@ def _lead_row_context(lead):
     }
 
 
+def _leads_list_context():
+    return {
+        'leads': get_recent_leads(100),
+        'status_choices': Lead.STATUS_CHOICES,
+        'status_counts': {
+            status: Lead.objects.filter(status=status).count()
+            for status, _ in Lead.STATUS_CHOICES
+        },
+        'sales_executives': get_sales_executives(),
+    }
+
+
 class LeadsView(OpsBaseMixin, TemplateView):
     template_name = 'pages/ops/leads.jinja'
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Leads'
-        ctx['leads'] = Lead.objects.select_related(
-            'assigned_to', 'converted_client',
-        ).all()[:100]
-        ctx['sales_executives'] = get_sales_executives()
-        ctx['status_choices'] = Lead.STATUS_CHOICES
-        ctx['status_counts'] = {
-            status: Lead.objects.filter(status=status).count()
-            for status, _ in Lead.STATUS_CHOICES
-        }
+        ctx.update(_leads_list_context())
         return ctx
 
 

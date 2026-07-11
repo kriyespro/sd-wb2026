@@ -1,41 +1,101 @@
 {% extends "layouts/dashboard.jinja" %}
 
 {% block dashboard_content %}
-<div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    {% set label = 'Pending QA' %}{% set value = stats.pending_deliverables %}{% set value_color = 'text-orange-600' %}{% set href = url('operations:quality_check') %}{% include "partials/dashboard/_stat_card.jinja" %}
-    {% set label = 'Active Projects' %}{% set value = stats.active_projects %}{% set value_color = 'text-ink-900' %}{% set href = '' %}{% include "partials/dashboard/_stat_card.jinja" %}
-    {% set label = 'New Applications' %}{% set value = stats.new_applications %}{% set value_color = 'text-brand-600' %}{% set href = url('operations:pipeline') %}{% include "partials/dashboard/_stat_card.jinja" %}
-    {% set label = 'New Leads' %}{% set value = stats.new_leads %}{% set value_color = 'text-emerald-600' %}{% set href = url('operations:leads') %}{% include "partials/dashboard/_stat_card.jinja" %}
+{# Live poll trigger — swaps OOB fragments only #}
+<div id="mission-control-poll"
+     hx-get="{{ url('operations:live_mission') }}"
+     hx-trigger="load, every 15s"
+     hx-swap="none"
+     class="hidden"
+     aria-hidden="true"></div>
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div>
+        <div class="flex items-center gap-2">
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            </span>
+            <p class="text-sm font-medium text-emerald-700">Live</p>
+            <span id="ops-live-timestamp" class="text-[10px] text-slate-400">
+                Updated {{ updated_at.strftime('%H:%M:%S') }}
+            </span>
+        </div>
+        <p class="mt-1 text-sm text-slate-600">Real-time view of inbound leads, QA queue, and pipeline health.</p>
+    </div>
+    <a href="{{ url('operations:leads') }}" class="rounded-full bg-ink-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-ink-800">
+        Manage Leads →
+    </a>
 </div>
 
-<div class="grid gap-6 lg:grid-cols-3">
+<div id="ops-stats-bar" class="mb-8">
+    {% include "partials/ops/_stats_bar.jinja" %}
+</div>
+
+<div class="mb-6 grid gap-6 lg:grid-cols-3">
     <div class="dash-panel lg:col-span-2">
-        {% set title = 'Deliverables awaiting QA' %}{% set action_url = url('operations:quality_check') %}{% set action_label = 'Review all' %}{% include "partials/dashboard/_panel_header.jinja" %}
-        <div class="p-5 sm:p-6">
-            {% if pending_deliverables %}
-            <ul class="space-y-2">
-                {% for deliverable in pending_deliverables %}
-                <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3 text-sm">
-                    <span class="font-medium text-slate-700">{{ deliverable.title }}</span>
-                    <span class="text-xs text-slate-500">{{ deliverable.project.name }}</span>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-sm text-slate-500">Nothing pending. All deliverables reviewed.</p>
-            {% endif %}
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
+            <div>
+                <h2 class="font-display text-base font-semibold text-ink-900">Inbound Leads</h2>
+                <p class="text-xs text-slate-500">Latest form submissions from the public site</p>
+            </div>
+            <a href="{{ url('operations:leads') }}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">View all</a>
+        </div>
+        <div id="ops-leads-feed" class="p-5 sm:p-6">
+            {% include "partials/ops/_leads_feed.jinja" %}
         </div>
     </div>
 
     <div class="dash-panel">
-        {% set title = 'Delivery workflow' %}{% include "partials/dashboard/_panel_header.jinja" %}
-        <div class="p-5 sm:p-6">
-            <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                {% for step in ['Lead', 'Sales', 'Consultant', 'PM', 'Senior Expert', 'Student Team', 'QA', 'Delivery'] %}
-                <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 font-medium text-slate-600">{{ step }}</span>
-                {% if not loop.last %}<span class="text-slate-300">→</span>{% endif %}
-                {% endfor %}
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
+            <div>
+                <h2 class="font-display text-base font-semibold text-ink-900">QA Queue</h2>
+                <p class="text-xs text-slate-500">Deliverables awaiting review</p>
             </div>
+            <a href="{{ url('operations:quality_check') }}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Review</a>
+        </div>
+        <div id="ops-qa-queue" class="p-5 sm:p-6">
+            {% include "partials/ops/_qa_queue.jinja" %}
+        </div>
+    </div>
+</div>
+
+<div class="mb-6 grid gap-6 lg:grid-cols-3">
+    <div class="dash-panel lg:col-span-2">
+        <div class="border-b border-slate-100 px-5 py-4 sm:px-6">
+            <h2 class="font-display text-base font-semibold text-ink-900">Lead Pipeline</h2>
+            <p class="text-xs text-slate-500">Counts by stage — updated live</p>
+        </div>
+        <div id="ops-pipeline-bar" class="p-5 sm:p-6">
+            {% include "partials/ops/_pipeline_bar.jinja" %}
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
+            <div>
+                <h2 class="font-display text-base font-semibold text-ink-900">Academy Intake</h2>
+                <p class="text-xs text-slate-500">New applications</p>
+            </div>
+            <a href="{{ url('operations:pipeline') }}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Pipeline</a>
+        </div>
+        <div id="ops-applications-feed" class="p-5 sm:p-6">
+            {% include "partials/ops/_applications_feed.jinja" %}
+        </div>
+    </div>
+</div>
+
+<div class="dash-panel">
+    <div class="border-b border-slate-100 px-5 py-4 sm:px-6">
+        <h2 class="font-display text-base font-semibold text-ink-900">Delivery Workflow</h2>
+        <p class="text-xs text-slate-500">End-to-end ops flow</p>
+    </div>
+    <div class="p-5 sm:p-6">
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            {% for step in ['Lead', 'Sales', 'Consultant', 'PM', 'Senior Expert', 'Student Team', 'QA', 'Delivery'] %}
+            <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 font-medium text-slate-600">{{ step }}</span>
+            {% if not loop.last %}<span class="text-slate-300">→</span>{% endif %}
+            {% endfor %}
         </div>
     </div>
 </div>

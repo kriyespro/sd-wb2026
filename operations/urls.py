@@ -6,6 +6,8 @@ app_name = 'operations'
 
 urlpatterns = [
     path('', views.OpsDashboardView.as_view(), name='dashboard'),
+    path('live/mission/', views.OpsMissionLiveView.as_view(), name='live_mission'),
+    path('live/leads/', views.OpsLeadsLiveView.as_view(), name='live_leads'),
     path('quality-check/', views.QualityCheckView.as_view(), name='quality_check'),
     path('quality-check/<int:pk>/approve/', views.DeliverableApproveView.as_view(), name='deliverable_approve'),
     path('quality-check/<int:pk>/reject/', views.DeliverableRejectView.as_view(), name='deliverable_reject'),

@@ -43,3 +43,15 @@ class LeadPipelineTests(TestCase):
         self.lead.refresh_from_db()
         self.assertTrue(self.lead.is_converted)
         self.assertEqual(self.lead.status, Lead.STATUS_WON)
+
+    def test_mission_control_live_partial(self):
+        response = self.client.get(reverse('operations:live_mission'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'ops-stats-bar', response.content)
+        self.assertIn(b'Pipeline Lead', response.content)
+
+    def test_leads_live_partial(self):
+        response = self.client.get(reverse('operations:live_leads'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'lead-', response.content)
+        self.assertIn(b'Pipeline Lead', response.content)

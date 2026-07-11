@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from academy.models import AdmissionApplication, MentorAllocation
 from projects.models import Deliverable, Project
 from website.models import Lead
@@ -45,6 +47,36 @@ def get_ops_stats():
             status=AdmissionApplication.STATUS_NEW,
         ).count(),
         'new_leads': Lead.objects.filter(status=Lead.STATUS_NEW).count(),
+    }
+
+
+def get_recent_leads(limit=10):
+    return Lead.objects.select_related(
+        'assigned_to', 'converted_client',
+    ).order_by('-created_at')[:limit]
+
+
+def get_lead_pipeline_counts():
+    return {
+        status: Lead.objects.filter(status=status).count()
+        for status, _ in Lead.STATUS_CHOICES
+    }
+
+
+def get_recent_applications(limit=5):
+    return AdmissionApplication.objects.filter(
+        status=AdmissionApplication.STATUS_NEW,
+    ).order_by('-created_at')[:limit]
+
+
+def get_mission_control_context():
+    return {
+        'stats': get_ops_stats(),
+        'recent_leads': get_recent_leads(10),
+        'pending_deliverables': get_pending_deliverables()[:5],
+        'lead_pipeline': get_lead_pipeline_counts(),
+        'recent_applications': get_recent_applications(5),
+        'updated_at': timezone.localtime(),
     }
 
 

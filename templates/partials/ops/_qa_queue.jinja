@@ -1,0 +1,12 @@
+{% if pending_deliverables %}
+<ul class="space-y-2">
+    {% for deliverable in pending_deliverables %}
+    <li class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3 text-sm transition hover:border-orange-200 hover:bg-orange-50/50">
+        <span class="font-medium text-slate-700">{{ deliverable.title }}</span>
+        <span class="text-xs text-slate-500">{{ deliverable.project.name }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-sm text-slate-500">All clear — nothing awaiting QA review.</p>
+{% endif %}
