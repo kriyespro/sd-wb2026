@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from .data import (
     ACADEMY_PROCESS,
     AUDIENCE_TAGS,
+    CAREERS_PERKS,
     CASE_STUDIES,
     CONTACT_INFO,
     F2C_PIPELINE,
@@ -12,6 +13,7 @@ from .data import (
     HERO_POINTS,
     INDUSTRIES,
     MODEL_STEPS,
+    OPEN_ROLES,
     PRICING_FAQS,
     PRICING_TIERS,
     RECENT_PROJECTS,
@@ -30,8 +32,19 @@ from .data import (
     TESTIMONIALS,
     WHY_CHOOSE_US,
 )
-from .forms import LeadForm
-from .services import create_lead
+from .forms import JobApplicationForm, LeadForm
+from .services import create_job_application, create_lead
+
+
+def _role_titles():
+    return [r['title'] for r in OPEN_ROLES]
+
+
+def _role_title_from_slug(slug):
+    for role in OPEN_ROLES:
+        if role['slug'] == slug:
+            return role['title']
+    return ''
 
 
 def _page(request, template, title, description='', **extra):
@@ -207,15 +220,54 @@ def startup(request):
 
 
 def careers(request):
+    role_slug = request.GET.get('role', '')
+    role_title = _role_title_from_slug(role_slug)
+    initial = {'role': role_title} if role_title else {}
+    if role_title and 'Intern' in role_title:
+        initial['application_type'] = 'internship'
+    form = JobApplicationForm(initial=initial, role_choices=_role_titles())
     return _page(
         request,
         'pages/careers.jinja',
         'Careers',
-        'Join our internship program. Learn while working on real client projects with senior experts.',
+        'Open roles at Winning Blueprints — full-time and internship. Apply directly for jobs on real D2C and startup work.',
+        form=form,
+        open_roles=OPEN_ROLES,
+        careers_perks=CAREERS_PERKS,
         academy_process=ACADEMY_PROCESS,
         stats=STATS,
         team_roles=TEAM_ROLES,
     )
+
+
+@require_http_methods(['GET', 'POST'])
+def job_apply_submit(request):
+    form = JobApplicationForm(request.POST or None, role_choices=_role_titles())
+    if request.method == 'POST' and form.is_valid():
+        create_job_application(form)
+        return render(request, 'partials/_job_apply_success.jinja')
+
+    # Non-HTMX full-page POST fallback
+    if request.method == 'POST' and not request.headers.get('HX-Request'):
+        return _page(
+            request,
+            'pages/careers.jinja',
+            'Careers',
+            'Open roles at Winning Blueprints — full-time and internship.',
+            form=form,
+            open_roles=OPEN_ROLES,
+            careers_perks=CAREERS_PERKS,
+            academy_process=ACADEMY_PROCESS,
+            stats=STATS,
+            team_roles=TEAM_ROLES,
+            show_errors=True,
+        )
+
+    return render(request, 'partials/_job_apply_form.jinja', {
+        'form': form,
+        'show_errors': request.method == 'POST',
+        'open_roles': OPEN_ROLES,
+    })
 
 
 def contact(request):

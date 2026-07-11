@@ -865,6 +865,70 @@ ACADEMY_PROCESS = [
     'Client Project', 'Portfolio', 'Placement',
 ]
 
+OPEN_ROLES = [
+    {
+        'slug': 'meta-ads-specialist',
+        'title': 'Meta Ads Specialist',
+        'type': 'Full-time',
+        'location': 'Surat / Hybrid',
+        'dept': 'Marketing',
+        'summary': 'Run Facebook & Instagram campaigns for manufacturer D2C brands — creative testing, audiences, and ROAS.',
+        'tags': ['Meta Ads', 'Creative', 'ROAS'],
+    },
+    {
+        'slug': 'google-ads-specialist',
+        'title': 'Google Ads / Shopping Specialist',
+        'type': 'Full-time',
+        'location': 'Surat / Hybrid',
+        'dept': 'Marketing',
+        'summary': 'Own search and shopping campaigns for high-SKU fashion catalogs with prepaid conversion goals.',
+        'tags': ['PPC', 'Shopping', 'Analytics'],
+    },
+    {
+        'slug': 'fullstack-ecommerce',
+        'title': 'Full-Stack / eCommerce Developer',
+        'type': 'Full-time',
+        'location': 'Surat / Remote',
+        'dept': 'Tech',
+        'summary': 'Build and ship storefronts, dashboards, and automation that power client D2C operations.',
+        'tags': ['Django', 'Frontend', 'eCommerce'],
+    },
+    {
+        'slug': 'ai-automation-engineer',
+        'title': 'AI Automation Engineer',
+        'type': 'Full-time',
+        'location': 'Surat / Hybrid',
+        'dept': 'Tech',
+        'summary': 'Design AI agents and no-code/low-code workflows for marketing, sales, support, and ops.',
+        'tags': ['AI', 'Automation', 'n8n'],
+    },
+    {
+        'slug': 'ops-crm-associate',
+        'title': 'Operations / CRM Associate',
+        'type': 'Full-time',
+        'location': 'Surat',
+        'dept': 'Operations',
+        'summary': 'SOPs, order workflows, WhatsApp support systems, and client backoffice training.',
+        'tags': ['CRM', 'SOPs', 'CX'],
+    },
+    {
+        'slug': 'growth-intern',
+        'title': 'Growth Intern (Marketing / Ops / Dev)',
+        'type': 'Internship',
+        'location': 'Surat / Hybrid',
+        'dept': 'Internship',
+        'summary': 'Work on real client projects under seniors — portfolio, mentorship, and path to full-time.',
+        'tags': ['Internship', 'Mentorship', 'Real projects'],
+    },
+]
+
+CAREERS_PERKS = [
+    {'title': 'Real client work', 'desc': 'No fake case studies — you ship on live manufacturer and startup accounts.'},
+    {'title': 'Senior mentorship', 'desc': 'Learn under strategy, ads, tech, and ops leads — not sink-or-swim.'},
+    {'title': 'Academy + delivery', 'desc': 'Train hard, then execute. Clear path from intern to specialist.'},
+    {'title': 'Surat-rooted, India-wide', 'desc': 'Textile D2C heartland with remote-friendly roles where it fits.'},
+]
+
 STATS = [
     {'value': 12, 'suffix': '+', 'label': 'Years Experience'},
     {'value': 2, 'suffix': 'x', 'label': 'Profit Margins'},

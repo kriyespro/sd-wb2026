@@ -53,3 +53,49 @@ class Lead(models.Model):
     @property
     def is_converted(self):
         return self.converted_client_id is not None
+
+
+class JobApplication(models.Model):
+    """Public careers / job applications (not Academy admissions)."""
+
+    TYPE_FULLTIME = 'fulltime'
+    TYPE_INTERNSHIP = 'internship'
+    TYPE_CONTRACT = 'contract'
+    TYPE_CHOICES = [
+        (TYPE_FULLTIME, 'Full-time'),
+        (TYPE_INTERNSHIP, 'Internship'),
+        (TYPE_CONTRACT, 'Contract'),
+    ]
+
+    STATUS_NEW = 'new'
+    STATUS_REVIEW = 'review'
+    STATUS_INTERVIEW = 'interview'
+    STATUS_HIRED = 'hired'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_NEW, 'New'),
+        (STATUS_REVIEW, 'Under Review'),
+        (STATUS_INTERVIEW, 'Interview'),
+        (STATUS_HIRED, 'Hired'),
+        (STATUS_REJECTED, 'Rejected'),
+    ]
+
+    name = models.CharField(max_length=120)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    role = models.CharField(max_length=120)
+    application_type = models.CharField(
+        max_length=20, choices=TYPE_CHOICES, default=TYPE_FULLTIME,
+    )
+    experience = models.CharField(max_length=120, blank=True)
+    portfolio_url = models.CharField(max_length=300, blank=True)
+    linkedin_url = models.CharField(max_length=300, blank=True)
+    cover_letter = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.name} — {self.role}'
