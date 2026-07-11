@@ -277,29 +277,38 @@ RECENT_PROJECTS = [
 
 SERVICE_PROCESS = F2C_PIPELINE
 
-TEAM = [
+TEAM_FOUNDERS = [
     {
         'name': 'Singh Kriti',
-        'role': 'D2C Strategy Lead',
-        'tags': ['Strategy', 'Sales'],
+        'role': 'Co-Founder & D2C Strategy Lead',
+        'tags': ['D2C Strategy', 'Sales Systems', 'Brand Building'],
         'initials': 'SK',
-        'bio': 'Maps factory-to-customer growth plans and owns client strategy from first call to scale.',
-        'image': img('photo-1573496359142-b8d87734a5a2', 400, 400),
+        'bio': (
+            '12+ years in textile D2C strategy. Singh Kriti has personally guided 200+ manufacturers '
+            'from wholesale dependency to profitable direct sales — building brands that customers love.'
+        ),
+        'image': img('photo-1573496359142-b8d87734a5a2', 600, 600),
     },
     {
         'name': 'Kr. Sunil Verma',
-        'role': 'Tech & Dev',
-        'tags': ['Dev', 'UX'],
+        'role': 'Co-Founder & Tech Lead',
+        'tags': ['Tech Architecture', 'eCommerce', 'UX Design'],
         'initials': 'SV',
-        'bio': 'Builds storefronts, dashboards, and systems that turn catalogs into prepaid order machines.',
-        'image': img('photo-1472099645785-5658abf4ff4e', 400, 400),
+        'bio': (
+            'Full-stack product engineer with a decade of eCommerce experience. Sunil architects the '
+            'digital infrastructure that powers every client’s D2C operation — from store to analytics.'
+        ),
+        'image': img('photo-1472099645785-5658abf4ff4e', 600, 600),
     },
+]
+
+TEAM_CORE = [
     {
         'name': 'ShreeVastav Mayank',
         'role': 'Marketing Expert',
-        'tags': ['Ads', 'SEO'],
+        'tags': ['Meta Ads', 'SEO'],
         'initials': 'SM',
-        'bio': 'Runs Meta, Google, and organic programs that bring real buyers — not empty traffic.',
+        'bio': 'Runs Meta and organic programs that bring real buyers — not empty traffic.',
         'image': img('photo-1507003211169-0a1dd7228f2d', 400, 400),
     },
     {
@@ -307,8 +316,86 @@ TEAM = [
         'role': 'Operations Head',
         'tags': ['Ops', 'CRM'],
         'initials': 'DA',
-        'bio': 'Sets up SOPs, CRM, and backoffice workflows so your team can run D2C day-to-day.',
+        'bio': 'SOPs, CRM, and backoffice workflows so your team can run D2C day-to-day.',
         'image': img('photo-1500648767791-00dcc994a43e', 400, 400),
+    },
+    {
+        'name': 'Neha Rawat',
+        'role': 'Creative Director',
+        'tags': ['Design', 'Brand'],
+        'initials': 'NR',
+        'bio': 'Brand systems and creatives that make factory products feel like consumer brands.',
+        'image': img('photo-1494790108377-be9c29b29330', 400, 400),
+    },
+    {
+        'name': 'Arjun Kaushik',
+        'role': 'Google Ads Lead',
+        'tags': ['PPC', 'Shopping'],
+        'initials': 'AK',
+        'bio': 'High-intent search and shopping campaigns for ready-to-buy customers.',
+        'image': img('photo-1519085362263-aa42b02f1f9c', 400, 400),
+    },
+    {
+        'name': 'Priya Sharma',
+        'role': 'Content Strategist',
+        'tags': ['Content', 'Email'],
+        'initials': 'PS',
+        'bio': 'Product stories, email sequences, and catalog copy that convert browsers into buyers.',
+        'image': img('photo-1580489944761-15a19d654956', 400, 400),
+    },
+    {
+        'name': 'Ravi Verma',
+        'role': 'Logistics Manager',
+        'tags': ['Logistics', '3PL'],
+        'initials': 'RV',
+        'bio': 'Dispatch, 3PL, and fulfillment workflows that keep prepaid orders moving on time.',
+        'image': img('photo-1560250097-0b93528c311a', 400, 400),
+    },
+    {
+        'name': 'Sneha Gupta',
+        'role': 'Customer Success',
+        'tags': ['Support', 'CX'],
+        'initials': 'SG',
+        'bio': 'Post-purchase support and CX systems that turn first orders into repeat buyers.',
+        'image': img('photo-1438761681033-6461ffad8d80', 400, 400),
+    },
+    {
+        'name': 'Mohit Jain',
+        'role': 'Analytics Lead',
+        'tags': ['Data', 'ROI'],
+        'initials': 'MJ',
+        'bio': 'Dashboards and ROI tracking so every rupee of ad spend is accountable.',
+        'image': img('photo-1506794778202-cad84cf45f1d', 400, 400),
+    },
+]
+
+# Home / about preview — founders + first two core
+TEAM = TEAM_FOUNDERS + TEAM_CORE[:2]
+
+TEAM_DEPARTMENTS = [
+    {
+        'icon': '🛒',
+        'title': 'eCommerce Team',
+        'count': '25',
+        'desc': 'Store designers, developers, and catalog managers who build high-converting D2C storefronts.',
+    },
+    {
+        'icon': '📣',
+        'title': 'Digital Marketing Team',
+        'count': '35',
+        'desc': 'Meta, Google, WhatsApp, and email specialists driving real buyers to your store every day.',
+    },
+    {
+        'icon': '⚙️',
+        'title': 'Operations Team',
+        'count': '20',
+        'desc': 'Backoffice trainers, SOP builders, and logistics coordinators keeping your D2C running smoothly.',
+    },
+    {
+        'icon': '📊',
+        'title': 'Analytics & Strategy',
+        'count': '20',
+        'desc': 'Data analysts and growth strategists constantly optimising campaigns, margins, and revenue.',
     },
 ]
 

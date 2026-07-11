@@ -19,6 +19,9 @@ from .data import (
     SERVICES,
     STATS,
     TEAM,
+    TEAM_CORE,
+    TEAM_DEPARTMENTS,
+    TEAM_FOUNDERS,
     TEAM_ROLES,
     TESTIMONIALS,
     WHY_CHOOSE_US,
@@ -176,9 +179,10 @@ def team(request):
         request,
         'pages/team.jinja',
         'Our Team',
-        'Meet the Winning Blueprints team — strategy, tech, marketing, and operations for manufacturer D2C.',
-        team=TEAM,
-        team_roles=TEAM_ROLES,
+        'Meet the Winning Blueprints team — 100+ specialists helping manufacturers sell direct.',
+        founders=TEAM_FOUNDERS,
+        core_team=TEAM_CORE,
+        departments=TEAM_DEPARTMENTS,
         stats=STATS,
     )
 

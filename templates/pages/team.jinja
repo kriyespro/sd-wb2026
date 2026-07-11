@@ -1,26 +1,61 @@
 {% extends "base.jinja" %}
 
 {% block content %}
-{% set hero_eyebrow = 'Our team' %}
-{% set hero_title = 'Making your business win' %}
-{% set hero_text = 'Strategy, tech, marketing, and operations — the people behind your factory-to-customer pipeline.' %}
-{% include "components/page_hero.jinja" %}
+{# Hero #}
+<section class="relative overflow-hidden bg-brand-900 py-20 text-white sm:py-28">
+    <div class="mesh absolute inset-0 opacity-60"></div>
+    <span class="wm text-white/5" style="font-size:18vw;bottom:-8%;right:-2%;letter-spacing:-0.04em">TEAM</span>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <span class="eyebrow !text-gold-300 before:!bg-gold-400">Our People</span>
+        <h1 class="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            The Team Behind<br>
+            <span class="font-serif text-gradient-gold">Your Growth</span>
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+            100+ professionals — strategists, marketers, developers, and operations experts —
+            dedicated to making your factory win direct.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-8">
+            {% for stat in stats[:3] %}
+            <div>
+                <p class="font-display text-3xl font-bold text-gold-300">{{ stat.value }}{{ stat.suffix }}</p>
+                <p class="mt-1 text-xs uppercase tracking-widest text-slate-400">{{ stat.label }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 
-<section class="py-20">
+{# Founders #}
+<section class="py-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {% for member in team %}
-            <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                <img src="{{ member.image }}" alt="{{ member.name }}" class="h-56 w-full object-cover">
-                <div class="p-6">
-                    <h2 class="font-display text-xl font-bold text-ink-900">{{ member.name }}</h2>
-                    <p class="mt-1 text-sm font-semibold text-brand-600">{{ member.role }}</p>
-                    <div class="mt-3 flex flex-wrap gap-1.5">
-                        {% for tag in member.tags %}
-                        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{{ tag }}</span>
-                        {% endfor %}
+        <div class="mx-auto max-w-2xl text-center">
+            <span class="eyebrow justify-center">Leadership</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Meet the Founders</h2>
+        </div>
+
+        <div class="mt-14 grid gap-8 lg:grid-cols-2">
+            {% for member in founders %}
+            <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-900/5">
+                <div class="grid sm:grid-cols-5">
+                    <div class="relative sm:col-span-2">
+                        <img src="{{ member.image }}" alt="{{ member.name }}"
+                             class="h-64 w-full object-cover sm:h-full sm:min-h-[320px]">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-900/50 to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-brand-900/10"></div>
+                        <span class="absolute bottom-4 left-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-500 font-display text-sm font-bold text-ink-900 shadow-lg">
+                            {{ member.initials }}
+                        </span>
                     </div>
-                    <p class="mt-4 text-sm leading-relaxed text-slate-600">{{ member.bio }}</p>
+                    <div class="flex flex-col justify-center p-8 sm:col-span-3 sm:p-10">
+                        <h3 class="font-display text-2xl font-bold text-ink-900">{{ member.name }}</h3>
+                        <p class="mt-1 text-sm font-semibold text-brand-600">{{ member.role }}</p>
+                        <p class="mt-5 text-sm leading-relaxed text-slate-600">{{ member.bio }}</p>
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            {% for tag in member.tags %}
+                            <span class="rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-800">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </article>
             {% endfor %}
@@ -28,35 +63,75 @@
     </div>
 </section>
 
-<section class="bg-slate-50 py-20">
+{# Core team #}
+<section class="bg-slate-50 py-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <span class="eyebrow">Delivery capacity</span>
-            <h2 class="mt-4 font-display text-3xl font-bold text-ink-900">Specialists across every discipline</h2>
-            <p class="mt-3 text-slate-600">Leadership above — execution depth across strategy, ads, product, and ops.</p>
+        <div class="mx-auto max-w-2xl text-center">
+            <span class="eyebrow justify-center">Core Team</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">The Experts Behind Every Win</h2>
+            <p class="mt-4 text-slate-600">Specialists across ads, ops, creative, logistics, and analytics.</p>
         </div>
-        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-            {% for role in team_roles %}
-            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white text-center">
-                <img src="{{ role.image }}" alt="{{ role.role }}" class="h-28 w-full object-cover">
-                <div class="p-5">
-                    <div class="font-display text-2xl font-bold text-brand-600">{{ role.count }}</div>
-                    <h3 class="mt-1 text-sm font-semibold text-ink-900">{{ role.role }}</h3>
+
+        <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {% for member in core_team %}
+            <article class="group overflow-hidden rounded-3xl border border-slate-200 bg-white text-center transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg">
+                <div class="relative overflow-hidden">
+                    <img src="{{ member.image }}" alt="{{ member.name }}"
+                         class="h-48 w-full object-cover transition duration-500 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-900/40 to-transparent opacity-0 transition group-hover:opacity-100"></div>
+                    <span class="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/95 font-display text-xs font-bold text-brand-700 shadow">
+                        {{ member.initials }}
+                    </span>
                 </div>
+                <div class="p-6">
+                    <h3 class="font-display text-lg font-semibold text-ink-900">{{ member.name }}</h3>
+                    <p class="mt-1 text-sm font-medium text-brand-600">{{ member.role }}</p>
+                    <div class="mt-3 flex flex-wrap justify-center gap-1.5">
+                        {% for tag in member.tags %}
+                        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# Departments #}
+<section class="py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+            <span class="eyebrow justify-center">Our Departments</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">100+ Specialists Across Every Function</h2>
+        </div>
+
+        <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {% for dept in departments %}
+            <div class="rounded-3xl border border-slate-200 bg-white p-8 transition hover:-translate-y-0.5 hover:border-gold-300 hover:shadow-md">
+                <span class="text-3xl">{{ dept.icon }}</span>
+                <h3 class="mt-5 font-display text-lg font-bold text-ink-900">
+                    {{ dept.title }}
+                    <span class="text-brand-600">({{ dept.count }})</span>
+                </h3>
+                <p class="mt-3 text-sm leading-relaxed text-slate-600">{{ dept.desc }}</p>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="py-20">
+{# CTA #}
+<section class="pb-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-[2rem] bg-ink-900 p-10 text-center text-white sm:p-14">
+        <div class="relative overflow-hidden rounded-[2rem] bg-ink-900 px-8 py-14 text-center text-white sm:px-14">
             <div class="mesh absolute inset-0 opacity-70"></div>
             <div class="relative">
-                <h2 class="font-display text-2xl font-bold sm:text-3xl">Want this team on your factory’s D2C?</h2>
-                <p class="mt-3 text-slate-300">Book a free consultation — we’ll map store, ads, and ops for your products.</p>
-                <a href="{{ url('website:contact') }}" class="btn-accent mt-8 inline-flex">Book Free Consultation →</a>
+                <h2 class="font-display text-2xl font-bold sm:text-4xl">Ready to Work with Our Team?</h2>
+                <p class="mx-auto mt-4 max-w-xl text-slate-300">
+                    Get a dedicated team of D2C experts working on your factory’s growth — every single day.
+                </p>
+                <a href="{{ url('website:contact') }}" class="btn-gold mt-8 inline-flex">📞 Book Free Call</a>
             </div>
         </div>
     </div>
