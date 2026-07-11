@@ -42,4 +42,10 @@ urlpatterns = [
         views.DgcApplicationRejectView.as_view(),
         name='dgc_application_reject',
     ),
+    path('dgc-leads/', views.DgcLeadsView.as_view(), name='dgc_leads'),
+    path(
+        'dgc-leads/<int:pk>/status/',
+        views.DgcLeadStatusUpdateView.as_view(),
+        name='dgc_lead_status',
+    ),
 ]

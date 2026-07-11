@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from academy.models import AdmissionApplication
 from billing.models import Invoice
+from partners.models import DgcApplication, PartnerLead, PayoutRequest
 from projects.models import Deliverable, Project
 from website.models import JobApplication, Lead
 
@@ -26,6 +27,7 @@ OPS_NAV = [
 OPS_NAV_SUPERUSER = [
     {'title': 'Job Applications', 'icon': '💼', 'url_name': 'operations:job_applications'},
     {'title': 'DGC Applications', 'icon': '🤝', 'url_name': 'operations:dgc_applications'},
+    {'title': 'DGC Leads', 'icon': '📣', 'url_name': 'operations:dgc_leads'},
 ]
 
 
@@ -64,10 +66,18 @@ def get_ops_stats():
         Lead.STATUS_QUALIFIED,
         Lead.STATUS_PROPOSAL,
     ]
+    open_dgc_statuses = [
+        PartnerLead.STATUS_NEW,
+        PartnerLead.STATUS_CONTACTED,
+    ]
 
     job_counts = {
         row['status']: row['c']
         for row in JobApplication.objects.values('status').annotate(c=Count('id'))
+    }
+    dgc_app_counts = {
+        row['status']: row['c']
+        for row in DgcApplication.objects.values('status').annotate(c=Count('id'))
     }
 
     return {
@@ -98,12 +108,31 @@ def get_ops_stats():
         'job_review': job_counts.get(JobApplication.STATUS_REVIEW, 0),
         'job_interview': job_counts.get(JobApplication.STATUS_INTERVIEW, 0),
         'total_job_applications': sum(job_counts.values()),
+        # DGC / partner
+        'new_dgc_applications': dgc_app_counts.get(DgcApplication.STATUS_NEW, 0),
+        'dgc_apps_review': dgc_app_counts.get(DgcApplication.STATUS_REVIEW, 0),
+        'new_dgc_leads': PartnerLead.objects.filter(status=PartnerLead.STATUS_NEW).count(),
+        'open_dgc_leads': PartnerLead.objects.filter(status__in=open_dgc_statuses).count(),
+        'dgc_leads_today': PartnerLead.objects.filter(created_at__gte=day_start).count(),
+        'dgc_won_month': PartnerLead.objects.filter(
+            status=PartnerLead.STATUS_WON,
+            updated_at__gte=month_start,
+        ).count(),
+        'pending_payouts': PayoutRequest.objects.filter(
+            status=PayoutRequest.STATUS_PENDING,
+        ).count(),
     }
 
 
 def get_recent_leads(limit=10):
     return Lead.objects.select_related(
         'assigned_to', 'converted_client',
+    ).order_by('-created_at')[:limit]
+
+
+def get_recent_dgc_leads(limit=8):
+    return PartnerLead.objects.select_related(
+        'partner', 'partner__user',
     ).order_by('-created_at')[:limit]
 
 
@@ -124,6 +153,12 @@ def get_recent_job_applications(limit=8):
     return JobApplication.objects.order_by('-created_at')[:limit]
 
 
+def get_recent_dgc_applications(limit=5):
+    return DgcApplication.objects.filter(
+        status__in=[DgcApplication.STATUS_NEW, DgcApplication.STATUS_REVIEW],
+    ).order_by('-created_at')[:limit]
+
+
 def get_attention_items(stats, include_jobs=False):
     """Priority alerts for the mission control header."""
     items = []
@@ -139,6 +174,18 @@ def get_attention_items(stats, include_jobs=False):
             'href_name': 'operations:leads',
             'tone': 'amber',
         })
+    if include_jobs and stats['new_dgc_leads']:
+        items.append({
+            'label': f"{stats['new_dgc_leads']} DGC lead{'s' if stats['new_dgc_leads'] != 1 else ''}",
+            'href_name': 'operations:dgc_leads',
+            'tone': 'teal',
+        })
+    if include_jobs and stats['new_dgc_applications']:
+        items.append({
+            'label': f"{stats['new_dgc_applications']} DGC app{'s' if stats['new_dgc_applications'] != 1 else ''}",
+            'href_name': 'operations:dgc_applications',
+            'tone': 'teal',
+        })
     if stats['pending_deliverables']:
         items.append({
             'label': f"{stats['pending_deliverables']} pending QA",
@@ -150,6 +197,12 @@ def get_attention_items(stats, include_jobs=False):
             'label': f"{stats['overdue_invoices']} overdue invoice{'s' if stats['overdue_invoices'] != 1 else ''}",
             'href_name': 'operations:invoices',
             'tone': 'rose',
+        })
+    if include_jobs and stats['pending_payouts']:
+        items.append({
+            'label': f"{stats['pending_payouts']} payout{'s' if stats['pending_payouts'] != 1 else ''}",
+            'href_name': 'operations:dgc_leads',
+            'tone': 'amber',
         })
     if stats['new_applications']:
         items.append({
@@ -172,19 +225,21 @@ def get_mission_control_context(include_jobs=False):
     pipeline_total = sum(pipeline.values()) or 1
     ctx = {
         'stats': stats,
-        'recent_leads': get_recent_leads(8),
-        'pending_deliverables': get_pending_deliverables()[:6],
+        'recent_leads': get_recent_leads(6),
+        'pending_deliverables': get_pending_deliverables()[:5],
         'lead_pipeline': pipeline,
         'pipeline_total': pipeline_total,
-        'recent_applications': get_recent_applications(5),
+        'recent_applications': get_recent_applications(4),
         'attention_items': get_attention_items(stats, include_jobs=include_jobs),
         'updated_at': timezone.localtime(),
         'include_jobs': include_jobs,
     }
     if include_jobs:
-        ctx['recent_job_applications'] = get_recent_job_applications(6)
+        ctx['recent_job_applications'] = get_recent_job_applications(5)
         ctx['job_application_new'] = stats['new_job_applications']
         ctx['job_application_count'] = stats['total_job_applications']
+        ctx['recent_dgc_leads'] = get_recent_dgc_leads(6)
+        ctx['recent_dgc_applications'] = get_recent_dgc_applications(4)
     return ctx
 
 

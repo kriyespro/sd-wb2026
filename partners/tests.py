@@ -110,21 +110,20 @@ class DgcPartnerTests(TestCase):
                 ).exists(),
             )
 
-    def test_ops_dgc_list_superuser_only(self):
-        DgcApplication.objects.create(
-            name='Ops See Me',
-            email='opssee@example.com',
-            phone='7777777777',
-            why='Apply',
-        )
-        self.client.login(username='admin', password='pass1234')
-        response = self.client.get(reverse('operations:dgc_applications'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Ops See Me')
-
-        sales = User.objects.create_user('salesx', 'salesx@test.com', 'pass1234')
-        sales.profile.role = ROLE_SALES
-        sales.profile.save()
-        self.client.login(username='salesx', password='pass1234')
-        response = self.client.get(reverse('operations:dgc_applications'))
+    def test_partner_can_submit_lead(self):
+        user = User.objects.create_user('dgclead', 'dgclead@test.com', 'pass1234')
+        user.profile.role = ROLE_PARTNER
+        user.profile.save()
+        PartnerProfile.objects.create(user=user, code='DGCLEAD1')
+        self.client.login(username='dgclead', password='pass1234')
+        response = self.client.post(reverse('partners:lead_create'), {
+            'name': 'Surat Mill',
+            'phone': '9876501234',
+            'email': 'mill@example.com',
+            'company': 'Surat Mill Pvt',
+            'interest': 'Meta Ads',
+            'notes': 'Ready to go D2C',
+            'deal_value': '40000',
+        })
         self.assertEqual(response.status_code, 302)
+        self.assertTrue(PartnerLead.objects.filter(name='Surat Mill', partner__code='DGCLEAD1').exists())

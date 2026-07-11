@@ -1,0 +1,15 @@
+{% if recent_dgc_applications %}
+<ul class="divide-y divide-slate-100">
+    {% for app in recent_dgc_applications %}
+    <li class="flex items-center justify-between gap-2 border-l-4 border-l-cyan-500 py-2.5 pl-2.5">
+        <div class="min-w-0">
+            <a href="{{ url('operations:dgc_applications') }}" class="truncate text-sm font-semibold text-ink-900 hover:text-cyan-700">{{ app.name }}</a>
+            <p class="truncate text-[11px] text-slate-500">{{ app.city or app.email }} · {{ app.get_status_display() }}</p>
+        </div>
+        <time class="shrink-0 text-[10px] font-medium text-slate-400">{{ timesince(app.created_at) }}</time>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="py-5 text-center text-xs text-slate-500">No pending DGC applications.</p>
+{% endif %}

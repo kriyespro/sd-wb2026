@@ -1,34 +1,79 @@
-<div class="grid grid-cols-2 gap-2 sm:grid-cols-3 {% if include_jobs %}xl:grid-cols-6{% else %}xl:grid-cols-5{% endif %}">
-    <a href="{{ url('operations:leads') }}" class="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-2.5 shadow-sm transition hover:border-emerald-300 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-emerald-700">New leads</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-emerald-800">{{ stats.new_leads }}</p>
-        <p class="text-[10px] text-emerald-800/70">{{ stats.unassigned_leads }} unassigned · {{ stats.leads_today }} today</p>
+{# Row 1 — always-on ops KPIs #}
+<div class="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+    <a href="{{ url('operations:leads') }}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 shadow-sm transition hover:border-emerald-400 hover:shadow">
+        <div class="flex items-center justify-between">
+            <p class="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Inbound leads</p>
+            {% if stats.new_leads %}<span class="h-2 w-2 rounded-full bg-emerald-500"></span>{% endif %}
+        </div>
+        <p class="mt-0.5 font-display text-2xl font-bold text-emerald-900">{{ stats.new_leads }}</p>
+        <p class="text-[10px] text-emerald-800/80">{{ stats.unassigned_leads }} unassigned · {{ stats.leads_today }} today · {{ stats.open_pipeline }} open</p>
     </a>
-    <a href="{{ url('operations:quality_check') }}" class="rounded-xl border border-orange-200 bg-orange-50/70 px-3 py-2.5 shadow-sm transition hover:border-orange-300 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-orange-700">Pending QA</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-orange-800">{{ stats.pending_deliverables }}</p>
-        <p class="text-[10px] text-orange-800/70">deliverables waiting</p>
+    <a href="{{ url('operations:quality_check') }}" class="rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5 shadow-sm transition hover:border-orange-400 hover:shadow">
+        <div class="flex items-center justify-between">
+            <p class="text-[10px] font-bold uppercase tracking-wide text-orange-700">QA queue</p>
+            {% if stats.pending_deliverables %}<span class="h-2 w-2 rounded-full bg-orange-500"></span>{% endif %}
+        </div>
+        <p class="mt-0.5 font-display text-2xl font-bold text-orange-900">{{ stats.pending_deliverables }}</p>
+        <p class="text-[10px] text-orange-800/80">awaiting review</p>
     </a>
-    <a href="{{ url('operations:projects') }}" class="rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-2.5 shadow-sm transition hover:border-sky-300 hover:shadow">
+    <a href="{{ url('operations:projects') }}" class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 shadow-sm transition hover:border-sky-400 hover:shadow">
         <p class="text-[10px] font-bold uppercase tracking-wide text-sky-700">Projects</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-sky-800">{{ stats.active_projects }}</p>
-        <p class="text-[10px] text-sky-800/70">{{ stats.planning_projects }} planning · {{ stats.hot_leads }} hot</p>
+        <p class="mt-0.5 font-display text-2xl font-bold text-sky-900">{{ stats.active_projects }}</p>
+        <p class="text-[10px] text-sky-800/80">{{ stats.planning_projects }} planning · {{ stats.hot_leads }} hot leads</p>
     </a>
-    <a href="{{ url('operations:pipeline') }}" class="rounded-xl border border-brand-200 bg-brand-50/70 px-3 py-2.5 shadow-sm transition hover:border-brand-300 hover:shadow">
+    <a href="{{ url('operations:pipeline') }}" class="rounded-xl border border-brand-200 bg-brand-50 px-3 py-2.5 shadow-sm transition hover:border-brand-400 hover:shadow">
         <p class="text-[10px] font-bold uppercase tracking-wide text-brand-700">Academy</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-brand-800">{{ stats.new_applications }}</p>
-        <p class="text-[10px] text-brand-800/70">new admissions</p>
+        <p class="mt-0.5 font-display text-2xl font-bold text-brand-900">{{ stats.new_applications }}</p>
+        <p class="text-[10px] text-brand-800/80">new admissions</p>
     </a>
-    <a href="{{ url('operations:invoices') }}" class="rounded-xl border border-rose-200 bg-rose-50/70 px-3 py-2.5 shadow-sm transition hover:border-rose-300 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-rose-700">Billing</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-rose-800">{{ stats.overdue_invoices }}</p>
-        <p class="text-[10px] text-rose-800/70">overdue · {{ stats.sent_invoices }} sent</p>
+    <a href="{{ url('operations:invoices') }}" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 shadow-sm transition hover:border-rose-400 hover:shadow">
+        <div class="flex items-center justify-between">
+            <p class="text-[10px] font-bold uppercase tracking-wide text-rose-700">Billing</p>
+            {% if stats.overdue_invoices %}<span class="h-2 w-2 rounded-full bg-rose-500"></span>{% endif %}
+        </div>
+        <p class="mt-0.5 font-display text-2xl font-bold text-rose-900">{{ stats.overdue_invoices }}</p>
+        <p class="text-[10px] text-rose-800/80">overdue · {{ stats.sent_invoices }} sent · {{ stats.won_month }} won/mo</p>
     </a>
     {% if include_jobs %}
-    <a href="{{ url('operations:job_applications') }}" class="rounded-xl border border-violet-200 bg-violet-50/70 px-3 py-2.5 shadow-sm transition hover:border-violet-300 hover:shadow">
+    <a href="{{ url('operations:job_applications') }}" class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 shadow-sm transition hover:border-violet-400 hover:shadow">
         <p class="text-[10px] font-bold uppercase tracking-wide text-violet-700">Hiring</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-violet-800">{{ stats.new_job_applications }}</p>
-        <p class="text-[10px] text-violet-800/70">{{ stats.job_interview }} interview · {{ stats.job_review }} review</p>
+        <p class="mt-0.5 font-display text-2xl font-bold text-violet-900">{{ stats.new_job_applications }}</p>
+        <p class="text-[10px] text-violet-800/80">{{ stats.job_interview }} interview · {{ stats.job_review }} review</p>
+    </a>
+    {% else %}
+    <a href="{{ url('operations:allocation') }}" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 shadow-sm transition hover:border-slate-400 hover:shadow">
+        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-600">Staffing</p>
+        <p class="mt-0.5 font-display text-lg font-bold text-ink-900">Allocate</p>
+        <p class="text-[10px] text-slate-500">assign team to projects</p>
     </a>
     {% endif %}
 </div>
+
+{% if include_jobs %}
+{# Row 2 — partner / DGC KPIs (superuser) #}
+<div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <a href="{{ url('operations:dgc_leads') }}" class="rounded-xl border border-teal-200 bg-teal-50 px-3 py-2.5 shadow-sm transition hover:border-teal-400 hover:shadow">
+        <div class="flex items-center justify-between">
+            <p class="text-[10px] font-bold uppercase tracking-wide text-teal-700">DGC leads</p>
+            {% if stats.new_dgc_leads %}<span class="h-2 w-2 rounded-full bg-teal-500"></span>{% endif %}
+        </div>
+        <p class="mt-0.5 font-display text-2xl font-bold text-teal-900">{{ stats.new_dgc_leads }}</p>
+        <p class="text-[10px] text-teal-800/80">{{ stats.open_dgc_leads }} open · {{ stats.dgc_leads_today }} today · {{ stats.dgc_won_month }} won/mo</p>
+    </a>
+    <a href="{{ url('operations:dgc_applications') }}" class="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2.5 shadow-sm transition hover:border-cyan-400 hover:shadow">
+        <p class="text-[10px] font-bold uppercase tracking-wide text-cyan-700">DGC applications</p>
+        <p class="mt-0.5 font-display text-2xl font-bold text-cyan-900">{{ stats.new_dgc_applications }}</p>
+        <p class="text-[10px] text-cyan-800/80">{{ stats.dgc_apps_review }} in review — approve partners</p>
+    </a>
+    <a href="{{ url('admin:partners_payoutrequest_changelist') }}" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 shadow-sm transition hover:border-amber-400 hover:shadow">
+        <p class="text-[10px] font-bold uppercase tracking-wide text-amber-700">Payouts</p>
+        <p class="mt-0.5 font-display text-2xl font-bold text-amber-900">{{ stats.pending_payouts }}</p>
+        <p class="text-[10px] text-amber-800/80">pending partner payout requests</p>
+    </a>
+    <a href="{{ url('operations:leads') }}" class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition hover:border-brand-300 hover:shadow">
+        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-600">This week</p>
+        <p class="mt-0.5 font-display text-2xl font-bold text-ink-900">{{ stats.leads_week }}</p>
+        <p class="text-[10px] text-slate-500">inbound leads · last 7 days</p>
+    </a>
+</div>
+{% endif %}

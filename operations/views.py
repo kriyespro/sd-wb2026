@@ -7,8 +7,8 @@ from projects.models import Deliverable, Project
 from users.mixins import DashboardContextMixin, OpsPortalMixin
 from users.roles import ROLE_SUPER_ADMIN
 from users.services import get_dashboard_url_for_user
-from partners.models import DgcApplication
-from partners.services import approve_dgc_application
+from partners.models import DgcApplication, PartnerLead
+from partners.services import approve_dgc_application, update_lead_status
 from website.models import JobApplication, Lead
 
 from .forms import (
@@ -402,3 +402,39 @@ class DgcApplicationRejectView(SuperAdminRequiredMixin, View):
         else:
             messages.error(request, 'Already approved — cannot reject.')
         return redirect('operations:dgc_applications')
+
+
+class DgcLeadsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/dgc_leads.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        leads = PartnerLead.objects.select_related(
+            'partner', 'partner__user',
+        ).all()
+        ctx['page_title'] = 'DGC Leads'
+        ctx['leads'] = leads
+        ctx['status_choices'] = PartnerLead.STATUS_CHOICES
+        ctx['status_counts'] = {
+            status: leads.filter(status=status).count()
+            for status, _ in PartnerLead.STATUS_CHOICES
+        }
+        ctx['total_count'] = leads.count()
+        return ctx
+
+
+class DgcLeadStatusUpdateView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        lead = get_object_or_404(
+            PartnerLead.objects.select_related('partner', 'partner__user'),
+            pk=pk,
+        )
+        status = request.POST.get('status')
+        valid = {value for value, _ in PartnerLead.STATUS_CHOICES}
+        if status in valid:
+            update_lead_status(lead, status)
+            lead.refresh_from_db()
+        return render(request, 'partials/ops/_dgc_lead_row.jinja', {
+            'lead': lead,
+            'status_choices': PartnerLead.STATUS_CHOICES,
+        })

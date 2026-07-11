@@ -1,0 +1,31 @@
+{% if recent_dgc_leads %}
+<ul class="divide-y divide-slate-100">
+    {% for lead in recent_dgc_leads %}
+    <li class="flex items-start gap-2.5 border-l-4 border-l-teal-500 py-2.5 pl-2.5">
+        <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <a href="{{ url('operations:dgc_leads') }}#dgc-lead-{{ lead.id }}"
+                   class="truncate text-sm font-semibold text-ink-900 hover:text-teal-700">
+                    {{ lead.name }}
+                </a>
+                <span class="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase
+                    {% if lead.status == 'won' %}bg-emerald-100 text-emerald-800
+                    {% elif lead.status == 'lost' %}bg-slate-100 text-slate-600
+                    {% elif lead.status == 'contacted' %}bg-sky-100 text-sky-800
+                    {% else %}bg-amber-100 text-amber-800{% endif %}">
+                    {{ lead.get_status_display() }}
+                </span>
+            </div>
+            <p class="mt-0.5 truncate text-[11px] text-slate-500">
+                {{ lead.company or lead.interest or 'General' }}
+                · {{ lead.partner.code }}
+                {% if lead.deal_value %} · ₹{{ lead.deal_value }}{% endif %}
+            </p>
+        </div>
+        <time class="shrink-0 text-[10px] font-medium text-slate-400">{{ timesince(lead.created_at) }}</time>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="py-5 text-center text-xs text-slate-500">No DGC leads yet.</p>
+{% endif %}

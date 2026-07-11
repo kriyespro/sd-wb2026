@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from users.roles import ROLE_SALES, ROLE_SUPER_ADMIN
+from partners.models import PartnerLead, PartnerProfile
 from website.models import JobApplication, Lead
 
 
@@ -75,4 +76,29 @@ class LeadPipelineTests(TestCase):
     def test_job_applications_sales_forbidden(self):
         self.client.login(username='sales1', password='pass1234')
         response = self.client.get(reverse('operations:job_applications'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_dgc_leads_superuser_table(self):
+        from users.roles import ROLE_PARTNER
+
+        partner_user = User.objects.create_user('dgcops', 'dgcops@test.com', 'pass1234')
+        partner_user.profile.role = ROLE_PARTNER
+        partner_user.profile.save()
+        partner = PartnerProfile.objects.create(user=partner_user, code='DGCOPS1')
+        PartnerLead.objects.create(
+            partner=partner,
+            name='Ops Visible Lead',
+            phone='9000000001',
+            company='Visible Mills',
+            interest='D2C',
+        )
+        response = self.client.get(reverse('operations:dgc_leads'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Ops Visible Lead')
+        self.assertContains(response, 'DGCOPS1')
+        self.assertContains(response, '<table')
+
+    def test_dgc_leads_sales_forbidden(self):
+        self.client.login(username='sales1', password='pass1234')
+        response = self.client.get(reverse('operations:dgc_leads'))
         self.assertEqual(response.status_code, 302)

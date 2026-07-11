@@ -50,8 +50,10 @@ class PartnerDashboardView(PartnerBaseMixin, TemplateView):
             ctx['recent_leads'] = partner.leads.all()[:5]
             ctx['recent_orders'] = partner.orders.select_related('offer')[:5]
             ctx['recent_commissions'] = partner.commissions.all()[:5]
+            ctx['lead_form'] = PartnerLeadForm()
         else:
             ctx['stats'] = {}
+            ctx['lead_form'] = None
         return ctx
 
 
