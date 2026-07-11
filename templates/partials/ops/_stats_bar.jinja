@@ -1,79 +1,37 @@
-{# Row 1 — always-on ops KPIs #}
-<div class="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
-    <a href="{{ url('operations:leads') }}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 shadow-sm transition hover:border-emerald-400 hover:shadow">
-        <div class="flex items-center justify-between">
-            <p class="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Inbound leads</p>
-            {% if stats.new_leads %}<span class="h-2 w-2 rounded-full bg-emerald-500"></span>{% endif %}
-        </div>
-        <p class="mt-0.5 font-display text-2xl font-bold text-emerald-900">{{ stats.new_leads }}</p>
-        <p class="text-[10px] text-emerald-800/80">{{ stats.unassigned_leads }} unassigned · {{ stats.leads_today }} today · {{ stats.open_pipeline }} open</p>
-    </a>
-    <a href="{{ url('operations:quality_check') }}" class="rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5 shadow-sm transition hover:border-orange-400 hover:shadow">
-        <div class="flex items-center justify-between">
-            <p class="text-[10px] font-bold uppercase tracking-wide text-orange-700">QA queue</p>
-            {% if stats.pending_deliverables %}<span class="h-2 w-2 rounded-full bg-orange-500"></span>{% endif %}
-        </div>
-        <p class="mt-0.5 font-display text-2xl font-bold text-orange-900">{{ stats.pending_deliverables }}</p>
-        <p class="text-[10px] text-orange-800/80">awaiting review</p>
-    </a>
-    <a href="{{ url('operations:projects') }}" class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 shadow-sm transition hover:border-sky-400 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-sky-700">Projects</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-sky-900">{{ stats.active_projects }}</p>
-        <p class="text-[10px] text-sky-800/80">{{ stats.planning_projects }} planning · {{ stats.hot_leads }} hot leads</p>
-    </a>
-    <a href="{{ url('operations:pipeline') }}" class="rounded-xl border border-brand-200 bg-brand-50 px-3 py-2.5 shadow-sm transition hover:border-brand-400 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-brand-700">Academy</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-brand-900">{{ stats.new_applications }}</p>
-        <p class="text-[10px] text-brand-800/80">new admissions</p>
-    </a>
-    <a href="{{ url('operations:invoices') }}" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 shadow-sm transition hover:border-rose-400 hover:shadow">
-        <div class="flex items-center justify-between">
-            <p class="text-[10px] font-bold uppercase tracking-wide text-rose-700">Billing</p>
-            {% if stats.overdue_invoices %}<span class="h-2 w-2 rounded-full bg-rose-500"></span>{% endif %}
-        </div>
-        <p class="mt-0.5 font-display text-2xl font-bold text-rose-900">{{ stats.overdue_invoices }}</p>
-        <p class="text-[10px] text-rose-800/80">overdue · {{ stats.sent_invoices }} sent · {{ stats.won_month }} won/mo</p>
-    </a>
-    {% if include_jobs %}
-    <a href="{{ url('operations:job_applications') }}" class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 shadow-sm transition hover:border-violet-400 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-violet-700">Hiring</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-violet-900">{{ stats.new_job_applications }}</p>
-        <p class="text-[10px] text-violet-800/80">{{ stats.job_interview }} interview · {{ stats.job_review }} review</p>
-    </a>
-    {% else %}
-    <a href="{{ url('operations:allocation') }}" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 shadow-sm transition hover:border-slate-400 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-600">Staffing</p>
-        <p class="mt-0.5 font-display text-lg font-bold text-ink-900">Allocate</p>
-        <p class="text-[10px] text-slate-500">assign team to projects</p>
-    </a>
-    {% endif %}
-</div>
+{# KPI strip + pipeline in one panel — no floating uneven cards #}
+{% macro cell(href, label, value, meta, accent='bg-brand-600', pulse=false) %}
+<a href="{{ href }}"
+   class="group relative flex min-w-0 flex-col justify-center gap-1 overflow-hidden px-3 py-3 transition hover:bg-slate-50/80 sm:px-4">
+    <span class="absolute inset-y-2 left-0 w-0.5 rounded-full {{ accent }} opacity-80"></span>
+    <div class="flex items-center gap-1.5 pl-2">
+        <p class="truncate text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">{{ label }}</p>
+        {% if pulse %}
+        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>
+        {% endif %}
+    </div>
+    <p class="pl-2 font-display text-2xl font-bold leading-none tabular-nums tracking-tight text-ink-900 group-hover:text-brand-700">{{ value }}</p>
+    <p class="truncate pl-2 text-[10px] text-slate-500">{{ meta }}</p>
+</a>
+{% endmacro %}
 
-{% if include_jobs %}
-{# Row 2 — partner / DGC KPIs (superuser) #}
-<div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-    <a href="{{ url('operations:dgc_leads') }}" class="rounded-xl border border-teal-200 bg-teal-50 px-3 py-2.5 shadow-sm transition hover:border-teal-400 hover:shadow">
-        <div class="flex items-center justify-between">
-            <p class="text-[10px] font-bold uppercase tracking-wide text-teal-700">DGC leads</p>
-            {% if stats.new_dgc_leads %}<span class="h-2 w-2 rounded-full bg-teal-500"></span>{% endif %}
-        </div>
-        <p class="mt-0.5 font-display text-2xl font-bold text-teal-900">{{ stats.new_dgc_leads }}</p>
-        <p class="text-[10px] text-teal-800/80">{{ stats.open_dgc_leads }} open · {{ stats.dgc_leads_today }} today · {{ stats.dgc_won_month }} won/mo</p>
-    </a>
-    <a href="{{ url('operations:dgc_applications') }}" class="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2.5 shadow-sm transition hover:border-cyan-400 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-cyan-700">DGC applications</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-cyan-900">{{ stats.new_dgc_applications }}</p>
-        <p class="text-[10px] text-cyan-800/80">{{ stats.dgc_apps_review }} in review — approve partners</p>
-    </a>
-    <a href="{{ url('admin:partners_payoutrequest_changelist') }}" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 shadow-sm transition hover:border-amber-400 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-amber-700">Payouts</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-amber-900">{{ stats.pending_payouts }}</p>
-        <p class="text-[10px] text-amber-800/80">pending partner payout requests</p>
-    </a>
-    <a href="{{ url('operations:leads') }}" class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition hover:border-brand-300 hover:shadow">
-        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-600">This week</p>
-        <p class="mt-0.5 font-display text-2xl font-bold text-ink-900">{{ stats.leads_week }}</p>
-        <p class="text-[10px] text-slate-500">inbound leads · last 7 days</p>
-    </a>
+<div class="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm">
+    <div class="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 {% if include_jobs %}lg:grid-cols-5{% else %}lg:grid-cols-6{% endif %}">
+        {{ cell(url('operations:leads'), 'Inbound', stats.new_leads, stats.unassigned_leads ~ ' unassigned · ' ~ stats.open_pipeline ~ ' open', 'bg-emerald-500', stats.new_leads > 0) }}
+        {{ cell(url('operations:quality_check'), 'QA', stats.pending_deliverables, 'awaiting review', 'bg-orange-500', stats.pending_deliverables > 0) }}
+        {{ cell(url('operations:projects'), 'Projects', stats.active_projects, stats.planning_projects ~ ' planning', 'bg-sky-500') }}
+        {{ cell(url('operations:pipeline'), 'Academy', stats.new_applications, 'new admissions', 'bg-brand-600', stats.new_applications > 0) }}
+        {{ cell(url('operations:invoices'), 'Billing', stats.overdue_invoices, stats.sent_invoices ~ ' sent · overdue', 'bg-rose-500', stats.overdue_invoices > 0) }}
+        {% if include_jobs %}
+        {{ cell(url('operations:job_applications'), 'Hiring', stats.new_job_applications, stats.job_interview ~ ' int · ' ~ stats.job_review ~ ' review', 'bg-violet-500', stats.new_job_applications > 0) }}
+        {{ cell(url('operations:dgc_leads'), 'DGC leads', stats.new_dgc_leads, stats.open_dgc_leads ~ ' open · ' ~ stats.dgc_won_month ~ ' won/mo', 'bg-teal-500', stats.new_dgc_leads > 0) }}
+        {{ cell(url('operations:dgc_applications'), 'DGC apps', stats.new_dgc_applications, stats.dgc_apps_review ~ ' in review', 'bg-cyan-500', stats.new_dgc_applications > 0) }}
+        {{ cell(url('admin:partners_payoutrequest_changelist'), 'Payouts', stats.pending_payouts, 'pending', 'bg-amber-500', stats.pending_payouts > 0) }}
+        {{ cell(url('operations:leads'), 'Week', stats.leads_week, 'inbound · 7 days', 'bg-slate-400') }}
+        {% else %}
+        {{ cell(url('operations:allocation'), 'Staffing', '→', 'assign team', 'bg-slate-400') }}
+        {% endif %}
+    </div>
+    <div id="ops-pipeline-bar" class="border-t border-slate-100 bg-slate-50/50 px-3 py-2.5 sm:px-4">
+        {% include "partials/ops/_pipeline_bar.jinja" %}
+    </div>
 </div>
-{% endif %}

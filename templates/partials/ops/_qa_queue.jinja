@@ -1,15 +1,17 @@
 {% if pending_deliverables %}
 <ul class="divide-y divide-slate-100">
     {% for deliverable in pending_deliverables %}
-    <li class="flex items-center justify-between gap-2 border-l-4 border-l-orange-400 py-2 pl-2.5">
-        <div class="min-w-0">
-            <p class="truncate text-sm font-semibold text-ink-900">{{ deliverable.title }}</p>
-            <p class="truncate text-[11px] text-slate-500">{{ deliverable.project.name }}</p>
+    <li class="flex min-w-0 items-center justify-between gap-2 py-2.5">
+        <div class="min-w-0 overflow-hidden">
+            <p class="truncate text-[13px] font-semibold text-ink-900">{{ deliverable.title }}</p>
+            <p class="truncate text-[10px] text-slate-500">{{ deliverable.project.name }}</p>
         </div>
-        <a href="{{ url('operations:quality_check') }}" class="shrink-0 rounded-md bg-orange-100 px-2 py-1 text-[10px] font-bold text-orange-800 hover:bg-orange-200">QA</a>
+        <a href="{{ url('operations:quality_check') }}" class="shrink-0 rounded-md bg-orange-50 px-2 py-1 text-[10px] font-bold text-orange-700 hover:bg-orange-100">QA</a>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="py-5 text-center text-xs text-emerald-700">All clear — nothing in QA.</p>
+<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
+    <p class="text-center text-[11px] text-slate-400">All clear — nothing in QA.</p>
+</div>
 {% endif %}

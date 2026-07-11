@@ -1,15 +1,20 @@
 {% if recent_applications %}
 <ul class="divide-y divide-slate-100">
     {% for app in recent_applications %}
-    <li class="flex items-center justify-between gap-2 border-l-4 border-l-brand-500 py-2.5 pl-2.5">
-        <div class="min-w-0">
-            <p class="truncate text-sm font-semibold text-ink-900">{{ app.name }}</p>
-            <p class="truncate text-[11px] text-slate-500">{{ app.course_interest or 'General application' }}</p>
+    <li class="flex min-w-0 items-center gap-2.5 py-2.5">
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 font-display text-[11px] font-bold text-brand-800">
+            {{ app.name[:1]|upper }}
+        </span>
+        <div class="min-w-0 flex-1 overflow-hidden">
+            <p class="truncate text-[13px] font-semibold text-ink-900">{{ app.name }}</p>
+            <p class="truncate text-[10px] text-slate-500">{{ app.course_interest or 'General application' }}</p>
         </div>
-        <time class="shrink-0 text-[10px] font-medium text-slate-400">{{ timesince(app.created_at) }}</time>
+        <time class="shrink-0 text-[10px] font-semibold tabular-nums text-slate-400" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(app.created_at) }}</time>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="py-5 text-center text-xs text-slate-500">No new academy applications.</p>
+<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
+    <p class="text-center text-[11px] text-slate-400">No new academy applications.</p>
+</div>
 {% endif %}

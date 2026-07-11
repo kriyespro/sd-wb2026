@@ -1,3 +1,4 @@
+{# Compact pipeline — single strip, no tall panel #}
 {% set pipeline_labels = {
     'new': 'New',
     'contacted': 'Contacted',
@@ -14,28 +15,35 @@
     'won': 'bg-brand-600',
     'lost': 'bg-slate-400',
 } %}
-{% set pipeline_chip = {
-    'new': 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    'contacted': 'bg-sky-50 text-sky-800 border-sky-200',
-    'qualified': 'bg-violet-50 text-violet-800 border-violet-200',
-    'proposal': 'bg-amber-50 text-amber-800 border-amber-200',
-    'won': 'bg-brand-50 text-brand-800 border-brand-200',
-    'lost': 'bg-slate-50 text-slate-600 border-slate-200',
+{% set pipeline_text = {
+    'new': 'text-emerald-700',
+    'contacted': 'text-sky-700',
+    'qualified': 'text-violet-700',
+    'proposal': 'text-amber-700',
+    'won': 'text-brand-700',
+    'lost': 'text-slate-500',
 } %}
 
 {% set total = pipeline_total|default(1) %}
-<div class="mb-3 flex h-2.5 overflow-hidden rounded-full bg-slate-100">
-    {% for status, count in lead_pipeline.items() %}
-    {% if count %}
-    <div class="{{ pipeline_colors.get(status, 'bg-slate-400') }}" style="width: {{ (count / total * 100)|round(1) }}%" title="{{ pipeline_labels.get(status, status) }}: {{ count }}"></div>
-    {% endif %}
-    {% endfor %}
-</div>
-<div class="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
-    {% for status, count in lead_pipeline.items() %}
-    <div class="rounded-lg border px-2 py-1.5 text-center {{ pipeline_chip.get(status, 'bg-slate-50 text-slate-600 border-slate-200') }}">
-        <p class="font-display text-base font-bold leading-none">{{ count }}</p>
-        <p class="mt-1 text-[9px] font-bold uppercase tracking-wide opacity-80">{{ pipeline_labels.get(status, status) }}</p>
+<div class="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
+    <div class="flex shrink-0 items-center gap-2">
+        <span class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Pipeline</span>
+        <span class="text-[10px] font-medium text-slate-400">{{ stats.open_pipeline }} open · {{ stats.hot_leads }} hot</span>
     </div>
-    {% endfor %}
+    <div class="flex h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100">
+        {% for status, count in lead_pipeline.items() %}
+        {% if count %}
+        <div class="h-full {{ pipeline_colors.get(status, 'bg-slate-400') }}" style="width: {{ (count / total * 100)|round(1) }}%" title="{{ pipeline_labels.get(status, status) }}: {{ count }}"></div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-x-2.5 gap-y-1">
+        {% for status, count in lead_pipeline.items() %}
+        <span class="inline-flex items-baseline gap-0.5 text-[10px] font-semibold {{ pipeline_text.get(status, 'text-slate-500') }}">
+            <span class="font-display text-xs font-bold tabular-nums">{{ count }}</span>
+            <span class="uppercase tracking-wide opacity-70">{{ pipeline_labels.get(status, status) }}</span>
+        </span>
+        {% endfor %}
+        <a href="{{ url('operations:leads') }}" class="text-[10px] font-bold text-brand-600 hover:text-brand-700">Leads →</a>
+    </div>
 </div>

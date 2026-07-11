@@ -1,31 +1,38 @@
 {% if recent_dgc_leads %}
 <ul class="divide-y divide-slate-100">
     {% for lead in recent_dgc_leads %}
-    <li class="flex items-start gap-2.5 border-l-4 border-l-teal-500 py-2.5 pl-2.5">
-        <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-1.5">
+    <li class="flex min-w-0 items-center gap-2.5 py-2.5">
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-50 font-display text-[11px] font-bold text-teal-800">
+            {{ lead.name[:1]|upper }}
+        </span>
+        <div class="min-w-0 flex-1 overflow-hidden">
+            <div class="flex min-w-0 items-center gap-1.5">
                 <a href="{{ url('operations:dgc_leads') }}#dgc-lead-{{ lead.id }}"
-                   class="truncate text-sm font-semibold text-ink-900 hover:text-teal-700">
+                   class="truncate text-[13px] font-semibold text-ink-900 hover:text-teal-700">
                     {{ lead.name }}
                 </a>
-                <span class="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase
-                    {% if lead.status == 'won' %}bg-emerald-100 text-emerald-800
-                    {% elif lead.status == 'lost' %}bg-slate-100 text-slate-600
-                    {% elif lead.status == 'contacted' %}bg-sky-100 text-sky-800
-                    {% else %}bg-amber-100 text-amber-800{% endif %}">
+                <span class="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold uppercase
+                    {% if lead.status == 'won' %}bg-emerald-50 text-emerald-700
+                    {% elif lead.status == 'lost' %}bg-slate-50 text-slate-500
+                    {% elif lead.status == 'contacted' %}bg-sky-50 text-sky-700
+                    {% else %}bg-amber-50 text-amber-700{% endif %}">
                     {{ lead.get_status_display() }}
                 </span>
             </div>
-            <p class="mt-0.5 truncate text-[11px] text-slate-500">
+            <p class="truncate text-[10px] text-slate-500">
                 {{ lead.company or lead.interest or 'General' }}
                 · {{ lead.partner.code }}
                 {% if lead.deal_value %} · ₹{{ lead.deal_value }}{% endif %}
             </p>
         </div>
-        <time class="shrink-0 text-[10px] font-medium text-slate-400">{{ timesince(lead.created_at) }}</time>
+        <time class="shrink-0 text-[10px] font-semibold tabular-nums text-slate-400" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">
+            {{ timeago(lead.created_at) }}
+        </time>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="py-5 text-center text-xs text-slate-500">No DGC leads yet.</p>
+<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
+    <p class="text-center text-[11px] text-slate-400">No DGC leads yet.</p>
+</div>
 {% endif %}

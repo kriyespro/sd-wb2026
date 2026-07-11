@@ -1,38 +1,55 @@
-{% set status_border = {
-    'new': 'border-l-emerald-500',
-    'contacted': 'border-l-sky-500',
-    'qualified': 'border-l-violet-500',
-    'proposal': 'border-l-amber-500',
-    'won': 'border-l-brand-600',
-    'lost': 'border-l-slate-400',
+{% set status_dot = {
+    'new': 'bg-emerald-500',
+    'contacted': 'bg-sky-500',
+    'qualified': 'bg-violet-500',
+    'proposal': 'bg-amber-500',
+    'won': 'bg-brand-600',
+    'lost': 'bg-slate-400',
 } %}
+{% set status_chip = {
+    'new': 'bg-emerald-50 text-emerald-700',
+    'contacted': 'bg-sky-50 text-sky-700',
+    'qualified': 'bg-violet-50 text-violet-700',
+    'proposal': 'bg-amber-50 text-amber-700',
+    'won': 'bg-brand-50 text-brand-700',
+    'lost': 'bg-slate-50 text-slate-500',
+} %}
+
 {% if recent_leads %}
 <ul class="divide-y divide-slate-100">
     {% for lead in recent_leads %}
-    <li class="flex items-start gap-2.5 border-l-4 py-2.5 pl-2.5 {{ status_border.get(lead.status, 'border-l-slate-300') }}">
-        <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-1.5">
+    <li class="flex min-w-0 items-center gap-2.5 py-2.5">
+        <span class="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-display text-[11px] font-bold text-ink-900">
+            {{ lead.name[:1]|upper }}
+            <span class="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full ring-2 ring-white {{ status_dot.get(lead.status, 'bg-slate-400') }}"></span>
+        </span>
+        <div class="min-w-0 flex-1 overflow-hidden">
+            <div class="flex min-w-0 items-center gap-1.5">
                 <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}"
-                   class="truncate text-sm font-semibold text-ink-900 hover:text-brand-600">
+                   class="truncate text-[13px] font-semibold text-ink-900 hover:text-brand-600">
                     {{ lead.name }}
                 </a>
-                {% include "partials/ops/_status_badge.jinja" %}
+                <span class="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold uppercase {{ status_chip.get(lead.status, 'bg-slate-50 text-slate-600') }}">
+                    {{ lead.get_status_display() }}
+                </span>
                 {% if not lead.assigned_to_id and lead.status not in ['won', 'lost'] %}
-                <span class="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-800">Unassigned</span>
+                <span class="shrink-0 text-[9px] font-bold uppercase text-amber-600">Unassigned</span>
                 {% endif %}
             </div>
-            <p class="mt-0.5 truncate text-[11px] text-slate-500">
+            <p class="truncate text-[10px] text-slate-500">
                 {% if lead.company %}{{ lead.company }} · {% endif %}
                 {{ lead.service_interest or 'General' }}
-                {% if lead.assigned_to %} · {{ lead.assigned_to.get_full_name() or lead.assigned_to.username }}{% endif %}
+                {% if lead.phone %} · {{ lead.phone }}{% elif lead.email %} · {{ lead.email }}{% endif %}
             </p>
         </div>
-        <time class="shrink-0 text-[10px] font-medium text-slate-400" title="{{ lead.created_at }}">
-            {{ timesince(lead.created_at) }}
+        <time class="shrink-0 text-[10px] font-semibold tabular-nums text-slate-400" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">
+            {{ timeago(lead.created_at) }}
         </time>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="py-6 text-center text-xs text-slate-500">No inbound leads yet.</p>
+<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
+    <p class="text-center text-[11px] text-slate-400">No inbound leads yet.</p>
+</div>
 {% endif %}
