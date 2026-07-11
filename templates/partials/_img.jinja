@@ -1,0 +1,12 @@
+{# Safe image with lazy-load + broken-image fallback.
+   Usage:
+   {% set src = member.image %}{% set alt = member.name %}{% set class = 'h-44 w-full object-cover' %}
+   {% include "partials/_img.jinja" %}
+#}
+{% set _lazy = lazy if lazy is defined else true %}
+{% set _fallback = static('img/placeholder.svg') %}
+<img src="{{ src }}"
+     alt="{{ alt|default('') }}"
+     class="{{ class|default('') }}"
+     {% if _lazy %}loading="lazy" decoding="async"{% else %}decoding="async" fetchpriority="high"{% endif %}
+     onerror="this.onerror=null;this.src='{{ _fallback }}';this.classList.add('object-contain','bg-ink-900');">

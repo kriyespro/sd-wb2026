@@ -39,8 +39,8 @@
             <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-900/5">
                 <div class="grid sm:grid-cols-5">
                     <div class="relative sm:col-span-2">
-                        <img src="{{ member.image }}" alt="{{ member.name }}"
-                             class="h-64 w-full object-cover sm:h-full sm:min-h-[320px]">
+                        {% set src = member.image %}{% set alt = member.name %}{% set class = 'h-64 w-full object-cover sm:h-full sm:min-h-[320px]' %}{% set lazy = false if loop.first else true %}
+                        {% include "partials/_img.jinja" %}
                         <div class="absolute inset-0 bg-gradient-to-t from-brand-900/50 to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-brand-900/10"></div>
                         <span class="absolute bottom-4 left-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-500 font-display text-sm font-bold text-ink-900 shadow-lg">
                             {{ member.initials }}
@@ -76,8 +76,8 @@
             {% for member in core_team %}
             <article class="group overflow-hidden rounded-3xl border border-slate-200 bg-white text-center transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg">
                 <div class="relative overflow-hidden">
-                    <img src="{{ member.image }}" alt="{{ member.name }}"
-                         class="h-48 w-full object-cover transition duration-500 group-hover:scale-105">
+                    {% set src = member.image %}{% set alt = member.name %}{% set class = 'h-48 w-full object-cover transition duration-500 group-hover:scale-105' %}
+                    {% include "partials/_img.jinja" %}
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-900/40 to-transparent opacity-0 transition group-hover:opacity-100"></div>
                     <span class="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/95 font-display text-xs font-bold text-brand-700 shadow">
                         {{ member.initials }}

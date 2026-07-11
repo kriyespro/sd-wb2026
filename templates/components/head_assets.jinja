@@ -1,6 +1,24 @@
 <link rel="stylesheet" href="{{ static('css/app.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link rel="dns-prefetch" href="https://images.unsplash.com">
+{# Non-blocking fonts #}
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" media="print" onload="this.media='all'">
+<noscript>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<script src="{{ static('vendor/htmx.min.js') }}"></script>
+</noscript>
+<script src="{{ static('vendor/htmx.min.js') }}" defer></script>
 <script src="{{ static('vendor/alpine.min.js') }}" defer></script>
+<script>
+/* Global broken-image fallback (skips logo / already-handled imgs) */
+document.addEventListener('error', function (e) {
+  var t = e.target;
+  if (!t || t.tagName !== 'IMG' || t.dataset.fallbackApplied) return;
+  if (t.getAttribute('onerror')) return;
+  t.dataset.fallbackApplied = '1';
+  t.src = '{{ static("img/placeholder.svg") }}';
+  t.classList.add('object-contain', 'bg-ink-900');
+}, true);
+</script>

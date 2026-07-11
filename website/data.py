@@ -7,13 +7,13 @@ def ph(w, h, label, bg='EEF2F9', fg='1E3A6E'):
 
 def img(photo, w=1200, h=800):
     """Free Unsplash stock image (https://unsplash.com/license)."""
-    return f'https://images.unsplash.com/{photo}?auto=format&fit=crop&w={w}&h={h}&q=80'
+    return f'https://images.unsplash.com/{photo}?auto=format&fit=crop&w={w}&h={h}&q=70'
 
 
 SITE_IMAGES = {
     'hero': img('photo-1558769132-cb1aea458c5e', 640, 420),
-    'contact_bg': img('photo-1441986300917-64674bd600d8', 1920, 900),
-    'about_team': img('photo-1556761175-5973dc0f32e7', 900, 700),
+    'contact_bg': img('photo-1441986300917-64674bd600d8', 1400, 700),
+    'about_team': img('photo-1556761175-5973dc0f32e7', 800, 600),
 }
 
 # Dual model: D2C agency clients see + Academy talent pipeline behind the scenes
@@ -287,19 +287,19 @@ TEAM_FOUNDERS = [
             '12+ years in textile D2C strategy. Singh Kriti has personally guided 200+ manufacturers '
             'from wholesale dependency to profitable direct sales — building brands that customers love.'
         ),
-        'image': img('photo-1573496359142-b8d87734a5a2', 600, 600),
+        'image': img('photo-1573496359142-b8d87734a5a2', 480, 480),
     },
     {
         'name': 'Kr. Sunil Verma',
         'role': 'Founder & CEO',
         'tags': ['AI Automation Engineer', 'Tech Architecture', 'eCommerce'],
-        'initials': 'SV',
+        'initials': 'KSV',
         'bio': (
             'Founder & CEO and AI Automation Engineer with a decade of eCommerce experience. '
             'Sunil architects the digital infrastructure and AI automation that powers every client’s '
             'D2C operation — from store to analytics.'
         ),
-        'image': img('photo-1472099645785-5658abf4ff4e', 600, 600),
+        'image': img('photo-1472099645785-5658abf4ff4e', 480, 480),
     },
 ]
 
