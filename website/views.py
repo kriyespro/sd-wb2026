@@ -17,6 +17,10 @@ from .data import (
     RECENT_PROJECTS,
     SERVICE_PROCESS,
     SERVICES,
+    STARTUP_FAQS,
+    STARTUP_FOR,
+    STARTUP_PHASES,
+    STARTUP_PROMISES,
     STATS,
     TEAM,
     TEAM_CORE,
@@ -183,6 +187,21 @@ def team(request):
         founders=TEAM_FOUNDERS,
         core_team=TEAM_CORE,
         departments=TEAM_DEPARTMENTS,
+        stats=STATS,
+    )
+
+
+def startup(request):
+    return _page(
+        request,
+        'pages/startup.jinja',
+        'Startup Plan',
+        'Full Startup Plan: build the product, create & train the team, plan marketing & ops, then launch — idea to income.',
+        form=LeadForm(initial={'service_interest': 'Full Startup Plan'}),
+        phases=STARTUP_PHASES,
+        promises=STARTUP_PROMISES,
+        startup_for=STARTUP_FOR,
+        startup_faqs=STARTUP_FAQS,
         stats=STATS,
     )
 

@@ -280,8 +280,8 @@ SERVICE_PROCESS = F2C_PIPELINE
 TEAM_FOUNDERS = [
     {
         'name': 'Singh Kriti',
-        'role': 'Co-Founder & D2C Strategy Lead',
-        'tags': ['D2C Strategy', 'Sales Systems', 'Brand Building'],
+        'role': 'Operations Head & D2C Strategy Lead',
+        'tags': ['D2C Strategy', 'Operations', 'Sales Systems'],
         'initials': 'SK',
         'bio': (
             '12+ years in textile D2C strategy. Singh Kriti has personally guided 200+ manufacturers '
@@ -291,12 +291,13 @@ TEAM_FOUNDERS = [
     },
     {
         'name': 'Kr. Sunil Verma',
-        'role': 'Co-Founder & Tech Lead',
-        'tags': ['Tech Architecture', 'eCommerce', 'UX Design'],
+        'role': 'Founder & CEO',
+        'tags': ['AI Automation Engineer', 'Tech Architecture', 'eCommerce'],
         'initials': 'SV',
         'bio': (
-            'Full-stack product engineer with a decade of eCommerce experience. Sunil architects the '
-            'digital infrastructure that powers every client’s D2C operation — from store to analytics.'
+            'Founder & CEO and AI Automation Engineer with a decade of eCommerce experience. '
+            'Sunil architects the digital infrastructure and AI automation that powers every client’s '
+            'D2C operation — from store to analytics.'
         ),
         'image': img('photo-1472099645785-5658abf4ff4e', 600, 600),
     },
@@ -692,6 +693,169 @@ GENERAL_FAQS = [
         'a': (
             'By going direct-to-customer and removing 3–5 intermediary layers, most manufacturers see '
             'a 2x to 4x improvement in net margins. Exact numbers depend on your product and current model.'
+        ),
+    },
+]
+
+# Full Startup Plan — idea → income
+STARTUP_PHASES = [
+    {
+        'num': '01',
+        'slug': 'build',
+        'short': 'Build',
+        'title': 'Develop the App / Project',
+        'subtitle': 'Turn the idea into a working product',
+        'desc': (
+            'We scope, design, and build your MVP or full product — web app, store, or custom system — '
+            'with clean architecture, mobile-first UX, and launch-ready infrastructure.'
+        ),
+        'outcomes': [
+            'Product roadmap & technical blueprint',
+            'MVP or production build',
+            'Admin / ops dashboards where needed',
+            'Staging → production launch checklist',
+        ],
+        'duration': '4–10 weeks',
+        'icon': '💻',
+    },
+    {
+        'num': '02',
+        'slug': 'team',
+        'short': 'Team',
+        'title': 'Help Create the Team',
+        'subtitle': 'Right roles, right people, right structure',
+        'desc': (
+            'We define the org chart for your stage — founders, ops, marketing, support — and help you '
+            'hire or assign the first operators so the business isn’t stuck on one person.'
+        ),
+        'outcomes': [
+            'Role map & hiring scorecards',
+            'Founding / early-team structure',
+            'SOPs for who owns what',
+            'Optional Academy talent pipeline',
+        ],
+        'duration': '2–4 weeks',
+        'icon': '👥',
+    },
+    {
+        'num': '03',
+        'slug': 'train',
+        'short': 'Train',
+        'title': 'Train the Team',
+        'subtitle': 'Make the team execution-ready',
+        'desc': (
+            'Hands-on training on tools, workflows, and daily rituals — so your people can run the product, '
+            'orders, support, and campaigns without constant founder firefighting.'
+        ),
+        'outcomes': [
+            'Tool & dashboard training',
+            'Playbooks for daily / weekly ops',
+            'QA checklists & escalation paths',
+            'Shadow → solo handoff plan',
+        ],
+        'duration': '2–3 weeks',
+        'icon': '🎓',
+    },
+    {
+        'num': '04',
+        'slug': 'plan',
+        'short': 'Plan',
+        'title': 'Plan Marketing & Operations',
+        'subtitle': 'Strategy before spend',
+        'desc': (
+            'We build the go-to-market and ops plan: channels, offers, funnels, unit economics, inventory / '
+            'fulfillment flow, and KPIs — so launch isn’t guesswork.'
+        ),
+        'outcomes': [
+            'GTM & channel plan',
+            'Offer & funnel design',
+            'Ops & fulfillment blueprint',
+            'Budget, KPIs & 90-day roadmap',
+        ],
+        'duration': '1–2 weeks',
+        'icon': '📋',
+    },
+    {
+        'num': '05',
+        'slug': 'launch',
+        'short': 'Launch',
+        'title': 'Start Real Marketing & Operations',
+        'subtitle': 'Idea → income',
+        'desc': (
+            'We go live: ads, content, WhatsApp / email, order handling, and weekly optimization — '
+            'until you have real customers, prepaid revenue, and a team that can sustain growth.'
+        ),
+        'outcomes': [
+            'Live campaigns & creatives',
+            'Order / lead ops running',
+            'Weekly performance reviews',
+            'Path to repeatable revenue',
+        ],
+        'duration': 'Ongoing',
+        'icon': '🚀',
+    },
+]
+
+STARTUP_PROMISES = [
+    {
+        'title': 'One partner, full journey',
+        'desc': 'Build → team → train → plan → launch under one roof. No handoff chaos between agencies.',
+    },
+    {
+        'title': 'Product + people + growth',
+        'desc': 'Most startups fail on ops and GTM, not code. We cover all three.',
+    },
+    {
+        'title': 'Academy-backed delivery',
+        'desc': 'Trained talent on real work — so you scale execution without bloating payroll overnight.',
+    },
+    {
+        'title': 'Income as the finish line',
+        'desc': 'We don’t stop at “shipped.” Success means customers, cash flow, and a runnable system.',
+    },
+]
+
+STARTUP_FOR = [
+    {'title': 'First-time founders', 'desc': 'You have the idea — we build the machine around it.'},
+    {'title': 'Factory / D2C owners', 'desc': 'Going direct? We build store, team, and growth together.'},
+    {'title': 'Operators with a product gap', 'desc': 'You can sell — we build the app and systems to scale.'},
+    {'title': 'Teams stuck after MVP', 'desc': 'Shipped but no revenue? We fix GTM, ops, and execution.'},
+]
+
+STARTUP_FAQS = [
+    {
+        'q': 'Is this only for tech startups?',
+        'a': (
+            'No. It works for SaaS, D2C stores, service platforms, and manufacturer digital brands — '
+            'anything that needs a product, a team, and a path to paying customers.'
+        ),
+    },
+    {
+        'q': 'Can I start from the middle (e.g. only marketing)?',
+        'a': (
+            'Yes. We diagnose where you are and plug into the right phase. The full plan is ideal when '
+            'you’re starting from idea or rebuilding from scratch.'
+        ),
+    },
+    {
+        'q': 'How long until first revenue?',
+        'a': (
+            'Depends on product readiness. If the build is light, many clients see first paid traction '
+            'within 30–60 days of the launch phase. Complex products take longer on Phase 1.'
+        ),
+    },
+    {
+        'q': 'Do you help hire or only train?',
+        'a': (
+            'Both. We help define roles and structure, support hiring decisions, and train whoever you '
+            'bring — including talent from our Academy pipeline when it fits.'
+        ),
+    },
+    {
+        'q': 'What do you need from me to start?',
+        'a': (
+            'A clear problem you’re solving, who pays, and a decision-maker who can move weekly. '
+            'We handle blueprint, build, team design, training, and go-to-market.'
         ),
     },
 ]

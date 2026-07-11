@@ -1,0 +1,230 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+{# HERO — Idea → Income #}
+<section class="relative overflow-hidden bg-brand-900 py-20 text-white sm:py-28">
+    <div class="mesh absolute inset-0 opacity-60"></div>
+    <span class="wm text-white/5" style="font-size:14vw;bottom:-6%;left:-2%;letter-spacing:-0.04em">IDEA</span>
+    <span class="wm text-white/5" style="font-size:12vw;top:10%;right:-4%;letter-spacing:-0.04em">INCOME</span>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <span class="eyebrow !text-gold-300 before:!bg-gold-400">Full Startup Plan</span>
+        <h1 class="mt-6 max-w-4xl font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+            From idea to income.<br>
+            <span class="font-serif text-gradient-gold">One complete system.</span>
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+            We don’t just build your product. We help you create the team, train them, plan marketing &amp; operations,
+            then run real growth — until customers and cash flow are real.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4">
+            <a href="#startup-apply" class="btn-gold">Start Your Startup Plan →</a>
+            <a href="#startup-journey" class="btn-outline !border-white/30 !text-white hover:!bg-white/10">See the 5 phases</a>
+        </div>
+
+        {# Mini pipeline #}
+        <div class="mt-14 flex flex-wrap items-center gap-2 text-xs sm:gap-3 sm:text-sm">
+            {% for label in ['Build', 'Team', 'Train', 'Plan', 'Launch'] %}
+            <span class="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-semibold text-gold-200">{{ label }}</span>
+            {% if not loop.last %}<span class="text-slate-500">→</span>{% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# WHY THIS PLAN #}
+<section class="border-b border-slate-200 bg-slate-50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {% for item in promises %}
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-100 font-display text-sm font-bold text-gold-700">0{{ loop.index }}</span>
+                <h2 class="mt-4 font-display text-lg font-semibold text-ink-900">{{ item.title }}</h2>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ item.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# INTERACTIVE JOURNEY #}
+<section id="startup-journey" class="py-24" x-data="{ active: 0 }">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+            <span class="eyebrow justify-center">The journey</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Five phases. Zero guesswork.</h2>
+            <p class="mt-4 text-slate-600">Click a phase to see what we build, deliver, and hand to your team.</p>
+        </div>
+
+        {# Phase tabs #}
+        <div class="mt-12 flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-5 lg:overflow-visible">
+            {% for phase in phases %}
+            <button type="button"
+                    @click="active = {{ loop.index0 }}"
+                    :class="active === {{ loop.index0 }} ? 'border-brand-500 bg-brand-900 text-white shadow-lg' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300'"
+                    class="min-w-[9.5rem] shrink-0 rounded-2xl border px-4 py-4 text-left transition lg:min-w-0">
+                <span class="block font-display text-xs font-bold opacity-70">{{ phase.num }}</span>
+                <span class="mt-1 block text-sm font-semibold leading-snug">{{ phase.title }}</span>
+            </button>
+            {% endfor %}
+        </div>
+
+        {# Phase detail panels #}
+        <div class="mt-8">
+            {% for phase in phases %}
+            <div x-show="active === {{ loop.index0 }}" x-cloak x-transition
+                 class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-brand-900/5">
+                <div class="grid lg:grid-cols-5">
+                    <div class="bg-brand-900 p-8 text-white sm:p-10 lg:col-span-2">
+                        <span class="text-4xl">{{ phase.icon }}</span>
+                        <p class="mt-6 text-xs font-semibold uppercase tracking-widest text-gold-300">Phase {{ phase.num }}</p>
+                        <h3 class="mt-3 font-display text-2xl font-bold sm:text-3xl">{{ phase.title }}</h3>
+                        <p class="mt-2 text-sm font-medium text-gold-200">{{ phase.subtitle }}</p>
+                        <p class="mt-6 text-sm leading-relaxed text-slate-300">{{ phase.desc }}</p>
+                        <div class="mt-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold text-gold-200">
+                            Typical timeline: {{ phase.duration }}
+                        </div>
+                    </div>
+                    <div class="p-8 sm:p-10 lg:col-span-3">
+                        <h4 class="font-display text-sm font-bold uppercase tracking-widest text-slate-400">What you get</h4>
+                        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+                            {% for item in phase.outcomes %}
+                            <li class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gold-100 text-xs text-gold-700">✓</span>
+                                {{ item }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% if not loop.last %}
+                        <p class="mt-8 text-sm text-slate-500">
+                            Next → <button type="button" @click="active = {{ loop.index }}" class="font-semibold text-brand-600 hover:text-brand-700">{{ phases[loop.index].title }}</button>
+                        </p>
+                        {% else %}
+                        <p class="mt-8 text-sm font-semibold text-emerald-700">This is where idea becomes income.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {# Visual flow strip #}
+        <div class="mt-10 hidden items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 lg:flex">
+            {% for phase in phases %}
+            <button type="button" @click="active = {{ loop.index0 }}"
+                    class="flex flex-1 flex-col items-center gap-1 text-center transition"
+                    :class="active === {{ loop.index0 }} ? 'opacity-100' : 'opacity-40 hover:opacity-70'">
+                <span class="font-display text-lg font-bold text-brand-700">{{ phase.num }}</span>
+                <span class="text-[11px] font-medium text-slate-600">{{ phase.short }}</span>
+            </button>
+            {% if not loop.last %}
+            <span class="text-slate-300">→</span>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# WHO IT'S FOR #}
+<section class="bg-slate-50 py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid items-end gap-8 lg:grid-cols-2">
+            <div>
+                <span class="eyebrow">Who it’s for</span>
+                <h2 class="mt-5 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Built for founders who want a business — not just a build</h2>
+            </div>
+            <p class="text-slate-600">
+                If you’ve been stuck between “I need a developer,” “I need a team,” and “I need customers,”
+                this plan connects all three into one path.
+            </p>
+        </div>
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {% for item in startup_for %}
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+                <h3 class="font-display font-semibold text-ink-900">{{ item.title }}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ item.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# OUTCOME BAND #}
+<section class="bg-brand-900 py-20 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+                <span class="eyebrow !text-gold-300 before:!bg-gold-400">The finish line</span>
+                <h2 class="mt-5 font-display text-3xl font-bold sm:text-4xl">A product that sells. A team that runs. Revenue that repeats.</h2>
+                <p class="mt-5 text-slate-300 leading-relaxed">
+                    Success isn’t a repo or a pitch deck. It’s prepaid customers, trained operators,
+                    and a weekly rhythm of marketing &amp; ops you can actually sustain.
+                </p>
+            </div>
+            <ul class="space-y-4">
+                {% for point in [
+                    'Working product in production',
+                    'Roles filled and trained',
+                    'Marketing & ops playbooks live',
+                    'First customers and cash flow',
+                ] %}
+                <li class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-ink-900">✓</span>
+                    <span class="font-medium text-slate-100">{{ point }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+{# FAQ #}
+<section class="py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <span class="eyebrow justify-center">FAQ</span>
+            <h2 class="mt-5 font-display text-3xl font-bold text-ink-900">Common questions</h2>
+        </div>
+        <div class="mt-10 space-y-3" x-data="{ open: 1 }">
+            {% for faq in startup_faqs %}
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <button type="button" @click="open = open === {{ loop.index }} ? 0 : {{ loop.index }}"
+                        class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left">
+                    <span class="font-display font-semibold text-ink-900">{{ faq.q }}</span>
+                    <svg class="h-5 w-5 shrink-0 text-slate-400 transition" :class="open === {{ loop.index }} ? 'rotate-45' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                </button>
+                <div x-show="open === {{ loop.index }}" x-cloak x-transition class="border-t border-slate-100 px-6 py-4">
+                    <p class="text-sm leading-relaxed text-slate-600">{{ faq.a }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# APPLY CTA #}
+<section id="startup-apply" class="bg-slate-50 pb-24 pt-8">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-brand-900/5">
+            <div class="grid lg:grid-cols-5">
+                <div class="bg-ink-900 p-10 text-white lg:col-span-2">
+                    <h2 class="font-display text-2xl font-bold sm:text-3xl">Ready to go from idea to income?</h2>
+                    <p class="mt-4 text-sm text-slate-300">
+                        Tell us your idea and stage. We’ll map which phases you need — and a realistic path to first revenue.
+                    </p>
+                    <ol class="mt-8 space-y-3 text-sm text-slate-200">
+                        {% for step in ['Build the product', 'Create & train the team', 'Plan then run marketing & ops'] %}
+                        <li class="flex items-center gap-2">
+                            <span class="text-gold-400">{{ loop.index }}.</span> {{ step }}
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <div class="p-8 lg:col-span-3 lg:p-10">
+                    {% set source_page = 'startup' %}
+                    {% include "partials/_lead_form.jinja" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
