@@ -48,5 +48,11 @@ portal: /dashboard/dgc/
 public apply: /dgc/
 seed: python manage.py seed_partners
 
+# Mission Control demo data (Indian textile / D2C context)
+# Fills /ops/ with leads, jobs, academy, DGC, invoices, QA
+seed: python manage.py seed_ops_demo
+reset: python manage.py seed_ops_demo --flush-demo
+# Demo emails use @demo.wb.in — safe to re-run / flush
+
 # Login URL
 http://127.0.0.1:8000/auth/login/
