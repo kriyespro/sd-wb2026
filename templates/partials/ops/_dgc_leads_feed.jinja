@@ -1,54 +1,32 @@
 {% if recent_dgc_leads %}
-<div class="w-full min-w-0 overflow-hidden">
-    <table class="w-full table-fixed border-collapse text-left">
-        <colgroup>
-            <col class="w-[52%]">
-            <col class="w-[30%]">
-            <col class="w-[18%]">
-        </colgroup>
-        <thead>
-            <tr class="border-b border-slate-100 text-[9px] font-bold uppercase tracking-wide text-slate-400">
-                <th class="pb-1.5 pr-2 font-bold">Lead</th>
-                <th class="pb-1.5 pr-2 font-bold">Status</th>
-                <th class="pb-1.5 text-right font-bold">Age</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-            {% for lead in recent_dgc_leads %}
-            <tr class="align-middle">
-                <td class="max-w-0 py-2.5 pr-2">
-                    <a href="{{ url('operations:dgc_leads') }}#dgc-lead-{{ lead.id }}"
-                       class="block truncate text-[13px] font-semibold text-ink-900 hover:text-teal-700"
-                       title="{{ lead.name }}">
-                        {{ lead.name }}
-                    </a>
-                    <p class="truncate text-[10px] text-slate-500" title="{{ lead.company or lead.interest or 'General' }} · {{ lead.partner.code }}{% if lead.deal_value %} · ₹{{ lead.deal_value }}{% endif %}">
-                        {{ lead.company or lead.interest or 'General' }}
-                        · {{ lead.partner.code }}
-                        {% if lead.deal_value %} · ₹{{ lead.deal_value }}{% endif %}
-                    </p>
-                </td>
-                <td class="py-2.5 pr-2">
-                    <span class="inline-flex w-fit max-w-full truncate rounded px-1.5 py-0.5 text-[9px] font-bold uppercase
-                        {% if lead.status == 'won' %}bg-emerald-50 text-emerald-700
-                        {% elif lead.status == 'lost' %}bg-slate-50 text-slate-500
-                        {% elif lead.status == 'contacted' %}bg-sky-50 text-sky-700
-                        {% else %}bg-amber-50 text-amber-700{% endif %}">
-                        {{ lead.get_status_display() }}
-                    </span>
-                </td>
-                <td class="py-2.5 text-right">
-                    <time class="text-[10px] font-semibold tabular-nums text-slate-400" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">
-                        {{ timeago(lead.created_at) }}
-                    </time>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="ops-feed">
+    {% for lead in recent_dgc_leads %}
+    <div class="ops-feed-row">
+        <div class="ops-feed-main">
+            <div class="flex min-w-0 items-center gap-1.5">
+                <a href="{{ url('operations:dgc_leads') }}#dgc-lead-{{ lead.id }}"
+                   class="ops-feed-title min-w-0 hover:text-teal-700"
+                   title="{{ lead.name }}">{{ lead.name }}</a>
+                <span class="ops-pill
+                    {% if lead.status == 'won' %}bg-emerald-50 text-emerald-700
+                    {% elif lead.status == 'lost' %}bg-slate-50 text-slate-500
+                    {% elif lead.status == 'contacted' %}bg-sky-50 text-sky-700
+                    {% else %}bg-amber-50 text-amber-700{% endif %}">
+                    {{ lead.get_status_display() }}
+                </span>
+            </div>
+            <p class="ops-feed-meta" title="{{ lead.company or lead.interest or 'General' }} · {{ lead.partner.code }}">
+                {{ lead.company or lead.interest or 'General' }}
+                · {{ lead.partner.code }}
+                {% if lead.deal_value %} · ₹{{ '{:,.0f}'.format(lead.deal_value) }}{% endif %}
+            </p>
+        </div>
+        <time class="ops-feed-time" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(lead.created_at) }}</time>
+    </div>
+    {% endfor %}
 </div>
 {% else %}
-<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
-    <p class="text-center text-[11px] text-slate-400">No DGC leads yet.</p>
+<div class="flex h-full min-h-[8rem] items-center justify-center">
+    <p class="text-[11px] text-slate-400">No DGC leads yet.</p>
 </div>
 {% endif %}

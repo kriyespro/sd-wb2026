@@ -1,37 +1,19 @@
 {% if recent_applications %}
-<div class="w-full min-w-0 overflow-hidden">
-    <table class="w-full table-fixed border-collapse text-left">
-        <colgroup>
-            <col class="w-[72%]">
-            <col class="w-[28%]">
-        </colgroup>
-        <thead>
-            <tr class="border-b border-slate-100 text-[9px] font-bold uppercase tracking-wide text-slate-400">
-                <th class="pb-1.5 pr-2 font-bold">Applicant</th>
-                <th class="pb-1.5 text-right font-bold">Age</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-            {% for app in recent_applications %}
-            <tr class="align-middle">
-                <td class="max-w-0 py-2.5 pr-2">
-                    <p class="truncate text-[13px] font-semibold text-ink-900" title="{{ app.name }}">{{ app.name }}</p>
-                    <p class="truncate text-[10px] text-slate-500" title="{{ app.course_interest or 'General application' }}">
-                        {{ app.course_interest or 'General application' }}
-                    </p>
-                </td>
-                <td class="py-2.5 text-right">
-                    <time class="text-[10px] font-semibold tabular-nums text-slate-400" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">
-                        {{ timeago(app.created_at) }}
-                    </time>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="ops-feed">
+    {% for app in recent_applications %}
+    <div class="ops-feed-row">
+        <div class="ops-feed-main">
+            <p class="ops-feed-title" title="{{ app.name }}">{{ app.name }}</p>
+            <p class="ops-feed-meta" title="{{ app.course_interest or 'General application' }}">
+                {{ app.course_interest or 'General application' }}
+            </p>
+        </div>
+        <time class="ops-feed-time" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(app.created_at) }}</time>
+    </div>
+    {% endfor %}
 </div>
 {% else %}
-<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
-    <p class="text-center text-[11px] text-slate-400">No new academy applications.</p>
+<div class="flex h-full min-h-[8rem] items-center justify-center">
+    <p class="text-[11px] text-slate-400">No new academy applications.</p>
 </div>
 {% endif %}

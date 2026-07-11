@@ -225,8 +225,8 @@ def get_mission_control_context(include_jobs=False):
     pipeline_total = sum(pipeline.values()) or 1
     ctx = {
         'stats': stats,
-        'recent_leads': get_recent_leads(6),
-        'pending_deliverables': get_pending_deliverables()[:5],
+        'recent_leads': get_recent_leads(5),
+        'pending_deliverables': get_pending_deliverables()[:4],
         'lead_pipeline': pipeline,
         'pipeline_total': pipeline_total,
         'recent_applications': get_recent_applications(4),
@@ -235,10 +235,10 @@ def get_mission_control_context(include_jobs=False):
         'include_jobs': include_jobs,
     }
     if include_jobs:
-        ctx['recent_job_applications'] = get_recent_job_applications(5)
+        ctx['recent_job_applications'] = get_recent_job_applications(4)
         ctx['job_application_new'] = stats['new_job_applications']
         ctx['job_application_count'] = stats['total_job_applications']
-        ctx['recent_dgc_leads'] = get_recent_dgc_leads(6)
+        ctx['recent_dgc_leads'] = get_recent_dgc_leads(4)
         ctx['recent_dgc_applications'] = get_recent_dgc_applications(4)
     return ctx
 

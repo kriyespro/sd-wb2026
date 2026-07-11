@@ -1,17 +1,13 @@
 {% if recent_job_applications %}
-<ul class="divide-y divide-slate-100">
+<div class="ops-feed">
     {% for app in recent_job_applications %}
-    <li class="flex min-w-0 items-center gap-2.5 py-2.5">
-        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 font-display text-[11px] font-bold text-violet-800">
-            {{ app.name[:1]|upper }}
-        </span>
-        <div class="min-w-0 flex-1 overflow-hidden">
+    <div class="ops-feed-row">
+        <div class="ops-feed-main">
             <div class="flex min-w-0 items-center gap-1.5">
                 <a href="{{ url('operations:job_applications') }}#job-app-{{ app.id }}"
-                   class="truncate text-[13px] font-semibold text-ink-900 hover:text-violet-700">
-                    {{ app.name }}
-                </a>
-                <span class="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold uppercase
+                   class="ops-feed-title min-w-0 hover:text-violet-700"
+                   title="{{ app.name }}">{{ app.name }}</a>
+                <span class="ops-pill
                     {% if app.status == 'new' %}bg-violet-50 text-violet-700
                     {% elif app.status == 'hired' %}bg-emerald-50 text-emerald-700
                     {% elif app.status == 'rejected' %}bg-slate-50 text-slate-500
@@ -20,14 +16,14 @@
                     {{ app.get_status_display() }}
                 </span>
             </div>
-            <p class="truncate text-[10px] text-slate-500">{{ app.role }} · {{ app.get_application_type_display() }}</p>
+            <p class="ops-feed-meta" title="{{ app.role }}">{{ app.role }} · {{ app.get_application_type_display() }}</p>
         </div>
-        <time class="shrink-0 text-[10px] font-semibold tabular-nums text-slate-400" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(app.created_at) }}</time>
-    </li>
+        <time class="ops-feed-time" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(app.created_at) }}</time>
+    </div>
     {% endfor %}
-</ul>
+</div>
 {% else %}
-<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
-    <p class="text-center text-[11px] text-slate-400">No job applications yet.</p>
+<div class="flex h-full min-h-[8rem] items-center justify-center">
+    <p class="text-[11px] text-slate-400">No job applications yet.</p>
 </div>
 {% endif %}

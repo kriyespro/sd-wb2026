@@ -1,4 +1,3 @@
-{# Compact pipeline strip — light theme companion to KPI card #}
 {% set pipeline_labels = {
     'new': 'New',
     'contacted': 'Contacted',
@@ -25,10 +24,10 @@
 } %}
 
 {% set total = pipeline_total|default(1) %}
-<div class="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
+<div class="flex min-w-0 flex-col gap-1.5 overflow-hidden sm:flex-row sm:items-center sm:gap-3">
     <div class="flex shrink-0 items-center gap-2">
-        <span class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Pipeline</span>
-        <span class="text-[10px] font-medium text-slate-400">{{ stats.open_pipeline }} open · {{ stats.hot_leads }} hot</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">Pipeline</span>
+        <span class="text-[10px] text-slate-400">{{ stats.open_pipeline }} open</span>
     </div>
     <div class="flex h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-200">
         {% for status, count in lead_pipeline.items() %}
@@ -37,13 +36,15 @@
         {% endif %}
         {% endfor %}
     </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-x-2.5 gap-y-1">
+    <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 overflow-hidden">
         {% for status, count in lead_pipeline.items() %}
+        {% if count %}
         <span class="inline-flex items-baseline gap-0.5 text-[10px] font-semibold {{ pipeline_text.get(status, 'text-slate-500') }}">
             <span class="font-display text-xs font-bold tabular-nums">{{ count }}</span>
-            <span class="uppercase tracking-wide opacity-70">{{ pipeline_labels.get(status, status) }}</span>
+            <span class="uppercase tracking-wide opacity-70">{{ pipeline_labels.get(status, status)[:3] }}</span>
         </span>
+        {% endif %}
         {% endfor %}
-        <a href="{{ url('operations:leads') }}" class="text-[10px] font-bold text-brand-600 hover:text-brand-700">Leads →</a>
+        <a href="{{ url('operations:leads') }}" class="text-[10px] font-bold text-brand-600 hover:text-brand-700">All →</a>
     </div>
 </div>

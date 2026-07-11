@@ -8,57 +8,31 @@
 } %}
 
 {% if recent_leads %}
-<div class="w-full min-w-0 overflow-hidden">
-    <table class="w-full table-fixed border-collapse text-left">
-        <colgroup>
-            <col class="w-[52%]">
-            <col class="w-[30%]">
-            <col class="w-[18%]">
-        </colgroup>
-        <thead>
-            <tr class="border-b border-slate-100 text-[9px] font-bold uppercase tracking-wide text-slate-400">
-                <th class="pb-1.5 pr-2 font-bold">Lead</th>
-                <th class="pb-1.5 pr-2 font-bold">Status</th>
-                <th class="pb-1.5 text-right font-bold">Age</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-            {% for lead in recent_leads %}
-            <tr class="align-middle">
-                <td class="max-w-0 py-2.5 pr-2">
-                    <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}"
-                       class="block truncate text-[13px] font-semibold text-ink-900 hover:text-brand-600"
-                       title="{{ lead.name }}">
-                        {{ lead.name }}
-                    </a>
-                    <p class="truncate text-[10px] text-slate-500" title="{% if lead.company %}{{ lead.company }} · {% endif %}{{ lead.service_interest or 'General' }}{% if lead.phone %} · {{ lead.phone }}{% elif lead.email %} · {{ lead.email }}{% endif %}">
-                        {% if lead.company %}{{ lead.company }} · {% endif %}
-                        {{ lead.service_interest or 'General' }}
-                        {% if lead.phone %} · {{ lead.phone }}{% elif lead.email %} · {{ lead.email }}{% endif %}
-                    </p>
-                </td>
-                <td class="py-2.5 pr-2">
-                    <div class="flex min-w-0 flex-col gap-0.5">
-                        <span class="inline-flex w-fit max-w-full truncate rounded px-1.5 py-0.5 text-[9px] font-bold uppercase {{ status_chip.get(lead.status, 'bg-slate-50 text-slate-600') }}">
-                            {{ lead.get_status_display() }}
-                        </span>
-                        {% if not lead.assigned_to_id and lead.status not in ['won', 'lost'] %}
-                        <span class="text-[9px] font-bold uppercase text-amber-600">Unassigned</span>
-                        {% endif %}
-                    </div>
-                </td>
-                <td class="py-2.5 text-right">
-                    <time class="text-[10px] font-semibold tabular-nums text-slate-400" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">
-                        {{ timeago(lead.created_at) }}
-                    </time>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="ops-feed">
+    {% for lead in recent_leads %}
+    <div class="ops-feed-row">
+        <div class="ops-feed-main">
+            <div class="flex min-w-0 items-center gap-1.5">
+                <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}"
+                   class="ops-feed-title min-w-0 hover:text-brand-600"
+                   title="{{ lead.name }}">{{ lead.name }}</a>
+                <span class="ops-pill {{ status_chip.get(lead.status, 'bg-slate-50 text-slate-600') }}">
+                    {{ lead.get_status_display() }}
+                </span>
+                {% if not lead.assigned_to_id and lead.status not in ['won', 'lost'] %}
+                <span class="ops-pill bg-amber-50 text-amber-700">Open</span>
+                {% endif %}
+            </div>
+            <p class="ops-feed-meta" title="{{ lead.company or '' }} {{ lead.service_interest or 'General' }}">
+                {% if lead.company %}{{ lead.company }} · {% endif %}{{ lead.service_interest or 'General' }}
+            </p>
+        </div>
+        <time class="ops-feed-time" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(lead.created_at) }}</time>
+    </div>
+    {% endfor %}
 </div>
 {% else %}
-<div class="flex h-full min-h-[10rem] items-center justify-center px-2">
-    <p class="text-center text-[11px] text-slate-400">No inbound leads yet.</p>
+<div class="flex h-full min-h-[8rem] items-center justify-center">
+    <p class="text-[11px] text-slate-400">No inbound leads yet.</p>
 </div>
 {% endif %}

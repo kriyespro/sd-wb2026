@@ -8,99 +8,54 @@
      class="hidden"
      aria-hidden="true"></div>
 
-{# Hero: live + KPIs + pipeline #}
-<div id="ops-stats-bar" class="mb-3 min-w-0">
-    {% include "partials/ops/_stats_bar.jinja" %}
-</div>
+<div class="min-w-0 space-y-3 overflow-x-hidden">
+    <div id="ops-stats-bar" class="min-w-0">
+        {% include "partials/ops/_stats_bar.jinja" %}
+    </div>
 
-{# Equal work panels #}
-<div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 {% if include_jobs %}xl:grid-cols-3{% endif %}">
+    <div class="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {% macro panel(tone, title, href, link_label, feed_id, partial) %}
+        <section class="dash-panel flex min-h-[14rem] min-w-0 flex-col overflow-hidden">
+            <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5">
+                <div class="flex min-w-0 items-center gap-2 overflow-hidden">
+                    <span class="h-2 w-2 shrink-0 rounded-full {{ tone }}"></span>
+                    <h2 class="truncate text-sm font-semibold text-ink-900">{{ title }}</h2>
+                </div>
+                <a href="{{ href }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">{{ link_label }}</a>
+            </header>
+            <div id="{{ feed_id }}" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3">
+                {% include partial %}
+            </div>
+        </section>
+        {% endmacro %}
 
-    <section class="dash-panel flex min-h-[15rem] min-w-0 flex-col overflow-hidden">
-        <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 sm:px-4">
-            <div class="flex min-w-0 items-center gap-2">
-                <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
-                <h2 class="truncate text-sm font-semibold text-ink-900">Inbound leads</h2>
-            </div>
-            <a href="{{ url('operations:leads') }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">Table →</a>
-        </header>
-        <div id="ops-leads-feed" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 sm:px-4">
-            {% include "partials/ops/_leads_feed.jinja" %}
-        </div>
-    </section>
+        {{ panel('bg-emerald-500', 'Inbound leads', url('operations:leads'), 'Open →', 'ops-leads-feed', 'partials/ops/_leads_feed.jinja') }}
 
-    {% if include_jobs %}
-    <section class="dash-panel flex min-h-[15rem] min-w-0 flex-col">
-        <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 sm:px-4">
-            <div class="flex min-w-0 items-center gap-2">
-                <span class="h-2 w-2 shrink-0 rounded-full bg-teal-500"></span>
-                <h2 class="truncate text-sm font-semibold text-ink-900">DGC leads</h2>
-            </div>
-            <a href="{{ url('operations:dgc_leads') }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">Table →</a>
-        </header>
-        <div id="ops-dgc-leads-feed" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 sm:px-4">
-            {% include "partials/ops/_dgc_leads_feed.jinja" %}
-        </div>
-    </section>
-    {% endif %}
+        {% if include_jobs %}
+        {{ panel('bg-teal-500', 'DGC leads', url('operations:dgc_leads'), 'Open →', 'ops-dgc-leads-feed', 'partials/ops/_dgc_leads_feed.jinja') }}
+        {% endif %}
 
-    <section class="dash-panel flex min-h-[15rem] min-w-0 flex-col overflow-hidden">
-        <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 sm:px-4">
-            <div class="flex min-w-0 items-center gap-2">
-                <span class="h-2 w-2 shrink-0 rounded-full bg-brand-600"></span>
-                <h2 class="truncate text-sm font-semibold text-ink-900">Academy intake</h2>
-            </div>
-            <a href="{{ url('operations:pipeline') }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">Pipeline →</a>
-        </header>
-        <div id="ops-applications-feed" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 sm:px-4">
-            {% include "partials/ops/_applications_feed.jinja" %}
-        </div>
-    </section>
+        {{ panel('bg-brand-600', 'Academy intake', url('operations:pipeline'), 'Open →', 'ops-applications-feed', 'partials/ops/_applications_feed.jinja') }}
 
-    <section class="dash-panel flex min-h-[15rem] min-w-0 flex-col">
-        <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 sm:px-4">
-            <div class="flex min-w-0 items-center gap-2">
-                <span class="h-2 w-2 shrink-0 rounded-full bg-orange-500"></span>
-                <h2 class="truncate text-sm font-semibold text-ink-900">QA queue</h2>
-            </div>
-            <a href="{{ url('operations:quality_check') }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">Review →</a>
-        </header>
-        <div id="ops-qa-queue" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 sm:px-4">
-            {% include "partials/ops/_qa_queue.jinja" %}
-        </div>
-    </section>
+        {{ panel('bg-orange-500', 'QA queue', url('operations:quality_check'), 'Review →', 'ops-qa-queue', 'partials/ops/_qa_queue.jinja') }}
 
-    {% if include_jobs %}
-    <section class="dash-panel flex min-h-[15rem] min-w-0 flex-col">
-        <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 sm:px-4">
-            <div class="flex min-w-0 items-center gap-2">
-                <span class="h-2 w-2 shrink-0 rounded-full bg-cyan-500"></span>
-                <h2 class="truncate text-sm font-semibold text-ink-900">DGC applications</h2>
-            </div>
-            <a href="{{ url('operations:dgc_applications') }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">Approve →</a>
-        </header>
-        <div id="ops-dgc-apps-feed" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 sm:px-4">
-            {% include "partials/ops/_dgc_apps_feed.jinja" %}
-        </div>
-    </section>
+        {% if include_jobs %}
+        {{ panel('bg-cyan-500', 'DGC applications', url('operations:dgc_applications'), 'Approve →', 'ops-dgc-apps-feed', 'partials/ops/_dgc_apps_feed.jinja') }}
 
-    <section class="dash-panel flex min-h-[15rem] min-w-0 flex-col">
-        <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 sm:px-4">
-            <div class="flex min-w-0 items-center gap-2">
-                <span class="h-2 w-2 shrink-0 rounded-full bg-violet-500"></span>
-                <h2 class="truncate text-sm font-semibold text-ink-900">Job applications</h2>
+        <section class="dash-panel flex min-h-[14rem] min-w-0 flex-col overflow-hidden">
+            <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5">
+                <div class="flex min-w-0 items-center gap-2 overflow-hidden">
+                    <span class="h-2 w-2 shrink-0 rounded-full bg-violet-500"></span>
+                    <h2 class="truncate text-sm font-semibold text-ink-900">Job applications</h2>
+                    <span id="ops-hiring-chips" class="truncate text-[10px] font-medium text-slate-400">{{ stats.new_job_applications }} new</span>
+                </div>
+                <a href="{{ url('operations:job_applications') }}" class="shrink-0 text-[10px] font-semibold text-brand-600 hover:text-brand-700">Open →</a>
+            </header>
+            <div id="ops-jobs-feed" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3">
+                {% include "partials/ops/_jobs_feed.jinja" %}
             </div>
-            <div class="flex shrink-0 items-center gap-2">
-                <span id="ops-hiring-chips" class="hidden text-[10px] font-medium text-slate-400 lg:inline">
-                    {{ stats.new_job_applications }} new
-                </span>
-                <a href="{{ url('operations:job_applications') }}" class="text-[10px] font-semibold text-brand-600 hover:text-brand-700">Table →</a>
-            </div>
-        </header>
-        <div id="ops-jobs-feed" class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 sm:px-4">
-            {% include "partials/ops/_jobs_feed.jinja" %}
-        </div>
-    </section>
-    {% endif %}
+        </section>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
