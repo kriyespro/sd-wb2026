@@ -25,4 +25,10 @@ urlpatterns = [
     path('leads/<int:pk>/notes/', views.LeadNotesUpdateView.as_view(), name='lead_notes'),
     path('leads/<int:pk>/convert/', views.LeadConvertView.as_view(), name='lead_convert'),
     path('invoices/', views.OpsInvoicesView.as_view(), name='invoices'),
+    path('job-applications/', views.JobApplicationsView.as_view(), name='job_applications'),
+    path(
+        'job-applications/<int:pk>/status/',
+        views.JobApplicationStatusUpdateView.as_view(),
+        name='job_application_status',
+    ),
 ]

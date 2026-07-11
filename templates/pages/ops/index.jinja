@@ -26,6 +26,11 @@
     <a href="{{ url('operations:leads') }}" class="rounded-full bg-ink-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-ink-800">
         Manage Leads →
     </a>
+    {% if is_superuser_ops %}
+    <a href="{{ url('operations:job_applications') }}" class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink-900 transition hover:border-brand-300 hover:bg-brand-50">
+        Job Applications{% if job_application_new %} ({{ job_application_new }} new){% endif %} →
+    </a>
+    {% endif %}
 </div>
 
 <div id="ops-stats-bar" class="mb-8">

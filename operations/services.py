@@ -18,6 +18,12 @@ OPS_NAV = [
     {'title': 'Invoices', 'icon': '🧾', 'url_name': 'operations:invoices'},
 ]
 
+# Superuser-only nav items (appended in OpsBaseMixin)
+OPS_NAV_SUPERUSER = [
+    {'title': 'Job Applications', 'icon': '💼', 'url_name': 'operations:job_applications'},
+]
+
+
 
 def get_pending_deliverables():
     return Deliverable.objects.filter(

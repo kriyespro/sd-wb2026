@@ -5,10 +5,19 @@ from django.views.generic import TemplateView
 from academy.models import AdmissionApplication, MentorAllocation
 from projects.models import Deliverable, Project
 from users.mixins import DashboardContextMixin, OpsPortalMixin
+from users.roles import ROLE_SUPER_ADMIN
 from users.services import get_dashboard_url_for_user
-from website.models import Lead
+from website.models import JobApplication, Lead
 
-from .forms import LeadAssignForm, LeadConvertForm, LeadNotesForm, LeadStatusForm, MentorAllocationForm, ProjectAssignmentForm
+from .forms import (
+    JobApplicationStatusForm,
+    LeadAssignForm,
+    LeadConvertForm,
+    LeadNotesForm,
+    LeadStatusForm,
+    MentorAllocationForm,
+    ProjectAssignmentForm,
+)
 from .lead_services import (
     assign_lead,
     convert_lead_to_client,
@@ -18,6 +27,7 @@ from .lead_services import (
 )
 from .services import (
     OPS_NAV,
+    OPS_NAV_SUPERUSER,
     approve_deliverable,
     get_mission_control_context,
     get_ops_stats,
@@ -29,15 +39,40 @@ from .services import (
 )
 
 
+def _is_superuser(user):
+    return (
+        user.is_authenticated
+        and (
+            user.is_superuser
+            or getattr(getattr(user, 'profile', None), 'role', None) == ROLE_SUPER_ADMIN
+        )
+    )
+
+
+class SuperAdminRequiredMixin(OpsPortalMixin):
+    """Ops pages restricted to Django superuser or Super Admin role."""
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not _is_superuser(request.user):
+            return redirect(get_dashboard_url_for_user(request.user))
+        return super().dispatch(request, *args, **kwargs)
+
+
 class OpsBaseMixin(DashboardContextMixin, OpsPortalMixin):
     portal_name = 'Internal Ops'
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['portal_name'] = self.portal_name
-        ctx['sidebar_links'] = OPS_NAV
+        nav = list(OPS_NAV)
+        if _is_superuser(self.request.user):
+            nav = nav + list(OPS_NAV_SUPERUSER)
+        ctx['sidebar_links'] = nav
         ctx['dashboard_url'] = get_dashboard_url_for_user(self.request.user)
         ctx['dashboard_label'] = 'Mission Control'
+        ctx['is_superuser_ops'] = _is_superuser(self.request.user)
         return ctx
 
 
@@ -48,6 +83,11 @@ class OpsDashboardView(OpsBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Mission Control'
         ctx.update(get_mission_control_context())
+        if ctx.get('is_superuser_ops'):
+            ctx['job_application_count'] = JobApplication.objects.count()
+            ctx['job_application_new'] = JobApplication.objects.filter(
+                status=JobApplication.STATUS_NEW,
+            ).count()
         return ctx
 
 
@@ -287,3 +327,33 @@ class OpsInvoicesView(OpsBaseMixin, TemplateView):
 
         ctx['invoices'] = get_all_invoices()
         return ctx
+
+
+class JobApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/job_applications.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        applications = JobApplication.objects.all()
+        ctx['page_title'] = 'Job Applications'
+        ctx['applications'] = applications
+        ctx['status_choices'] = JobApplication.STATUS_CHOICES
+        ctx['status_counts'] = {
+            status: applications.filter(status=status).count()
+            for status, _ in JobApplication.STATUS_CHOICES
+        }
+        ctx['total_count'] = applications.count()
+        return ctx
+
+
+class JobApplicationStatusUpdateView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        application = get_object_or_404(JobApplication, pk=pk)
+        form = JobApplicationStatusForm(request.POST)
+        if form.is_valid():
+            application.status = form.cleaned_data['status']
+            application.save(update_fields=['status'])
+        return render(request, 'partials/ops/_job_application_row.jinja', {
+            'app': application,
+            'status_choices': JobApplication.STATUS_CHOICES,
+        })

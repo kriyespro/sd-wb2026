@@ -1,0 +1,59 @@
+<tr id="job-app-{{ app.id }}">
+    <td class="px-4 py-4 align-top">
+        <p class="font-medium text-ink-900">{{ app.name }}</p>
+        <a href="mailto:{{ app.email }}" class="text-xs text-brand-600 hover:underline">{{ app.email }}</a>
+        <p class="mt-0.5 text-xs text-slate-500">{{ app.phone }}</p>
+    </td>
+    <td class="px-4 py-4 align-top">
+        <p class="font-medium text-slate-700">{{ app.role }}</p>
+    </td>
+    <td class="px-4 py-4 align-top">
+        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+            {{ app.get_application_type_display() }}
+        </span>
+    </td>
+    <td class="px-4 py-4 align-top text-slate-600">
+        {{ app.experience or '—' }}
+    </td>
+    <td class="px-4 py-4 align-top text-xs">
+        {% if app.portfolio_url %}
+        <a href="{{ app.portfolio_url }}" target="_blank" rel="noopener" class="block text-brand-600 hover:underline">Portfolio</a>
+        {% endif %}
+        {% if app.linkedin_url %}
+        <a href="{{ app.linkedin_url }}" target="_blank" rel="noopener" class="block text-brand-600 hover:underline">LinkedIn</a>
+        {% endif %}
+        {% if not app.portfolio_url and not app.linkedin_url %}
+        <span class="text-slate-400">—</span>
+        {% endif %}
+    </td>
+    <td class="px-4 py-4 align-top whitespace-nowrap text-xs text-slate-500">
+        {{ app.created_at.strftime('%d %b %Y') }}<br>
+        {{ app.created_at.strftime('%H:%M') }}
+    </td>
+    <td class="px-4 py-4 align-top">
+        <form hx-post="{{ url('operations:job_application_status', kwargs={'pk': app.id}) }}"
+              hx-target="#job-app-{{ app.id }}"
+              hx-swap="outerHTML"
+              class="min-w-[9rem]">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <select name="status"
+                    class="wb-input text-xs
+                    {% if app.status == 'hired' %}border-emerald-300 bg-emerald-50
+                    {% elif app.status == 'rejected' %}border-red-200 bg-red-50
+                    {% elif app.status == 'interview' %}border-amber-300 bg-amber-50
+                    {% elif app.status == 'review' %}border-sky-200 bg-sky-50
+                    {% else %}border-slate-200{% endif %}"
+                    onchange="htmx.trigger(this.form, 'submit')">
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if app.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </td>
+    <td class="px-4 py-4 align-top max-w-xs">
+        <details class="text-xs text-slate-600">
+            <summary class="cursor-pointer font-medium text-brand-600 hover:underline">View</summary>
+            <p class="mt-2 whitespace-pre-wrap leading-relaxed text-slate-600">{{ app.cover_letter }}</p>
+        </details>
+    </td>
+</tr>

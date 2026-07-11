@@ -3,12 +3,14 @@ from django.test import TestCase
 from django.urls import reverse
 
 from users.roles import ROLE_SALES, ROLE_SUPER_ADMIN
-from website.models import Lead
+from website.models import JobApplication, Lead
 
 
 class LeadPipelineTests(TestCase):
     def setUp(self):
         self.admin = User.objects.create_user('admin', 'admin@test.com', 'pass1234')
+        self.admin.is_superuser = True
+        self.admin.save()
         self.admin.profile.role = ROLE_SUPER_ADMIN
         self.admin.profile.save()
         self.sales = User.objects.create_user('sales1', 'sales@test.com', 'pass1234')
@@ -55,3 +57,22 @@ class LeadPipelineTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'lead-', response.content)
         self.assertIn(b'Pipeline Lead', response.content)
+
+    def test_job_applications_superuser_table(self):
+        JobApplication.objects.create(
+            name='Applicant One',
+            email='applicant@example.com',
+            phone='9999999999',
+            role='Meta Ads Specialist',
+            cover_letter='I want this role.',
+        )
+        response = self.client.get(reverse('operations:job_applications'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Applicant One')
+        self.assertContains(response, 'Meta Ads Specialist')
+        self.assertContains(response, '<table')
+
+    def test_job_applications_sales_forbidden(self):
+        self.client.login(username='sales1', password='pass1234')
+        response = self.client.get(reverse('operations:job_applications'))
+        self.assertEqual(response.status_code, 302)

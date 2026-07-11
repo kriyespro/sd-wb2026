@@ -1,0 +1,43 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div>
+        <p class="text-sm text-slate-600">All careers / job applications from the public site. Super Admin only.</p>
+        <p class="mt-1 text-xs text-slate-400">Total: {{ total_count }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2 text-xs">
+        {% for value, label in status_choices %}
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">{{ label }}: {{ status_counts[value] }}</span>
+        {% endfor %}
+    </div>
+</div>
+
+{% if applications %}
+<div class="dash-panel overflow-x-auto">
+    <table class="w-full min-w-[960px] text-left text-sm">
+        <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+                <th class="px-4 py-3 font-semibold">Applicant</th>
+                <th class="px-4 py-3 font-semibold">Role</th>
+                <th class="px-4 py-3 font-semibold">Type</th>
+                <th class="px-4 py-3 font-semibold">Experience</th>
+                <th class="px-4 py-3 font-semibold">Links</th>
+                <th class="px-4 py-3 font-semibold">Applied</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold">Cover letter</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for app in applications %}
+            {% include "partials/ops/_job_application_row.jinja" %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center">
+    <p class="text-slate-500">No job applications yet. Submissions from <a href="{{ url('website:careers') }}" class="font-semibold text-brand-600 hover:underline">/careers/</a> appear here.</p>
+</div>
+{% endif %}
+{% endblock %}

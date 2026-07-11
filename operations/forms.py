@@ -3,7 +3,7 @@ from django import forms
 from academy.models import MentorAllocation
 from projects.models import Project
 from users.roles import STUDENT_ROLES
-from website.models import Lead
+from website.models import JobApplication, Lead
 
 from .models import ProjectAssignment
 
@@ -71,4 +71,11 @@ class LeadConvertForm(forms.Form):
         max_length=200,
         required=False,
         widget=forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Project name (optional)'}),
+    )
+
+
+class JobApplicationStatusForm(forms.Form):
+    status = forms.ChoiceField(
+        choices=JobApplication.STATUS_CHOICES,
+        widget=forms.Select(attrs={'class': 'wb-input text-sm'}),
     )
