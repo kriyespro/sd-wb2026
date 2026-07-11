@@ -51,6 +51,18 @@
   .dash-badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
+
+  .ops-select {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink-900 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10;
+  }
+
+  .ops-textarea {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink-900 shadow-sm transition placeholder-slate-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10;
+  }
+
+  .ops-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm;
+  }
 }
 
 /* Non-Tailwind utilities */

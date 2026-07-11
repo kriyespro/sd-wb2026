@@ -1,16 +1,27 @@
 {% extends "layouts/dashboard.jinja" %}
 
 {% block dashboard_content %}
-<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-    <p class="text-sm text-slate-600">Manage inbound leads from the public site. Update status, assign sales, add handoff notes, and convert won leads to clients.</p>
-    <div class="flex items-center gap-2">
-        <span class="relative flex h-2 w-2">
-            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-        </span>
-        <span class="text-xs font-medium text-emerald-700">Live</span>
+<section class="relative mb-6 overflow-hidden rounded-[1.75rem] bg-ink-900 px-6 py-7 text-white sm:px-8">
+    <div class="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl"></div>
+    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+                </span>
+                <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Inbound pipeline</span>
+            </div>
+            <h2 class="mt-2 font-display text-2xl font-bold">Inbound Leads</h2>
+            <p class="mt-1 max-w-xl text-sm text-slate-300">
+                Update status, assign sales, add handoff notes, and convert won leads to clients.
+            </p>
+        </div>
+        <a href="{{ url('operations:dashboard') }}" class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/10">
+            ← Mission Control
+        </a>
     </div>
-</div>
+</section>
 
 <div id="ops-leads-list"
      hx-get="{{ url('operations:live_leads') }}"
