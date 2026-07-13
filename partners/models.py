@@ -9,11 +9,15 @@ class DgcApplication(models.Model):
     STATUS_NEW = 'new'
     STATUS_REVIEW = 'review'
     STATUS_APPROVED = 'approved'
+    STATUS_PAUSED = 'paused'
+    STATUS_CANCELLED = 'cancelled'
     STATUS_REJECTED = 'rejected'
     STATUS_CHOICES = [
         (STATUS_NEW, 'New'),
         (STATUS_REVIEW, 'Under Review'),
         (STATUS_APPROVED, 'Approved'),
+        (STATUS_PAUSED, 'Paused'),
+        (STATUS_CANCELLED, 'Cancelled'),
         (STATUS_REJECTED, 'Rejected'),
     ]
 

@@ -42,6 +42,21 @@ urlpatterns = [
         views.DgcApplicationRejectView.as_view(),
         name='dgc_application_reject',
     ),
+    path(
+        'dgc-applications/<int:pk>/pause/',
+        views.DgcApplicationPauseView.as_view(),
+        name='dgc_application_pause',
+    ),
+    path(
+        'dgc-applications/<int:pk>/resume/',
+        views.DgcApplicationResumeView.as_view(),
+        name='dgc_application_resume',
+    ),
+    path(
+        'dgc-applications/<int:pk>/cancel/',
+        views.DgcApplicationCancelView.as_view(),
+        name='dgc_application_cancel',
+    ),
     path('dgc-leads/', views.DgcLeadsView.as_view(), name='dgc_leads'),
     path(
         'dgc-leads/<int:pk>/status/',

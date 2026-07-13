@@ -85,6 +85,55 @@ def approve_dgc_application(application, actor):
     return user, temp_password
 
 
+def _set_partner_access(application, *, active: bool):
+    user = application.partner_user
+    if not user:
+        raise ValueError('No partner login linked to this application')
+    if user.is_active != active:
+        user.is_active = active
+        user.save(update_fields=['is_active'])
+    partner = getattr(user, 'partner_profile', None)
+    if partner and partner.is_active != active:
+        partner.is_active = active
+        partner.save(update_fields=['is_active'])
+
+
+@transaction.atomic
+def pause_dgc_application(application, actor):
+    """Temporarily disable portal access; can resume later."""
+    if application.status != DgcApplication.STATUS_APPROVED:
+        raise ValueError('Only approved applications can be paused')
+    _set_partner_access(application, active=False)
+    application.status = DgcApplication.STATUS_PAUSED
+    application.reviewed_by = actor
+    application.save(update_fields=['status', 'reviewed_by', 'updated_at'])
+
+
+@transaction.atomic
+def resume_dgc_application(application, actor):
+    """Re-enable a paused partner portal."""
+    if application.status != DgcApplication.STATUS_PAUSED:
+        raise ValueError('Only paused applications can be resumed')
+    _set_partner_access(application, active=True)
+    application.status = DgcApplication.STATUS_APPROVED
+    application.reviewed_by = actor
+    application.save(update_fields=['status', 'reviewed_by', 'updated_at'])
+
+
+@transaction.atomic
+def cancel_dgc_application(application, actor):
+    """Permanently cancel after approve — disables login; no resume."""
+    if application.status not in (
+        DgcApplication.STATUS_APPROVED,
+        DgcApplication.STATUS_PAUSED,
+    ):
+        raise ValueError('Only approved or paused applications can be cancelled')
+    _set_partner_access(application, active=False)
+    application.status = DgcApplication.STATUS_CANCELLED
+    application.reviewed_by = actor
+    application.save(update_fields=['status', 'reviewed_by', 'updated_at'])
+
+
 def get_active_offers():
     return ResellerOffer.objects.filter(is_active=True)
 

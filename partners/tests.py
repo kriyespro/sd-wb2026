@@ -16,8 +16,11 @@ from partners.models import (
 from partners.services import (
     approve_dgc_application,
     can_request_payout,
+    cancel_dgc_application,
     create_payout_request,
+    pause_dgc_application,
     place_order,
+    resume_dgc_application,
     update_lead_status,
 )
 from users.roles import ROLE_PARTNER, ROLE_SALES, ROLE_SUPER_ADMIN
@@ -66,6 +69,37 @@ class DgcPartnerTests(TestCase):
         self.client.login(username=user.username, password=password)
         response = self.client.get(reverse('partners:dashboard'))
         self.assertEqual(response.status_code, 200)
+
+    def test_pause_resume_cancel_partner_access(self):
+        app = DgcApplication.objects.create(
+            name='Pause Partner',
+            email='pause@example.com',
+            phone='9999999997',
+            why='Test pause flow',
+        )
+        user, _password = approve_dgc_application(app, self.admin)
+        pause_dgc_application(app, self.admin)
+        app.refresh_from_db()
+        user.refresh_from_db()
+        self.assertEqual(app.status, DgcApplication.STATUS_PAUSED)
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.partner_profile.is_active)
+
+        resume_dgc_application(app, self.admin)
+        app.refresh_from_db()
+        user.refresh_from_db()
+        self.assertEqual(app.status, DgcApplication.STATUS_APPROVED)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.partner_profile.is_active)
+
+        cancel_dgc_application(app, self.admin)
+        app.refresh_from_db()
+        user.refresh_from_db()
+        self.assertEqual(app.status, DgcApplication.STATUS_CANCELLED)
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.partner_profile.is_active)
+        with self.assertRaises(ValueError):
+            resume_dgc_application(app, self.admin)
 
     def test_order_creates_commission(self):
         user = User.objects.create_user('dgcx', 'dgcx@test.com', 'pass1234')

@@ -8,7 +8,13 @@ from users.mixins import DashboardContextMixin, OpsPortalMixin
 from users.roles import ROLE_SUPER_ADMIN
 from users.services import get_dashboard_url_for_user
 from partners.models import DgcApplication, PartnerLead
-from partners.services import approve_dgc_application, update_lead_status
+from partners.services import (
+    approve_dgc_application,
+    cancel_dgc_application,
+    pause_dgc_application,
+    resume_dgc_application,
+    update_lead_status,
+)
 from website.models import JobApplication, Lead
 
 from .forms import (
@@ -361,7 +367,7 @@ class DgcApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        applications = DgcApplication.objects.all()
+        applications = DgcApplication.objects.select_related('partner_user')
         ctx['page_title'] = 'DGC Applications'
         ctx['applications'] = applications
         ctx['status_choices'] = DgcApplication.STATUS_CHOICES
@@ -394,13 +400,56 @@ class DgcApplicationRejectView(SuperAdminRequiredMixin, View):
         from django.contrib import messages
 
         application = get_object_or_404(DgcApplication, pk=pk)
-        if application.status != DgcApplication.STATUS_APPROVED:
+        if application.status in (
+            DgcApplication.STATUS_APPROVED,
+            DgcApplication.STATUS_PAUSED,
+            DgcApplication.STATUS_CANCELLED,
+        ):
+            messages.error(request, 'Use Pause or Cancel for approved partners — cannot reject.')
+        else:
             application.status = DgcApplication.STATUS_REJECTED
             application.reviewed_by = request.user
             application.save(update_fields=['status', 'reviewed_by', 'updated_at'])
             messages.success(request, f'Rejected {application.name}.')
-        else:
-            messages.error(request, 'Already approved — cannot reject.')
+        return redirect('operations:dgc_applications')
+
+
+class DgcApplicationPauseView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        from django.contrib import messages
+
+        application = get_object_or_404(DgcApplication, pk=pk)
+        try:
+            pause_dgc_application(application, request.user)
+            messages.success(request, f'Paused {application.name} — portal login disabled.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
+        return redirect('operations:dgc_applications')
+
+
+class DgcApplicationResumeView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        from django.contrib import messages
+
+        application = get_object_or_404(DgcApplication, pk=pk)
+        try:
+            resume_dgc_application(application, request.user)
+            messages.success(request, f'Resumed {application.name} — portal login enabled.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
+        return redirect('operations:dgc_applications')
+
+
+class DgcApplicationCancelView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        from django.contrib import messages
+
+        application = get_object_or_404(DgcApplication, pk=pk)
+        try:
+            cancel_dgc_application(application, request.user)
+            messages.success(request, f'Cancelled {application.name} — portal permanently disabled.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
         return redirect('operations:dgc_applications')
 
 
