@@ -1,0 +1,102 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div id="ops2-poll"
+     hx-get="{{ url('ops2:live') }}"
+     hx-trigger="load, every 15s"
+     hx-swap="none"
+     class="hidden"
+     aria-hidden="true"></div>
+
+<div class="mx-auto min-w-0 max-w-[1440px] space-y-5 overflow-x-hidden pb-8">
+    {# Command header #}
+    <section class="relative overflow-hidden rounded-3xl bg-ink-900 px-5 py-6 text-white sm:px-8 sm:py-7">
+        <div class="pointer-events-none absolute inset-0 opacity-40"
+             style="background:
+                radial-gradient(50% 80% at 10% 0%, rgba(201,162,39,0.25), transparent 55%),
+                radial-gradient(40% 60% at 90% 20%, rgba(56,189,248,0.12), transparent 50%);"></div>
+        <div class="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60"></span>
+                        <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+                    </span>
+                    <span class="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-300">Winning Blueprints · Ops</span>
+                    <span id="ops2-live-timestamp" class="rounded-md bg-white/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-200">
+                        {{ updated_at.strftime('%H:%M:%S') }}
+                    </span>
+                </div>
+                <h2 class="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">Mission Control</h2>
+                <p class="mt-2 max-w-xl text-sm text-slate-300">
+                    Live desk for inbound, QA, academy, and partner pipeline.
+                </p>
+                <div id="ops2-attention" class="mt-4 min-w-0">
+                    {% include "partials/ops/_attention_v2.jinja" %}
+                </div>
+            </div>
+            <div class="flex shrink-0 flex-wrap gap-2">
+                <a href="{{ url('operations:leads') }}" class="rounded-full bg-gold-500 px-4 py-2 text-[11px] font-bold text-ink-900 hover:bg-gold-400">Inbound leads</a>
+                <a href="{{ url('operations:quality_check') }}" class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-[11px] font-bold text-white hover:bg-white/10">QA queue</a>
+                {% if include_jobs %}
+                <a href="{{ url('operations:dgc_orders') }}" class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-[11px] font-bold text-white hover:bg-white/10">DGC orders</a>
+                {% endif %}
+                <a href="{{ url('operations:dashboard') }}" class="rounded-full border border-white/15 px-4 py-2 text-[11px] font-semibold text-slate-300 hover:bg-white/5">Classic →</a>
+            </div>
+        </div>
+    </section>
+
+    {# Primary metrics #}
+    <div id="ops2-kpi" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {% include "partials/ops/_kpi_v2.jinja" %}
+    </div>
+
+    {# Pipeline + secondary #}
+    <div class="grid gap-3 lg:grid-cols-3">
+        <section class="dash-panel lg:col-span-2 overflow-hidden p-4 sm:p-5">
+            <div class="mb-3 flex items-center justify-between gap-2">
+                <h3 class="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Inbound pipeline</h3>
+                <a href="{{ url('operations:leads') }}" class="text-[10px] font-bold text-brand-600 hover:text-brand-700">Manage →</a>
+            </div>
+            <div id="ops2-pipeline">
+                {% include "partials/ops/_pipeline_bar.jinja" %}
+            </div>
+        </section>
+        <section class="dash-panel overflow-hidden p-4 sm:p-5">
+            <h3 class="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">This week</h3>
+            <div id="ops2-week" class="space-y-3">
+                {% include "partials/ops/_week_v2.jinja" %}
+            </div>
+        </section>
+    </div>
+
+    {# Feeds #}
+    <div class="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {% macro board(tone, title, href, label, feed_id, partial) %}
+        <section class="dash-panel flex min-h-[17rem] min-w-0 flex-col overflow-hidden">
+            <header class="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-4 py-3">
+                <div class="flex min-w-0 items-center gap-2.5">
+                    <span class="h-2.5 w-2.5 shrink-0 rounded-full {{ tone }}"></span>
+                    <h3 class="truncate font-display text-sm font-semibold text-ink-900">{{ title }}</h3>
+                </div>
+                <a href="{{ href }}" class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">{{ label }}</a>
+            </header>
+            <div id="{{ feed_id }}" class="min-w-0 flex-1 px-4 pb-2 pt-1">
+                {% include partial %}
+            </div>
+        </section>
+        {% endmacro %}
+
+        {{ board('bg-emerald-500', 'Inbound leads', url('operations:leads'), 'Open →', 'ops2-leads-feed', 'partials/ops/_leads_feed.jinja') }}
+        {{ board('bg-orange-500', 'QA queue', url('operations:quality_check'), 'Review →', 'ops2-qa-queue', 'partials/ops/_qa_queue.jinja') }}
+        {{ board('bg-brand-600', 'Academy intake', url('operations:pipeline'), 'Open →', 'ops2-applications-feed', 'partials/ops/_applications_feed.jinja') }}
+
+        {% if include_jobs %}
+        {{ board('bg-teal-500', 'DGC leads', url('operations:dgc_leads'), 'Open →', 'ops2-dgc-leads-feed', 'partials/ops/_dgc_leads_feed.jinja') }}
+        {{ board('bg-cyan-500', 'DGC applications', url('operations:dgc_applications'), 'Approve →', 'ops2-dgc-apps-feed', 'partials/ops/_dgc_apps_feed.jinja') }}
+        {{ board('bg-violet-500', 'DGC orders', url('operations:dgc_orders'), 'Manage →', 'ops2-dgc-orders-feed', 'partials/ops/_dgc_orders_feed.jinja') }}
+        {{ board('bg-fuchsia-500', 'Job applications', url('operations:job_applications'), 'Open →', 'ops2-jobs-feed', 'partials/ops/_jobs_feed.jinja') }}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

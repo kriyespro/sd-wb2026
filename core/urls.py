@@ -16,6 +16,7 @@ urlpatterns = [
     path('dashboard/dgc/', include('partners.urls')),
     path('dgc/', include('partners.public_urls')),
     path('ops/', include('operations.urls')),
+    path('ops2/', include('operations.urls_v2')),
     path('', include('website.urls')),
     path('academy/', include('academy.urls')),
 ]

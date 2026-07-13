@@ -126,3 +126,47 @@ class LeadPipelineTests(TestCase):
         self.assertEqual(lead.status, PartnerLead.STATUS_WON)
         self.assertTrue(lead.commissions.exists())
         self.assertEqual(lead.commissions.first().amount, Decimal('2000.00'))
+
+    def test_dgc_orders_page_and_status(self):
+        from decimal import Decimal
+
+        from partners.models import PartnerOrder, ResellerOffer
+        from users.roles import ROLE_PARTNER
+
+        partner_user = User.objects.create_user('dgcord', 'dgcord@test.com', 'pass1234')
+        partner_user.profile.role = ROLE_PARTNER
+        partner_user.profile.save()
+        partner = PartnerProfile.objects.create(user=partner_user, code='DGCORD1')
+        offer = ResellerOffer.objects.create(
+            title='Ops Offer',
+            price=Decimal('15000.00'),
+            commission_percent=Decimal('0.00'),
+        )
+        order = PartnerOrder.objects.create(
+            partner=partner,
+            offer=offer,
+            quantity=1,
+            unit_price=offer.price,
+            total=offer.price,
+        )
+        response = self.client.get(reverse('operations:dgc_orders'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Ops Offer')
+        self.assertContains(response, 'DGCORD1')
+
+        url = reverse('operations:dgc_order_status', kwargs={'pk': order.pk})
+        response = self.client.post(url, {'status': PartnerOrder.STATUS_FULFILLED})
+        self.assertEqual(response.status_code, 200)
+        order.refresh_from_db()
+        self.assertEqual(order.status, PartnerOrder.STATUS_FULFILLED)
+
+        self.client.login(username='sales1', password='pass1234')
+        self.assertEqual(self.client.get(reverse('operations:dgc_orders')).status_code, 302)
+
+    def test_ops2_mission_control(self):
+        response = self.client.get(reverse('ops2:dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Mission Control')
+        live = self.client.get(reverse('ops2:live'))
+        self.assertEqual(live.status_code, 200)
+        self.assertIn(b'ops2-kpi', live.content)

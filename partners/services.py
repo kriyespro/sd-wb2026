@@ -163,6 +163,16 @@ def place_order(partner, offer, quantity=1, notes=''):
     return order
 
 
+@transaction.atomic
+def update_order_status(order, status):
+    valid = {value for value, _ in PartnerOrder.STATUS_CHOICES}
+    if status not in valid:
+        raise ValueError('Invalid order status')
+    order.status = status
+    order.save(update_fields=['status'])
+    return order
+
+
 def create_partner_lead(partner, cleaned):
     return PartnerLead.objects.create(partner=partner, **cleaned)
 

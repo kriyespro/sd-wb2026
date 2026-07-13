@@ -1,0 +1,50 @@
+<tr id="dgc-order-{{ order.id }}" class="align-top transition hover:bg-slate-50/80">
+    <td class="px-4 py-4">
+        <p class="font-semibold text-ink-900">#{{ order.id }}</p>
+    </td>
+    <td class="px-4 py-4">
+        <p class="font-medium text-slate-800">{{ order.offer.title }}</p>
+        <p class="text-xs text-slate-500">₹{{ '{:,.0f}'.format(order.unit_price) }} each</p>
+    </td>
+    <td class="px-4 py-4">
+        <p class="font-semibold text-ink-900">×{{ order.quantity }}</p>
+        <p class="text-sm font-bold text-brand-700">₹{{ '{:,.0f}'.format(order.total) }}</p>
+    </td>
+    <td class="px-4 py-4">
+        <p class="font-semibold text-violet-800">{{ order.partner.code }}</p>
+        <p class="text-xs text-slate-500">{{ order.partner.user.get_full_name() or order.partner.user.username }}</p>
+    </td>
+    <td class="px-4 py-4 whitespace-nowrap text-xs text-slate-500">
+        <p class="font-medium text-slate-700">{{ order.created_at.strftime('%d %b %Y') }}</p>
+        <p>{{ order.created_at.strftime('%H:%M') }}</p>
+    </td>
+    <td class="px-4 py-4 max-w-xs">
+        {% if order.notes %}
+        <details class="text-xs text-slate-600">
+            <summary class="cursor-pointer font-medium text-brand-600">View</summary>
+            <p class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 p-2">{{ order.notes }}</p>
+        </details>
+        {% else %}
+        <span class="text-xs text-slate-400">—</span>
+        {% endif %}
+    </td>
+    <td class="px-4 py-4">
+        <form hx-post="{{ url('operations:dgc_order_status', kwargs={'pk': order.id}) }}"
+              hx-target="#dgc-order-{{ order.id }}"
+              hx-swap="outerHTML"
+              class="min-w-[9rem]">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <select name="status"
+                    class="ops-select text-xs font-semibold
+                    {% if order.status == 'fulfilled' %}border-emerald-300 bg-emerald-50 text-emerald-900
+                    {% elif order.status == 'cancelled' %}border-slate-300 bg-slate-50 text-slate-600
+                    {% elif order.status == 'confirmed' %}border-sky-300 bg-sky-50 text-sky-900
+                    {% else %}border-amber-300 bg-amber-50 text-amber-900{% endif %}"
+                    onchange="htmx.trigger(this.form, 'submit')">
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </td>
+</tr>

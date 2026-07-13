@@ -33,6 +33,7 @@
             <a href="{{ url('operations:leads') }}" class="rounded-lg bg-ink-900 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-ink-800">Inbound</a>
             {% if include_jobs %}
             <a href="{{ url('operations:dgc_leads') }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">DGC</a>
+            <a href="{{ url('operations:dgc_orders') }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">Orders</a>
             {% endif %}
             <a href="{{ url('operations:quality_check') }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">QA</a>
             <a href="{{ url('operations:invoices') }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">Billing</a>
@@ -42,6 +43,7 @@
             </a>
             <a href="{{ url('operations:dgc_applications') }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">Apps</a>
             {% endif %}
+            <a href="{{ url('ops2:dashboard') }}" class="rounded-lg border border-brand-200 bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700 hover:bg-brand-100">v2 →</a>
         </nav>
     </div>
 

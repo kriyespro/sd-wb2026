@@ -63,4 +63,10 @@ urlpatterns = [
         views.DgcLeadStatusUpdateView.as_view(),
         name='dgc_lead_status',
     ),
+    path('dgc-orders/', views.DgcOrdersView.as_view(), name='dgc_orders'),
+    path(
+        'dgc-orders/<int:pk>/status/',
+        views.DgcOrderStatusUpdateView.as_view(),
+        name='dgc_order_status',
+    ),
 ]

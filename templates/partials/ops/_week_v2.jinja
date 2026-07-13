@@ -1,0 +1,23 @@
+<div class="flex items-baseline justify-between gap-2">
+    <span class="text-xs text-slate-500">Inbound leads</span>
+    <span class="font-display text-lg font-bold tabular-nums text-ink-900">{{ stats.leads_week }}</span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+    <span class="text-xs text-slate-500">Won this month</span>
+    <span class="font-display text-lg font-bold tabular-nums text-emerald-700">{{ stats.won_month }}</span>
+</div>
+{% if include_jobs %}
+<div class="flex items-baseline justify-between gap-2">
+    <span class="text-xs text-slate-500">DGC leads won</span>
+    <span class="font-display text-lg font-bold tabular-nums text-teal-700">{{ stats.dgc_won_month }}</span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+    <span class="text-xs text-slate-500">Pending payouts</span>
+    <span class="font-display text-lg font-bold tabular-nums text-amber-700">{{ stats.pending_payouts }}</span>
+</div>
+{% else %}
+<div class="flex items-baseline justify-between gap-2">
+    <span class="text-xs text-slate-500">Academy apps</span>
+    <span class="font-display text-lg font-bold tabular-nums text-brand-700">{{ stats.new_applications }}</span>
+</div>
+{% endif %}

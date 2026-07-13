@@ -1,0 +1,26 @@
+{% set tone_map = {
+    'emerald': 'bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-400/30 hover:bg-emerald-500/25',
+    'amber': 'bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/30 hover:bg-amber-500/25',
+    'orange': 'bg-orange-500/15 text-orange-100 ring-1 ring-orange-400/30 hover:bg-orange-500/25',
+    'rose': 'bg-rose-500/15 text-rose-100 ring-1 ring-rose-400/30 hover:bg-rose-500/25',
+    'brand': 'bg-sky-500/15 text-sky-100 ring-1 ring-sky-400/30 hover:bg-sky-500/25',
+    'violet': 'bg-violet-500/15 text-violet-100 ring-1 ring-violet-400/30 hover:bg-violet-500/25',
+    'teal': 'bg-teal-500/15 text-teal-100 ring-1 ring-teal-400/30 hover:bg-teal-500/25',
+} %}
+
+{% if attention_items %}
+<div class="flex max-w-full flex-wrap gap-1.5">
+    {% for item in attention_items[:6] %}
+    <a href="{{ url(item.href_name) }}"
+       class="inline-flex max-w-[12rem] items-center gap-1.5 truncate rounded-full px-2.5 py-1 text-[10px] font-semibold transition {{ tone_map.get(item.tone, 'bg-white/10 text-slate-200 ring-1 ring-white/15') }}">
+        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-80"></span>
+        <span class="truncate">{{ item.label }}</span>
+    </a>
+    {% endfor %}
+    {% if attention_items|length > 6 %}
+    <span class="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold text-slate-300">+{{ attention_items|length - 6 }}</span>
+    {% endif %}
+</div>
+{% else %}
+<p class="text-[11px] font-medium text-slate-400">All clear — nothing urgent.</p>
+{% endif %}

@@ -7,13 +7,14 @@ from projects.models import Deliverable, Project
 from users.mixins import DashboardContextMixin, OpsPortalMixin
 from users.roles import ROLE_SUPER_ADMIN
 from users.services import get_dashboard_url_for_user
-from partners.models import DgcApplication, PartnerLead
+from partners.models import DgcApplication, PartnerLead, PartnerOrder
 from partners.services import (
     approve_dgc_application,
     cancel_dgc_application,
     pause_dgc_application,
     resume_dgc_application,
     update_lead_status as update_partner_lead_status,
+    update_order_status,
 )
 from website.models import JobApplication, Lead
 
@@ -487,3 +488,60 @@ class DgcLeadStatusUpdateView(SuperAdminRequiredMixin, View):
             'lead': lead,
             'status_choices': PartnerLead.STATUS_CHOICES,
         })
+
+
+class DgcOrdersView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/dgc_orders.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        orders = PartnerOrder.objects.select_related(
+            'partner', 'partner__user', 'offer',
+        ).all()
+        ctx['page_title'] = 'DGC Orders'
+        ctx['orders'] = orders
+        ctx['status_choices'] = PartnerOrder.STATUS_CHOICES
+        ctx['status_counts'] = {
+            status: orders.filter(status=status).count()
+            for status, _ in PartnerOrder.STATUS_CHOICES
+        }
+        ctx['total_count'] = orders.count()
+        return ctx
+
+
+class DgcOrderStatusUpdateView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        order = get_object_or_404(
+            PartnerOrder.objects.select_related('partner', 'partner__user', 'offer'),
+            pk=pk,
+        )
+        status = request.POST.get('status')
+        valid = {value for value, _ in PartnerOrder.STATUS_CHOICES}
+        if status in valid:
+            update_order_status(order, status)
+            order.refresh_from_db()
+        return render(request, 'partials/ops/_dgc_order_row.jinja', {
+            'order': order,
+            'status_choices': PartnerOrder.STATUS_CHOICES,
+        })
+
+
+class OpsDashboardV2View(OpsBaseMixin, TemplateView):
+    """Redesigned Mission Control at /ops2/."""
+
+    template_name = 'pages/ops/mission_v2.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'Mission Control'
+        include_jobs = ctx.get('is_superuser_ops', False)
+        ctx.update(get_mission_control_context(include_jobs=include_jobs))
+        return ctx
+
+
+class OpsMissionLiveV2View(OpsPortalMixin, View):
+    def get(self, request):
+        include_jobs = _is_superuser(request.user)
+        ctx = get_mission_control_context(include_jobs=include_jobs)
+        ctx['is_superuser_ops'] = include_jobs
+        return render(request, 'partials/ops/_mission_live_v2.jinja', ctx)

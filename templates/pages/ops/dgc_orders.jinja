@@ -1,0 +1,70 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<section class="relative mb-6 overflow-hidden rounded-[1.75rem] bg-ink-900 px-6 py-7 text-white sm:px-8">
+    <div class="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-violet-500/20 blur-3xl"></div>
+    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Partner desk</span>
+            <h2 class="mt-2 font-display text-2xl font-bold">DGC Orders</h2>
+            <p class="mt-1 max-w-xl text-sm text-slate-300">
+                Reseller package orders placed by DGC partners. Confirm, fulfill, or cancel.
+            </p>
+            <p class="mt-2 text-xs text-slate-400">Total: {{ total_count }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ url('operations:dgc_leads') }}"
+               class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:bg-white/10">
+                DGC Leads →
+            </a>
+            <a href="{{ url('operations:dgc_applications') }}"
+               class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:bg-white/10">
+                Applications →
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="mb-5 flex flex-wrap gap-2">
+    {% for value, label in status_choices %}
+    <span class="ops-chip
+        {% if value == 'pending' %}border-amber-200 bg-amber-50 text-amber-800
+        {% elif value == 'confirmed' %}border-sky-200 bg-sky-50 text-sky-800
+        {% elif value == 'fulfilled' %}border-emerald-200 bg-emerald-50 text-emerald-800
+        {% elif value == 'cancelled' %}border-slate-200 bg-slate-50 text-slate-600
+        {% endif %}">
+        <span class="opacity-70">{{ label }}</span>
+        <span class="font-bold">{{ status_counts[value] }}</span>
+    </span>
+    {% endfor %}
+</div>
+
+{% if orders %}
+<div class="dash-panel overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[960px] text-left text-sm">
+            <thead class="border-b border-slate-100 bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
+                <tr>
+                    <th class="px-4 py-3">Order</th>
+                    <th class="px-4 py-3">Package</th>
+                    <th class="px-4 py-3">Qty / Total</th>
+                    <th class="px-4 py-3">DGC partner</th>
+                    <th class="px-4 py-3">Placed</th>
+                    <th class="px-4 py-3">Notes</th>
+                    <th class="px-4 py-3">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for order in orders %}
+                {% include "partials/ops/_dgc_order_row.jinja" %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center text-slate-500">
+    No DGC orders yet. Partners place them from <code class="text-xs">/dashboard/dgc/orders/</code>.
+</div>
+{% endif %}
+{% endblock %}

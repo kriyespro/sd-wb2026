@@ -1,0 +1,47 @@
+{# OOB fragments for /ops2/ live poll #}
+<div id="ops2-live-timestamp" hx-swap-oob="true" class="rounded-md bg-white/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-200">
+    {{ updated_at.strftime('%H:%M:%S') }}
+</div>
+
+<div id="ops2-attention" hx-swap-oob="true">
+    {% include "partials/ops/_attention_v2.jinja" %}
+</div>
+
+<div id="ops2-kpi" hx-swap-oob="true" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    {% include "partials/ops/_kpi_v2.jinja" %}
+</div>
+
+<div id="ops2-pipeline" hx-swap-oob="true">
+    {% include "partials/ops/_pipeline_bar.jinja" %}
+</div>
+
+<div id="ops2-week" hx-swap-oob="true" class="space-y-3">
+    {% include "partials/ops/_week_v2.jinja" %}
+</div>
+
+<div id="ops2-leads-feed" hx-swap-oob="true">
+    {% include "partials/ops/_leads_feed.jinja" %}
+</div>
+
+<div id="ops2-qa-queue" hx-swap-oob="true">
+    {% include "partials/ops/_qa_queue.jinja" %}
+</div>
+
+<div id="ops2-applications-feed" hx-swap-oob="true">
+    {% include "partials/ops/_applications_feed.jinja" %}
+</div>
+
+{% if include_jobs %}
+<div id="ops2-dgc-leads-feed" hx-swap-oob="true">
+    {% include "partials/ops/_dgc_leads_feed.jinja" %}
+</div>
+<div id="ops2-dgc-apps-feed" hx-swap-oob="true">
+    {% include "partials/ops/_dgc_apps_feed.jinja" %}
+</div>
+<div id="ops2-dgc-orders-feed" hx-swap-oob="true">
+    {% include "partials/ops/_dgc_orders_feed.jinja" %}
+</div>
+<div id="ops2-jobs-feed" hx-swap-oob="true">
+    {% include "partials/ops/_jobs_feed.jinja" %}
+</div>
+{% endif %}

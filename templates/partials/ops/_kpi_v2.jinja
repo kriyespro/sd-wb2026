@@ -1,0 +1,17 @@
+{% macro kpi(href, label, value, meta, accent='text-ink-900') %}
+<a href="{{ href }}"
+   class="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md sm:p-5">
+    <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{{ label }}</p>
+    <p class="mt-2 font-display text-3xl font-bold tabular-nums tracking-tight {{ accent }} group-hover:text-brand-700 sm:text-4xl">{{ value }}</p>
+    <p class="mt-1.5 truncate text-[11px] text-slate-400">{{ meta }}</p>
+</a>
+{% endmacro %}
+
+{{ kpi(url('operations:leads'), 'Inbound new', stats.new_leads, stats.unassigned_leads ~ ' unassigned', 'text-emerald-700') }}
+{{ kpi(url('operations:quality_check'), 'QA pending', stats.pending_deliverables, 'awaiting review', 'text-orange-600') }}
+{{ kpi(url('operations:projects'), 'Active projects', stats.active_projects, stats.planning_projects ~ ' planning', 'text-sky-700') }}
+{% if include_jobs %}
+{{ kpi(url('operations:dgc_orders'), 'DGC orders', stats.pending_dgc_orders, stats.dgc_orders_total ~ ' total', 'text-violet-700') }}
+{% else %}
+{{ kpi(url('operations:invoices'), 'Overdue billing', stats.overdue_invoices, stats.sent_invoices ~ ' sent', 'text-rose-600') }}
+{% endif %}

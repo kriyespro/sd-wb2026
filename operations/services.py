@@ -5,13 +5,14 @@ from django.utils import timezone
 
 from academy.models import AdmissionApplication
 from billing.models import Invoice
-from partners.models import DgcApplication, PartnerLead, PayoutRequest
+from partners.models import DgcApplication, PartnerLead, PartnerOrder, PayoutRequest
 from projects.models import Deliverable, Project
 from website.models import JobApplication, Lead
 
 from .models import ProjectAssignment, Team
 
 OPS_NAV = [
+    {'title': 'Mission Control v2', 'icon': '🛰️', 'url_name': 'ops2:dashboard'},
     {'title': 'Quality Check', 'icon': '✔️', 'url_name': 'operations:quality_check'},
     {'title': 'Projects', 'icon': '📁', 'url_name': 'operations:projects'},
     {'title': 'Talent Pipeline', 'icon': '🔄', 'url_name': 'operations:pipeline'},
@@ -28,6 +29,7 @@ OPS_NAV_SUPERUSER = [
     {'title': 'Job Applications', 'icon': '💼', 'url_name': 'operations:job_applications'},
     {'title': 'DGC Applications', 'icon': '🤝', 'url_name': 'operations:dgc_applications'},
     {'title': 'DGC Leads', 'icon': '📣', 'url_name': 'operations:dgc_leads'},
+    {'title': 'DGC Orders', 'icon': '🛒', 'url_name': 'operations:dgc_orders'},
 ]
 
 
@@ -121,6 +123,10 @@ def get_ops_stats():
         'pending_payouts': PayoutRequest.objects.filter(
             status=PayoutRequest.STATUS_PENDING,
         ).count(),
+        'pending_dgc_orders': PartnerOrder.objects.filter(
+            status=PartnerOrder.STATUS_PENDING,
+        ).count(),
+        'dgc_orders_total': PartnerOrder.objects.count(),
     }
 
 
@@ -141,6 +147,12 @@ def get_lead_pipeline_counts():
         status: Lead.objects.filter(status=status).count()
         for status, _ in Lead.STATUS_CHOICES
     }
+
+
+def get_recent_dgc_orders(limit=8):
+    return PartnerOrder.objects.select_related(
+        'partner', 'partner__user', 'offer',
+    ).order_by('-created_at')[:limit]
 
 
 def get_recent_applications(limit=5):
@@ -198,6 +210,12 @@ def get_attention_items(stats, include_jobs=False):
             'href_name': 'operations:invoices',
             'tone': 'rose',
         })
+    if include_jobs and stats.get('pending_dgc_orders'):
+        items.append({
+            'label': f"{stats['pending_dgc_orders']} DGC order{'s' if stats['pending_dgc_orders'] != 1 else ''}",
+            'href_name': 'operations:dgc_orders',
+            'tone': 'violet',
+        })
     if include_jobs and stats['pending_payouts']:
         items.append({
             'label': f"{stats['pending_payouts']} payout{'s' if stats['pending_payouts'] != 1 else ''}",
@@ -240,6 +258,7 @@ def get_mission_control_context(include_jobs=False):
         ctx['job_application_count'] = stats['total_job_applications']
         ctx['recent_dgc_leads'] = get_recent_dgc_leads(4)
         ctx['recent_dgc_applications'] = get_recent_dgc_applications(4)
+        ctx['recent_dgc_orders'] = get_recent_dgc_orders(5)
     return ctx
 
 
