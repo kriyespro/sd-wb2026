@@ -5,7 +5,7 @@
         <div class="ops-feed-main">
             <div class="flex min-w-0 items-start justify-between gap-2">
                 <div class="min-w-0 flex-1 overflow-hidden">
-                    <p class="ops-feed-title" title="{{ deliverable.title }}">{{ deliverable.title }}</p>
+                    <p class="ops-feed-title normal-case" title="{{ deliverable.title }}">{{ deliverable.title }}</p>
                     <p class="ops-feed-meta" title="{{ deliverable.project.name }}">{{ deliverable.project.name }}</p>
                 </div>
                 <a href="{{ url('operations:quality_check') }}"
@@ -18,7 +18,7 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="flex h-full min-h-[8rem] items-center justify-center">
+<div class="flex min-h-[7rem] items-center justify-center py-6">
     <p class="text-[11px] text-slate-400">All clear — nothing in QA.</p>
 </div>
 {% endif %}

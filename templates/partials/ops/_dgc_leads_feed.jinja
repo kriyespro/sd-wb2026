@@ -3,7 +3,7 @@
     {% for lead in recent_dgc_leads %}
     <div class="ops-feed-row">
         <div class="ops-feed-main">
-            <div class="flex min-w-0 items-baseline justify-between gap-2">
+            <div class="flex min-w-0 items-center justify-between gap-2">
                 <a href="{{ url('operations:dgc_leads') }}#dgc-lead-{{ lead.id }}"
                    class="ops-feed-title hover:text-teal-700"
                    title="{{ lead.name }}">{{ lead.name }}</a>
@@ -14,7 +14,7 @@
                 · {{ lead.partner.code }}
                 {% if lead.deal_value %} · ₹{{ '{:,.0f}'.format(lead.deal_value) }}{% endif %}
             </p>
-            <div class="mt-1">
+            <div class="ops-feed-tags">
                 <span class="ops-pill
                     {% if lead.status == 'won' %}bg-emerald-50 text-emerald-700
                     {% elif lead.status == 'lost' %}bg-slate-50 text-slate-500
@@ -28,7 +28,7 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="flex h-full min-h-[8rem] items-center justify-center">
+<div class="flex min-h-[7rem] items-center justify-center py-6">
     <p class="text-[11px] text-slate-400">No DGC leads yet.</p>
 </div>
 {% endif %}

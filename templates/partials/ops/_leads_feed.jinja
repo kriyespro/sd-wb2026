@@ -12,7 +12,7 @@
     {% for lead in recent_leads %}
     <div class="ops-feed-row">
         <div class="ops-feed-main">
-            <div class="flex min-w-0 items-baseline justify-between gap-2">
+            <div class="flex min-w-0 items-center justify-between gap-2">
                 <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}"
                    class="ops-feed-title hover:text-brand-600"
                    title="{{ lead.name }}">{{ lead.name }}</a>
@@ -21,7 +21,7 @@
             <p class="ops-feed-meta" title="{{ lead.company or '' }} {{ lead.service_interest or 'General' }}">
                 {% if lead.company %}{{ lead.company }} · {% endif %}{{ lead.service_interest or 'General' }}
             </p>
-            <div class="mt-1 flex min-w-0 flex-wrap gap-1">
+            <div class="ops-feed-tags">
                 <span class="ops-pill {{ status_chip.get(lead.status, 'bg-slate-50 text-slate-600') }}">
                     {{ lead.get_status_display() }}
                 </span>
@@ -34,7 +34,7 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="flex h-full min-h-[8rem] items-center justify-center">
+<div class="flex min-h-[7rem] items-center justify-center py-6">
     <p class="text-[11px] text-slate-400">No inbound leads yet.</p>
 </div>
 {% endif %}
