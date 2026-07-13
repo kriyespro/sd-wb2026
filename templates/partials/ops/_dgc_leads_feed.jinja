@@ -3,10 +3,18 @@
     {% for lead in recent_dgc_leads %}
     <div class="ops-feed-row">
         <div class="ops-feed-main">
-            <div class="flex min-w-0 items-center gap-1.5">
+            <div class="flex min-w-0 items-baseline justify-between gap-2">
                 <a href="{{ url('operations:dgc_leads') }}#dgc-lead-{{ lead.id }}"
-                   class="ops-feed-title min-w-0 hover:text-teal-700"
+                   class="ops-feed-title hover:text-teal-700"
                    title="{{ lead.name }}">{{ lead.name }}</a>
+                <time class="ops-feed-time" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(lead.created_at) }}</time>
+            </div>
+            <p class="ops-feed-meta" title="{{ lead.company or lead.interest or 'General' }} · {{ lead.partner.code }}">
+                {{ lead.company or lead.interest or 'General' }}
+                · {{ lead.partner.code }}
+                {% if lead.deal_value %} · ₹{{ '{:,.0f}'.format(lead.deal_value) }}{% endif %}
+            </p>
+            <div class="mt-1">
                 <span class="ops-pill
                     {% if lead.status == 'won' %}bg-emerald-50 text-emerald-700
                     {% elif lead.status == 'lost' %}bg-slate-50 text-slate-500
@@ -15,13 +23,7 @@
                     {{ lead.get_status_display() }}
                 </span>
             </div>
-            <p class="ops-feed-meta" title="{{ lead.company or lead.interest or 'General' }} · {{ lead.partner.code }}">
-                {{ lead.company or lead.interest or 'General' }}
-                · {{ lead.partner.code }}
-                {% if lead.deal_value %} · ₹{{ '{:,.0f}'.format(lead.deal_value) }}{% endif %}
-            </p>
         </div>
-        <time class="ops-feed-time" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(lead.created_at) }}</time>
     </div>
     {% endfor %}
 </div>

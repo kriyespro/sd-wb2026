@@ -12,22 +12,24 @@
     {% for lead in recent_leads %}
     <div class="ops-feed-row">
         <div class="ops-feed-main">
-            <div class="flex min-w-0 items-center gap-1.5">
+            <div class="flex min-w-0 items-baseline justify-between gap-2">
                 <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}"
-                   class="ops-feed-title min-w-0 hover:text-brand-600"
+                   class="ops-feed-title hover:text-brand-600"
                    title="{{ lead.name }}">{{ lead.name }}</a>
-                <span class="ops-pill {{ status_chip.get(lead.status, 'bg-slate-50 text-slate-600') }}">
-                    {{ lead.get_status_display() }}
-                </span>
-                {% if not lead.assigned_to_id and lead.status not in ['won', 'lost'] %}
-                <span class="ops-pill bg-amber-50 text-amber-700">Open</span>
-                {% endif %}
+                <time class="ops-feed-time" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(lead.created_at) }}</time>
             </div>
             <p class="ops-feed-meta" title="{{ lead.company or '' }} {{ lead.service_interest or 'General' }}">
                 {% if lead.company %}{{ lead.company }} · {% endif %}{{ lead.service_interest or 'General' }}
             </p>
+            <div class="mt-1 flex min-w-0 flex-wrap gap-1">
+                <span class="ops-pill {{ status_chip.get(lead.status, 'bg-slate-50 text-slate-600') }}">
+                    {{ lead.get_status_display() }}
+                </span>
+                {% if not lead.assigned_to_id and lead.status not in ['won', 'lost'] %}
+                <span class="ops-pill bg-amber-50 text-amber-700">Unassigned</span>
+                {% endif %}
+            </div>
         </div>
-        <time class="ops-feed-time" title="{{ lead.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(lead.created_at) }}</time>
     </div>
     {% endfor %}
 </div>

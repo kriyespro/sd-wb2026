@@ -69,7 +69,7 @@
   }
 
   .ops-feed-row {
-    @apply flex min-w-0 items-start gap-2.5 border-b border-slate-100 py-2.5 last:border-0;
+    @apply flex min-w-0 items-start gap-2 border-b border-slate-100 py-2.5 last:border-0;
   }
 
   .ops-feed-main {
@@ -77,19 +77,19 @@
   }
 
   .ops-feed-title {
-    @apply block truncate text-[13px] font-semibold leading-snug text-ink-900;
+    @apply block min-w-0 max-w-full truncate text-[13px] font-semibold leading-snug text-ink-900;
   }
 
   .ops-feed-meta {
-    @apply mt-0.5 truncate text-[11px] leading-snug text-slate-500;
+    @apply mt-0.5 block min-w-0 max-w-full truncate text-[11px] leading-snug text-slate-500;
   }
 
   .ops-feed-time {
-    @apply shrink-0 pt-0.5 text-[10px] font-semibold tabular-nums text-slate-400;
+    @apply shrink-0 whitespace-nowrap pt-0.5 text-[10px] font-semibold tabular-nums text-slate-400;
   }
 
   .ops-pill {
-    @apply inline-flex max-w-full shrink-0 truncate rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide;
+    @apply inline-flex max-w-full truncate rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide;
   }
 }
 

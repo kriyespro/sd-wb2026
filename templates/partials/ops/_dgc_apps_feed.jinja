@@ -3,10 +3,14 @@
     {% for app in recent_dgc_applications %}
     <div class="ops-feed-row">
         <div class="ops-feed-main">
-            <div class="flex min-w-0 items-center gap-1.5">
+            <div class="flex min-w-0 items-baseline justify-between gap-2">
                 <a href="{{ url('operations:dgc_applications') }}"
-                   class="ops-feed-title min-w-0 hover:text-cyan-700"
+                   class="ops-feed-title hover:text-cyan-700"
                    title="{{ app.name }}">{{ app.name }}</a>
+                <time class="ops-feed-time" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(app.created_at) }}</time>
+            </div>
+            <p class="ops-feed-meta" title="{{ app.city or app.email }}">{{ app.city or app.email }}</p>
+            <div class="mt-1">
                 <span class="ops-pill
                     {% if app.status == 'new' %}bg-cyan-50 text-cyan-700
                     {% elif app.status == 'review' %}bg-amber-50 text-amber-700
@@ -14,9 +18,7 @@
                     {{ app.get_status_display() }}
                 </span>
             </div>
-            <p class="ops-feed-meta" title="{{ app.city or app.email }}">{{ app.city or app.email }}</p>
         </div>
-        <time class="ops-feed-time" title="{{ app.created_at.strftime('%d %b %Y, %H:%M') }}">{{ timeago(app.created_at) }}</time>
     </div>
     {% endfor %}
 </div>
