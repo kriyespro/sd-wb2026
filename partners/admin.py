@@ -16,7 +16,7 @@ class DgcApplicationAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'phone', 'city', 'status', 'created_at')
     list_filter = ('status',)
     search_fields = ('name', 'email', 'phone', 'city', 'why')
-    readonly_fields = ('created_at', 'updated_at', 'partner_user')
+    readonly_fields = ('created_at', 'updated_at', 'partner_user', 'temp_password')
 
 
 @admin.register(PartnerProfile)

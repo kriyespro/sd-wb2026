@@ -78,7 +78,10 @@ def approve_dgc_application(application, actor):
     application.status = DgcApplication.STATUS_APPROVED
     application.reviewed_by = actor
     application.partner_user = user
-    application.save(update_fields=['status', 'reviewed_by', 'partner_user', 'updated_at'])
+    application.temp_password = temp_password
+    application.save(update_fields=[
+        'status', 'reviewed_by', 'partner_user', 'temp_password', 'updated_at',
+    ])
     return user, temp_password
 
 

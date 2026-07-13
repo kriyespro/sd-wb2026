@@ -38,6 +38,8 @@ class DgcApplication(models.Model):
         blank=True,
         related_name='source_dgc_application',
     )
+    # Plaintext invite password for ops handoff (set on approve; ops-only view)
+    temp_password = models.CharField(max_length=64, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

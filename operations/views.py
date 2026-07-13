@@ -382,7 +382,7 @@ class DgcApplicationApproveView(SuperAdminRequiredMixin, View):
             user, temp_password = approve_dgc_application(application, request.user)
             messages.success(
                 request,
-                f'Approved {application.name}. Login: {user.username} / temp password: {temp_password}',
+                f'Approved {application.name}. Share login → Username: {user.username} | Temp password: {temp_password} → /auth/login/ then /dashboard/dgc/',
             )
         except ValueError as exc:
             messages.error(request, str(exc))
