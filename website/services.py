@@ -3,12 +3,6 @@ import threading
 
 from django.conf import settings
 from django.core.mail import send_mail
-
-import logging
-import threading
-
-from django.conf import settings
-from django.core.mail import send_mail
 from django.utils import timezone
 
 from .models import JobApplication, Lead, LeadFollowUp
@@ -34,6 +28,25 @@ def ensure_lead_followups(lead):
     if to_create:
         LeadFollowUp.objects.bulk_create(to_create)
     return lead.followups.all()
+
+
+def ensure_lead_followups_bulk(leads):
+    """Same as ensure_lead_followups but for many leads in 2 queries total
+    instead of ~2 queries per lead — use whenever iterating a lead list."""
+    leads = list(leads)
+    if not leads:
+        return
+    existing = set(
+        LeadFollowUp.objects.filter(lead__in=leads).values_list('lead_id', 'key'),
+    )
+    to_create = [
+        LeadFollowUp(lead=lead, key=key, label=label, sort_order=i)
+        for lead in leads
+        for i, (key, label) in enumerate(DEFAULT_FOLLOWUPS)
+        if (lead.pk, key) not in existing
+    ]
+    if to_create:
+        LeadFollowUp.objects.bulk_create(to_create)
 
 
 def toggle_lead_followup(followup, actor, is_done=None):

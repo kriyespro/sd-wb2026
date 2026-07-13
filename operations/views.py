@@ -3,8 +3,9 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from academy.models import AdmissionApplication, MentorAllocation
+from core.pagination import paginate
 from projects.models import Deliverable, Project
-from users.mixins import DashboardContextMixin, OpsPortalMixin
+from users.mixins import DashboardContextMixin, NarrowerOpsRoleMixin, OpsPortalMixin
 from users.services import get_dashboard_url_for_user
 from partners.models import DgcApplication, PartnerLead, PartnerOrder
 from partners.services import (
@@ -16,9 +17,18 @@ from partners.services import (
     update_lead_status as update_partner_lead_status,
     update_order_status,
 )
-from users.roles import DELIVERY_ROLES, ROLE_SUPER_ADMIN
+from users.roles import (
+    DELIVERY_ROLES,
+    OFFICE_DESK_ROLES,
+    ROLE_ACADEMY_ADMIN,
+    ROLE_DIRECTOR,
+    ROLE_OFFICE,
+    ROLE_PLACEMENT,
+    ROLE_PM,
+    ROLE_SUPER_ADMIN,
+)
 from website.models import JobApplication, Lead, LeadFollowUp
-from website.services import ensure_lead_followups, toggle_lead_followup
+from website.services import ensure_lead_followups, ensure_lead_followups_bulk, toggle_lead_followup
 
 from .forms import (
     JobApplicationStatusForm,
@@ -49,6 +59,7 @@ from .services import (
     get_recent_leads,
     get_teams,
     reject_deliverable,
+    status_counts_for,
     validate_project_staffing,
 )
 
@@ -72,6 +83,24 @@ class SuperAdminRequiredMixin(OpsPortalMixin):
         if not _is_superuser(request.user):
             return redirect(get_dashboard_url_for_user(request.user))
         return super().dispatch(request, *args, **kwargs)
+
+
+class OfficeDeskRequiredMixin(NarrowerOpsRoleMixin):
+    """Leads belong to sales/office/account-management desk roles — any other
+    ops role (mentor, freelancer, qa_specialist, ...) could otherwise view,
+    reassign and even convert leads into paying-client accounts."""
+    extra_allowed_roles = OFFICE_DESK_ROLES | {ROLE_DIRECTOR}
+
+
+class AllocationRequiredMixin(NarrowerOpsRoleMixin):
+    """Project staffing decisions restricted to roles that actually manage
+    delivery capacity, so any ops role can't assign themselves as PM."""
+    extra_allowed_roles = {ROLE_PM, ROLE_OFFICE, ROLE_DIRECTOR}
+
+
+class MentorAllocationRequiredMixin(NarrowerOpsRoleMixin):
+    """Mentor assignment restricted to academy leadership roles."""
+    extra_allowed_roles = {ROLE_ACADEMY_ADMIN, ROLE_PLACEMENT, ROLE_DIRECTOR}
 
 
 class OpsBaseMixin(DashboardContextMixin, OpsPortalMixin):
@@ -111,7 +140,7 @@ class OpsMissionLiveView(OpsPortalMixin, View):
         return render(request, 'partials/ops/_mission_live.jinja', ctx)
 
 
-class OpsLeadsLiveView(OpsPortalMixin, View):
+class OpsLeadsLiveView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     """HTMX poll endpoint — refreshes the full leads list on /ops/leads/."""
 
     def get(self, request):
@@ -197,7 +226,7 @@ class AllocationView(OpsBaseMixin, TemplateView):
         return ctx
 
 
-class AllocationCreateView(OpsPortalMixin, View):
+class AllocationCreateView(AllocationRequiredMixin, OpsPortalMixin, View):
     def post(self, request):
         form = ProjectAssignmentForm(request.POST)
         if form.is_valid():
@@ -216,7 +245,7 @@ class MentorsView(OpsBaseMixin, TemplateView):
         return ctx
 
 
-class MentorAllocateView(OpsPortalMixin, View):
+class MentorAllocateView(MentorAllocationRequiredMixin, OpsPortalMixin, View):
     def post(self, request):
         form = MentorAllocationForm(request.POST)
         if form.is_valid():
@@ -264,20 +293,16 @@ def _lead_row_context(lead):
 
 def _leads_list_context():
     leads = list(get_recent_leads(100))
-    for lead in leads:
-        ensure_lead_followups(lead)
+    ensure_lead_followups_bulk(leads)
     return {
         'leads': leads,
         'status_choices': Lead.STATUS_CHOICES,
-        'status_counts': {
-            status: Lead.objects.filter(status=status).count()
-            for status, _ in Lead.STATUS_CHOICES
-        },
+        'status_counts': status_counts_for(Lead.objects.all(), Lead.STATUS_CHOICES),
         'sales_executives': get_office_desk_users(),
     }
 
 
-class LeadsView(OpsBaseMixin, TemplateView):
+class LeadsView(OfficeDeskRequiredMixin, OpsBaseMixin, TemplateView):
     template_name = 'pages/ops/leads.jinja'
 
     def get_context_data(self, **kwargs):
@@ -287,7 +312,7 @@ class LeadsView(OpsBaseMixin, TemplateView):
         return ctx
 
 
-class LeadStatusUpdateView(OpsPortalMixin, View):
+class LeadStatusUpdateView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         lead = get_object_or_404(Lead, pk=pk)
         form = LeadStatusForm(request.POST)
@@ -296,7 +321,7 @@ class LeadStatusUpdateView(OpsPortalMixin, View):
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
 
 
-class LeadAssignView(OpsPortalMixin, View):
+class LeadAssignView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         lead = get_object_or_404(Lead, pk=pk)
         form = LeadAssignForm(request.POST)
@@ -305,7 +330,7 @@ class LeadAssignView(OpsPortalMixin, View):
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
 
 
-class LeadNotesUpdateView(OpsPortalMixin, View):
+class LeadNotesUpdateView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         lead = get_object_or_404(Lead, pk=pk)
         form = LeadNotesForm(request.POST)
@@ -314,7 +339,7 @@ class LeadNotesUpdateView(OpsPortalMixin, View):
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
 
 
-class LeadConvertView(OpsPortalMixin, View):
+class LeadConvertView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         lead = get_object_or_404(Lead, pk=pk)
         form = LeadConvertForm(request.POST)
@@ -331,14 +356,14 @@ class LeadConvertView(OpsPortalMixin, View):
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
 
 
-class LeadFollowUpToggleView(OpsPortalMixin, View):
+class LeadFollowUpToggleView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         followup = get_object_or_404(LeadFollowUp.objects.select_related('lead'), pk=pk)
         toggle_lead_followup(followup, request.user)
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(followup.lead))
 
 
-class LeadNextFollowUpView(OpsPortalMixin, View):
+class LeadNextFollowUpView(OfficeDeskRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         from datetime import datetime, time
         from django.utils.dateparse import parse_datetime, parse_date
@@ -359,7 +384,7 @@ class LeadNextFollowUpView(OpsPortalMixin, View):
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
 
 
-class FollowUpsView(OpsBaseMixin, TemplateView):
+class FollowUpsView(OfficeDeskRequiredMixin, OpsBaseMixin, TemplateView):
     """Office desk — assigned enquiries + checklist progress."""
 
     template_name = 'pages/ops/follow_ups.jinja'
@@ -385,9 +410,8 @@ class FollowUpsView(OpsBaseMixin, TemplateView):
             next_follow_up_at__lte=tz.now() + tz.timedelta(days=1),
             next_follow_up_at__isnull=False,
         ).select_related('assigned_to').prefetch_related('followups')[:20]
-        for qs in (mine, unassigned, due_soon):
-            for lead in qs:
-                ensure_lead_followups(lead)
+        mine, unassigned, due_soon = list(mine), list(unassigned), list(due_soon)
+        ensure_lead_followups_bulk(mine + unassigned + due_soon)
         ctx['my_leads'] = mine
         ctx['unassigned_leads'] = unassigned
         ctx['due_soon'] = due_soon
@@ -415,13 +439,12 @@ class JobApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         applications = JobApplication.objects.all()
         ctx['page_title'] = 'Job Applications'
-        ctx['applications'] = applications
         ctx['status_choices'] = JobApplication.STATUS_CHOICES
-        ctx['status_counts'] = {
-            status: applications.filter(status=status).count()
-            for status, _ in JobApplication.STATUS_CHOICES
-        }
+        ctx['status_counts'] = status_counts_for(applications, JobApplication.STATUS_CHOICES)
         ctx['total_count'] = applications.count()
+        page = paginate(self.request, applications)
+        ctx['applications'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -445,13 +468,12 @@ class DgcApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         applications = DgcApplication.objects.select_related('partner_user')
         ctx['page_title'] = 'DGC Applications'
-        ctx['applications'] = applications
         ctx['status_choices'] = DgcApplication.STATUS_CHOICES
-        ctx['status_counts'] = {
-            status: applications.filter(status=status).count()
-            for status, _ in DgcApplication.STATUS_CHOICES
-        }
+        ctx['status_counts'] = status_counts_for(applications, DgcApplication.STATUS_CHOICES)
         ctx['total_count'] = applications.count()
+        page = paginate(self.request, applications)
+        ctx['applications'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -544,13 +566,12 @@ class DgcLeadsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
             'partner', 'partner__user',
         ).all()
         ctx['page_title'] = 'DGC Leads'
-        ctx['leads'] = leads
         ctx['status_choices'] = PartnerLead.STATUS_CHOICES
-        ctx['status_counts'] = {
-            status: leads.filter(status=status).count()
-            for status, _ in PartnerLead.STATUS_CHOICES
-        }
+        ctx['status_counts'] = status_counts_for(leads, PartnerLead.STATUS_CHOICES)
         ctx['total_count'] = leads.count()
+        page = paginate(self.request, leads)
+        ctx['leads'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -580,13 +601,12 @@ class DgcOrdersView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
             'partner', 'partner__user', 'offer', 'assigned_to',
         ).all()
         ctx['page_title'] = 'DGC Orders'
-        ctx['orders'] = orders
         ctx['status_choices'] = PartnerOrder.STATUS_CHOICES
-        ctx['status_counts'] = {
-            status: orders.filter(status=status).count()
-            for status, _ in PartnerOrder.STATUS_CHOICES
-        }
+        ctx['status_counts'] = status_counts_for(orders, PartnerOrder.STATUS_CHOICES)
         ctx['total_count'] = orders.count()
+        page = paginate(self.request, orders)
+        ctx['orders'] = page.object_list
+        ctx['paginator_page'] = page
         ctx['delivery_users'] = _delivery_users()
         return ctx
 

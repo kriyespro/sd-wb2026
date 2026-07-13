@@ -1,7 +1,10 @@
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
+from billing.services import get_client_invoices
+from core.pagination import paginate
 from projects.models import Meeting, Project, Report
 from users.mixins import ClientPortalMixin, DashboardContextMixin
 from users.services import get_dashboard_url_for_user
@@ -96,7 +99,9 @@ class FilesView(ClientBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Files'
-        ctx['deliverables'] = get_approved_deliverables(ctx['account'])
+        page = paginate(self.request, get_approved_deliverables(ctx['account']))
+        ctx['deliverables'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -106,7 +111,9 @@ class MeetingsView(ClientBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Meetings'
-        ctx['meetings'] = get_client_meetings(ctx['account'])
+        page = paginate(self.request, get_client_meetings(ctx['account']))
+        ctx['meetings'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -116,9 +123,9 @@ class InvoicesView(ClientBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Invoices'
-        from billing.services import get_client_invoices
-
-        ctx['invoices'] = get_client_invoices(ctx['account'])
+        page = paginate(self.request, get_client_invoices(ctx['account']))
+        ctx['invoices'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -129,7 +136,12 @@ class SupportView(ClientBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Support'
         account = ctx['account']
-        ctx['tickets'] = account.tickets.all() if account else []
+        if account:
+            page = paginate(self.request, account.tickets.all())
+            ctx['tickets'] = page.object_list
+            ctx['paginator_page'] = page
+        else:
+            ctx['tickets'] = []
         ctx['form'] = SupportTicketForm()
         return ctx
 
@@ -202,7 +214,10 @@ class ROIView(ClientBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'ROI'
         account = ctx['account']
-        completed = get_client_projects(account).filter(status=Project.STATUS_COMPLETED).count()
-        ctx['completed_projects'] = completed
-        ctx['total_projects'] = get_client_projects(account).count()
+        counts = get_client_projects(account).aggregate(
+            total=Count('id'),
+            completed=Count('id', filter=Q(status=Project.STATUS_COMPLETED)),
+        )
+        ctx['completed_projects'] = counts['completed']
+        ctx['total_projects'] = counts['total']
         return ctx

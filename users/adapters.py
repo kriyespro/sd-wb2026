@@ -4,9 +4,9 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 from .services import (
     PUBLIC_SIGNUP_ROLES,
-    SESSION_NEEDS_ROLE,
     SESSION_SIGNUP_ROLE,
     get_dashboard_url_for_user,
+    needs_role_choice,
     provision_public_signup,
 )
 
@@ -17,10 +17,10 @@ class AccountAdapter(DefaultAccountAdapter):
         return False
 
     def get_login_redirect_url(self, request):
-        if request.session.get(SESSION_NEEDS_ROLE):
-            from django.urls import reverse
-            return reverse('users:choose_role')
         if request.user.is_authenticated:
+            if needs_role_choice(request.user):
+                from django.urls import reverse
+                return reverse('users:choose_role')
             return get_dashboard_url_for_user(request.user)
         return super().get_login_redirect_url(request)
 
@@ -41,15 +41,17 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         role = request.session.pop(SESSION_SIGNUP_ROLE, None)
         if role in PUBLIC_SIGNUP_ROLES:
             provision_public_signup(user, role)
-            request.session.pop(SESSION_NEEDS_ROLE, None)
         else:
-            request.session[SESSION_NEEDS_ROLE] = True
+            # Persisted on the profile (not just the session) so a lost/expired
+            # session can't leave this account stuck on the default role with
+            # real portal access — see users/models.py Profile.role_confirmed.
+            user.profile.role_confirmed = False
+            user.profile.save(update_fields=['role_confirmed'])
         return user
 
     def pre_social_login(self, request, sociallogin):
         """Existing accounts skip role selection; still ensure email is verified."""
         if sociallogin.is_existing:
-            request.session.pop(SESSION_NEEDS_ROLE, None)
             request.session.pop(SESSION_SIGNUP_ROLE, None)
             user = sociallogin.user
             if user and user.email:

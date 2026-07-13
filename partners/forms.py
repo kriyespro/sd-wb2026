@@ -1,6 +1,11 @@
+import re
+
 from django import forms
 
 from .models import DgcApplication, PartnerLead, PartnerOrder, PartnerProfile, ResellerOffer
+
+PAN_RE = re.compile(r'^[A-Z]{5}[0-9]{4}[A-Z]$')
+IFSC_RE = re.compile(r'^[A-Z]{4}0[A-Z0-9]{6}$')
 
 
 class DgcApplicationForm(forms.ModelForm):
@@ -82,8 +87,8 @@ class PartnerKycForm(forms.ModelForm):
 
     def clean_pan_number(self):
         pan = (self.cleaned_data.get('pan_number') or '').strip().upper()
-        if pan and len(pan) != 10:
-            raise forms.ValidationError('PAN should be 10 characters.')
+        if pan and not PAN_RE.match(pan):
+            raise forms.ValidationError('Enter a valid PAN (e.g. ABCDE1234F).')
         return pan
 
     def clean_aadhaar_last4(self):
@@ -93,7 +98,16 @@ class PartnerKycForm(forms.ModelForm):
         return val
 
     def clean_bank_ifsc(self):
-        return (self.cleaned_data.get('bank_ifsc') or '').strip().upper()
+        ifsc = (self.cleaned_data.get('bank_ifsc') or '').strip().upper()
+        if ifsc and not IFSC_RE.match(ifsc):
+            raise forms.ValidationError('Enter a valid IFSC code (e.g. HDFC0001234).')
+        return ifsc
+
+    def clean_bank_account(self):
+        val = re.sub(r'\s+', '', self.cleaned_data.get('bank_account') or '')
+        if val and not val.isdigit():
+            raise forms.ValidationError('Bank account number should contain digits only.')
+        return val
 
 
 class PartnerOrderForm(forms.Form):
@@ -142,6 +156,18 @@ class PartnerPayoutDetailsForm(forms.ModelForm):
             'bank_account': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'Bank account number'}),
             'bank_ifsc': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'IFSC'}),
         }
+
+    def clean_bank_ifsc(self):
+        ifsc = (self.cleaned_data.get('bank_ifsc') or '').strip().upper()
+        if ifsc and not IFSC_RE.match(ifsc):
+            raise forms.ValidationError('Enter a valid IFSC code (e.g. HDFC0001234).')
+        return ifsc
+
+    def clean_bank_account(self):
+        val = re.sub(r'\s+', '', self.cleaned_data.get('bank_account') or '')
+        if val and not val.isdigit():
+            raise forms.ValidationError('Bank account number should contain digits only.')
+        return val
 
 
 class PartnerOrderStatusForm(forms.Form):

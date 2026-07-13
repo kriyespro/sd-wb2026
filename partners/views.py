@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import TemplateView
 
+from core.pagination import paginate
 from users.mixins import DashboardContextMixin, PartnerPortalMixin
 from users.services import get_dashboard_url_for_user
 
@@ -127,7 +128,9 @@ class OrdersView(PartnerBaseMixin, TemplateView):
         partner = ctx['partner']
         offers = get_active_offers()
         ctx['form'] = PartnerOrderForm(offers=offers)
-        ctx['orders'] = partner.orders.select_related('offer') if partner else []
+        page = paginate(self.request, partner.orders.select_related('offer') if partner else [])
+        ctx['orders'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -159,7 +162,9 @@ class LeadsView(PartnerBaseMixin, TemplateView):
         ctx['page_title'] = 'Leads'
         partner = ctx['partner']
         ctx['form'] = PartnerLeadForm()
-        ctx['leads'] = partner.leads.all() if partner else []
+        page = paginate(self.request, partner.leads.all() if partner else [])
+        ctx['leads'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -186,7 +191,12 @@ class CommissionsView(PartnerBaseMixin, TemplateView):
         ctx['page_title'] = 'Commissions'
         partner = ctx['partner']
         ctx['summary'] = partner_commission_summary(partner) if partner else {}
-        ctx['commissions'] = partner.commissions.select_related('order', 'lead') if partner else []
+        page = paginate(
+            self.request,
+            partner.commissions.select_related('order', 'lead') if partner else [],
+        )
+        ctx['commissions'] = page.object_list
+        ctx['paginator_page'] = page
         return ctx
 
 
@@ -199,7 +209,9 @@ class PayoutsView(PartnerBaseMixin, TemplateView):
         partner = ctx['partner']
         ctx['can_payout'] = can_request_payout()
         ctx['summary'] = partner_commission_summary(partner) if partner else {}
-        ctx['payouts'] = partner.payout_requests.all() if partner else []
+        page = paginate(self.request, partner.payout_requests.all() if partner else [])
+        ctx['payouts'] = page.object_list
+        ctx['paginator_page'] = page
         ctx['payout_form'] = PartnerPayoutDetailsForm(instance=partner) if partner else None
         return ctx
 
@@ -207,7 +219,8 @@ class PayoutsView(PartnerBaseMixin, TemplateView):
 class PayoutRequestCreateView(PartnerBaseMixin, View):
     def post(self, request):
         partner = get_partner_profile(request.user)
-        if not partner:
+        if not partner or not partner.is_active:
+            messages.error(request, 'Partner profile inactive.')
             return redirect('partners:payouts')
         try:
             create_payout_request(partner)

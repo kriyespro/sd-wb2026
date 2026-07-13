@@ -7,7 +7,6 @@ from partners.models import PartnerProfile
 from users.roles import ROLE_CLIENT_OWNER, ROLE_PARTNER, ROLE_PM, ROLE_STUDENT
 from users.services import (
     PUBLIC_SIGNUP_ROLES,
-    SESSION_NEEDS_ROLE,
     SESSION_SIGNUP_ROLE,
     create_public_user,
     provision_public_signup,
@@ -84,15 +83,27 @@ class SignupViewTests(TestCase):
 
     def test_choose_role_after_flag(self):
         user = User.objects.create_user('newg', 'newg@example.com', 'pass12345')
+        user.profile.role_confirmed = False
+        user.profile.save(update_fields=['role_confirmed'])
         self.client.force_login(user)
-        session = self.client.session
-        session[SESSION_NEEDS_ROLE] = True
-        session.save()
         r = self.client.post(reverse('users:choose_role'), {'role': ROLE_STUDENT})
         self.assertEqual(r.status_code, 302)
         user.profile.refresh_from_db()
         self.assertEqual(user.profile.role, ROLE_STUDENT)
+        self.assertTrue(user.profile.role_confirmed)
         self.assertEqual(r.url, reverse('academy_dashboard:dashboard'))
+
+    def test_lost_session_still_forces_role_choice(self):
+        """Even if the session flag never gets set (e.g. session lost after
+        Google OAuth), an unconfirmed profile must not fall through to the
+        default client_owner portal."""
+        user = User.objects.create_user('newg2', 'newg2@example.com', 'pass12345')
+        user.profile.role_confirmed = False
+        user.profile.save(update_fields=['role_confirmed'])
+        self.client.force_login(user)
+        r = self.client.get(reverse('users:dashboard_redirect'))
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.url, reverse('users:choose_role'))
 
     def test_google_start_stores_role(self):
         r = self.client.get(reverse('users:google_start') + '?role=partner')

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from users.roles import ROLE_SALES, ROLE_SUPER_ADMIN
+from users.roles import ROLE_FREELANCER, ROLE_PM, ROLE_SALES, ROLE_SUPER_ADMIN
 from partners.models import PartnerLead, PartnerProfile
 from website.models import JobApplication, Lead
 
@@ -17,6 +17,9 @@ class LeadPipelineTests(TestCase):
         self.sales = User.objects.create_user('sales1', 'sales@test.com', 'pass1234')
         self.sales.profile.role = ROLE_SALES
         self.sales.profile.save()
+        self.freelancer = User.objects.create_user('free1', 'free@test.com', 'pass1234')
+        self.freelancer.profile.role = ROLE_FREELANCER
+        self.freelancer.profile.save()
         self.lead = Lead.objects.create(
             name='Pipeline Lead',
             email='pipeline@example.com',
@@ -46,6 +49,58 @@ class LeadPipelineTests(TestCase):
         self.lead.refresh_from_db()
         self.assertTrue(self.lead.is_converted)
         self.assertEqual(self.lead.status, Lead.STATUS_WON)
+
+    def test_leads_view_forbidden_for_non_office_desk_role(self):
+        """A random ops role (e.g. freelancer) must not see or act on leads —
+        that's office-desk-only (sales/office/account-manager/director)."""
+        self.client.login(username='free1', password='pass1234')
+        self.assertEqual(self.client.get(reverse('operations:leads')).status_code, 302)
+        self.assertEqual(
+            self.client.post(
+                reverse('operations:lead_convert', kwargs={'pk': self.lead.pk}),
+                {'project_name': 'Should not happen'},
+            ).status_code,
+            302,
+        )
+        self.lead.refresh_from_db()
+        self.assertFalse(self.lead.is_converted)
+
+    def test_allocation_create_forbidden_for_non_management_role(self):
+        """Any ops role assigning themselves/others as PM would be a
+        privilege-escalation path if not restricted to PM/office/director."""
+        from clients.models import ClientAccount
+        from projects.models import Project
+
+        owner = User.objects.create_user('client_owner1', 'owner1@test.com', 'pass1234')
+        account = ClientAccount.objects.create(user=owner, company_name='Escalation Co')
+        project = Project.objects.create(client_account=account, name='Escalation Test Project')
+        self.client.login(username='free1', password='pass1234')
+        response = self.client.post(reverse('operations:allocation_add'), {
+            'project': project.pk,
+            'user': self.freelancer.pk,
+            'role': 'pm',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(project.assignments.exists())
+
+    def test_allocation_create_allowed_for_pm_role(self):
+        from clients.models import ClientAccount
+        from projects.models import Project
+
+        pm_user = User.objects.create_user('pm1', 'pm1@test.com', 'pass1234')
+        pm_user.profile.role = ROLE_PM
+        pm_user.profile.save()
+        owner = User.objects.create_user('client_owner2', 'owner2@test.com', 'pass1234')
+        account = ClientAccount.objects.create(user=owner, company_name='Allowed Co')
+        project = Project.objects.create(client_account=account, name='Allowed Allocation Project')
+        self.client.login(username='pm1', password='pass1234')
+        response = self.client.post(reverse('operations:allocation_add'), {
+            'project': project.pk,
+            'user': pm_user.pk,
+            'role': 'pm',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(project.assignments.exists())
 
     def test_mission_control_live_partial(self):
         response = self.client.get(reverse('operations:live_mission'))

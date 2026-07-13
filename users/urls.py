@@ -10,6 +10,7 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
     path('choose-role/', views.choose_role, name='choose_role'),
+    path('force-password-change/', views.force_password_change, name='force_password_change'),
     path('google/', views.google_start, name='google_start'),
     path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
     path('password-reset/', auth_views.PasswordResetView.as_view(

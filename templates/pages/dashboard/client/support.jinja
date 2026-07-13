@@ -40,6 +40,7 @@
             </a>
             {% endfor %}
         </div>
+        {% include "components/pagination.jinja" %}
         {% else %}
         <p class="mt-4 text-sm text-slate-500">No tickets yet.</p>
         {% endif %}

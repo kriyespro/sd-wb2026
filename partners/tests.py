@@ -67,6 +67,22 @@ class DgcPartnerTests(TestCase):
         self.assertEqual(app.temp_password, password)
         self.assertEqual(app.partner_user_id, user.id)
         self.client.login(username=user.username, password=password)
+        # Temp password → must change password before the portal unlocks.
+        response = self.client.get(reverse('partners:dashboard'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('users:force_password_change'))
+
+        response = self.client.post(reverse('users:force_password_change'), {
+            'old_password': password,
+            'new_password1': 'BrandNewPass123!',
+            'new_password2': 'BrandNewPass123!',
+        })
+        self.assertEqual(response.status_code, 302)
+        user.partner_profile.refresh_from_db()
+        self.assertFalse(user.partner_profile.must_change_password)
+        app.refresh_from_db()
+        self.assertEqual(app.temp_password, '')
+
         response = self.client.get(reverse('partners:dashboard'))
         self.assertEqual(response.status_code, 200)
 
@@ -146,6 +162,21 @@ class DgcPartnerTests(TestCase):
                     partner=partner, status=Commission.STATUS_REQUESTED,
                 ).exists(),
             )
+
+    def test_orders_view_paginates(self):
+        user = User.objects.create_user('dgcpage', 'dgcpage@test.com', 'pass1234')
+        user.profile.role = ROLE_PARTNER
+        user.profile.save()
+        partner = PartnerProfile.objects.create(user=user, code='DGCPAGE1')
+        for _ in range(22):
+            place_order(partner, self.offer, quantity=1)
+        self.client.login(username='dgcpage', password='pass1234')
+        response = self.client.get(reverse('partners:orders'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Next')
+        response = self.client.get(reverse('partners:orders') + '?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Previous')
 
     def test_partner_can_submit_lead(self):
         user = User.objects.create_user('dgclead', 'dgclead@test.com', 'pass1234')

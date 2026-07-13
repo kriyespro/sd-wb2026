@@ -33,7 +33,7 @@ class DgcApplication(models.Model):
     upi_id = models.CharField(max_length=120, blank=True)
     bank_account = models.CharField(max_length=120, blank=True)
     bank_ifsc = models.CharField(max_length=20, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW, db_index=True)
     reviewed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -48,7 +48,9 @@ class DgcApplication(models.Model):
         blank=True,
         related_name='source_dgc_application',
     )
-    # Plaintext invite password for ops handoff (set on approve; ops-only view)
+    # Plaintext invite password for ops handoff (set on approve; ops-only
+    # view). Cleared once the partner completes the forced password change
+    # (see users.views.force_password_change) so it isn't a standing secret.
     temp_password = models.CharField(max_length=64, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -75,6 +77,11 @@ class PartnerProfile(models.Model):
     bank_account = models.CharField(max_length=120, blank=True)
     bank_ifsc = models.CharField(max_length=20, blank=True)
     is_active = models.BooleanField(default=True)
+    # Set when ops issues a temp password for a legacy (non-Google) DGC
+    # approval; forces a password change before the portal is usable so the
+    # plaintext temp password isn't a standing credential. See
+    # PortalAccessMiddleware and users.views.force_password_change.
+    must_change_password = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

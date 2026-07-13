@@ -36,6 +36,14 @@ OPS_NAV_SUPERUSER = [
 ]
 
 
+def status_counts_for(queryset, status_choices, field='status'):
+    """One GROUP BY query instead of one COUNT query per status choice."""
+    counts = dict(
+        queryset.values_list(field).annotate(n=Count('id')).values_list(field, 'n'),
+    )
+    return {status: counts.get(status, 0) for status, _ in status_choices}
+
+
 def get_pending_deliverables():
     return Deliverable.objects.filter(
         approval_status=Deliverable.APPROVAL_PENDING,
@@ -136,7 +144,7 @@ def get_ops_stats():
 def get_recent_leads(limit=10):
     return Lead.objects.select_related(
         'assigned_to', 'converted_client',
-    ).order_by('-created_at')[:limit]
+    ).prefetch_related('followups').order_by('-created_at')[:limit]
 
 
 def get_recent_dgc_leads(limit=8):
@@ -267,7 +275,10 @@ def get_mission_control_context(include_jobs=False):
 
 def validate_project_staffing(project):
     """Enforce: every project needs 1 PM (owner) and 1 senior specialist (tech lead)."""
-    roles = set(project.assignments.values_list('role', flat=True))
+    # Iterate the (often prefetched) assignments in Python rather than
+    # values_list(), which always issues a fresh query and defeats
+    # prefetch_related('assignments__user') on the calling view's queryset.
+    roles = {a.role for a in project.assignments.all()}
     issues = []
     if ProjectAssignment.ROLE_PM not in roles:
         issues.append('Missing Project Manager (owner)')

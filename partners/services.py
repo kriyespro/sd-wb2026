@@ -18,6 +18,8 @@ from .models import (
     ResellerOffer,
 )
 
+DEFAULT_LEAD_COMMISSION_PERCENT = Decimal('20.00')
+
 DGC_NAV = [
     {'title': 'Profile / KYC', 'icon': '🪪', 'url_name': 'partners:profile'},
     {'title': 'Offers', 'icon': '📦', 'url_name': 'partners:offers'},
@@ -172,6 +174,7 @@ def approve_dgc_application(application, actor):
             bank_account=application.bank_account,
             bank_ifsc=application.bank_ifsc,
             is_active=True,
+            must_change_password=True,
         )
         application.partner_user = user
 
@@ -300,9 +303,10 @@ def update_lead_status(lead, status):
     lead.save(update_fields=['status', 'updated_at'])
     if status == PartnerLead.STATUS_WON and prev != PartnerLead.STATUS_WON:
         if not lead.commissions.exists() and lead.deal_value > 0:
-            # Use average active offer % or default 20%
-            offer = get_active_offers().first()
-            pct = offer.commission_percent if offer else Decimal('20.00')
+            # A won lead isn't tied to any particular offer, so its commission
+            # uses a fixed default rather than an arbitrary active offer's
+            # commission_percent (which could silently change with sort_order).
+            pct = DEFAULT_LEAD_COMMISSION_PERCENT
             amount = (lead.deal_value * pct / Decimal('100')).quantize(Decimal('0.01'))
             Commission.objects.create(
                 partner=lead.partner,

@@ -26,7 +26,6 @@ PUBLIC_SIGNUP_CHOICES = [
 ]
 
 SESSION_SIGNUP_ROLE = 'signup_role'
-SESSION_NEEDS_ROLE = 'needs_role_choice'
 
 
 def get_portal_for_role(role):
@@ -41,11 +40,19 @@ def get_portal_for_role(role):
     return PORTAL_OPS
 
 
+def needs_role_choice(user):
+    if not user.is_authenticated or not hasattr(user, 'profile'):
+        return False
+    return not user.profile.role_confirmed
+
+
 def get_dashboard_url_name_for_user(user):
     if not user.is_authenticated:
         return 'users:login'
     if not hasattr(user, 'profile'):
         return 'users:login'
+    if needs_role_choice(user):
+        return 'users:choose_role'
     portal = get_portal_for_role(user.profile.role)
     return PORTAL_URL_NAMES[portal]
 
@@ -101,7 +108,8 @@ def provision_public_signup(user, role):
 
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.role = role
-    profile.save(update_fields=['role'])
+    profile.role_confirmed = True
+    profile.save(update_fields=['role', 'role_confirmed'])
     # Keep reverse OneToOne cache in sync (login updates last_login and would
     # otherwise re-save a stale default role via the profile signal).
     user.profile = profile

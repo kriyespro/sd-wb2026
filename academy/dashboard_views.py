@@ -1,7 +1,9 @@
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
+from core.pagination import paginate
 from users.mixins import DashboardContextMixin, StudentPortalMixin
 from users.services import get_dashboard_url_for_user
 
@@ -74,14 +76,12 @@ class AssignmentsView(StudentBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Assignments'
         assignments = get_student_assignments(self.request.user)
-        submitted_ids = set(
-            Submission.objects.filter(user=self.request.user).values_list('assignment_id', flat=True),
-        )
-        ctx['assignments'] = assignments
-        ctx['submitted_ids'] = submitted_ids
-        ctx['submissions'] = {
+        submissions = {
             s.assignment_id: s for s in Submission.objects.filter(user=self.request.user)
         }
+        ctx['assignments'] = assignments
+        ctx['submitted_ids'] = set(submissions)
+        ctx['submissions'] = submissions
         return ctx
 
 
@@ -139,11 +139,16 @@ class AttendanceView(StudentBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Attendance'
-        records = self.request.user.attendance_records.all()
-        ctx['records'] = records
-        present = records.filter(status='present').count()
-        total = records.count()
-        ctx['attendance_rate'] = round((present / total) * 100) if total else 0
+        all_records = self.request.user.attendance_records.all()
+        counts = all_records.aggregate(
+            total=Count('id'), present=Count('id', filter=Q(status='present')),
+        )
+        page = paginate(self.request, all_records)
+        ctx['records'] = page.object_list
+        ctx['paginator_page'] = page
+        ctx['attendance_rate'] = (
+            round((counts['present'] / counts['total']) * 100) if counts['total'] else 0
+        )
         return ctx
 
 

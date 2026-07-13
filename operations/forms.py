@@ -2,13 +2,17 @@ from django import forms
 
 from academy.models import MentorAllocation
 from projects.models import Project
-from users.roles import STUDENT_ROLES
 from website.models import JobApplication, Lead
 
 from .models import ProjectAssignment
 
 
 class ProjectAssignmentForm(forms.ModelForm):
+    """can_contact_client is an explicit per-assignment override, surfaced in
+    the UI as its own checkbox ("Authorize client contact"). Submitting this
+    form at all is restricted to PM/office/director via
+    operations.views.AllocationRequiredMixin."""
+
     class Meta:
         model = ProjectAssignment
         fields = ['project', 'user', 'role', 'can_contact_client']
@@ -17,17 +21,6 @@ class ProjectAssignmentForm(forms.ModelForm):
             'user': forms.Select(attrs={'class': 'wb-input'}),
             'role': forms.Select(attrs={'class': 'wb-input'}),
         }
-
-    def clean(self):
-        cleaned = super().clean()
-        user = cleaned.get('user')
-        can_contact = cleaned.get('can_contact_client')
-        # Students/interns may only contact clients when explicitly authorized.
-        if user and hasattr(user, 'profile') and user.profile.role in STUDENT_ROLES:
-            if can_contact:
-                # Allowed only as an explicit override; keep it but flag intent is clear.
-                pass
-        return cleaned
 
 
 class MentorAllocationForm(forms.ModelForm):
