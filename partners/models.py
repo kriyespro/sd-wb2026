@@ -78,6 +78,18 @@ class ResellerOffer(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    market_price_min = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True,
+        help_text='Suggested market sell price (low)',
+    )
+    market_price_max = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True,
+        help_text='Suggested market sell price (high)',
+    )
+    billing_note = models.CharField(
+        max_length=80, blank=True,
+        help_text='e.g. per year, one-time',
+    )
     commission_percent = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal('20.00'),
     )
@@ -90,6 +102,12 @@ class ResellerOffer(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def margin_max(self):
+        if self.market_price_max is None:
+            return None
+        return self.market_price_max - self.price
 
 
 class PartnerOrder(models.Model):

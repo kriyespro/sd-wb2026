@@ -1,19 +1,46 @@
 {% extends "layouts/dashboard.jinja" %}
 
 {% block dashboard_content %}
-<p class="mb-4 text-sm text-slate-600">Active reseller packages you can sell / order.</p>
+<p class="mb-4 text-sm text-slate-600">
+    Reseller packages — your cost vs suggested market sell price. Margin is yours when you close the deal.
+</p>
 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {% for offer in offers %}
-    <article class="dash-panel p-5">
+    <article class="dash-panel flex flex-col p-5">
         <h3 class="font-display text-lg font-semibold text-ink-900">{{ offer.title }}</h3>
-        <p class="mt-2 text-sm text-slate-600">{{ offer.description or '—' }}</p>
-        <div class="mt-4 flex items-end justify-between gap-2">
-            <div>
-                <p class="font-display text-2xl font-bold text-brand-700">₹{{ offer.price }}</p>
-                <p class="text-[11px] font-semibold text-emerald-700">{{ offer.commission_percent }}% commission</p>
+        <p class="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{{ offer.description or '—' }}</p>
+
+        <div class="mt-4 space-y-2 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
+            <div class="flex items-baseline justify-between gap-2">
+                <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Your cost</span>
+                <p class="font-display text-xl font-bold text-brand-700">
+                    ₹{{ '{:,.0f}'.format(offer.price) }}
+                    {% if offer.billing_note %}<span class="text-xs font-semibold text-slate-500">{{ offer.billing_note }}</span>{% endif %}
+                </p>
             </div>
-            <a href="{{ url('partners:orders') }}" class="rounded-xl bg-gold-500 px-3 py-2 text-[11px] font-bold text-ink-900 hover:bg-gold-400">Order →</a>
+            {% if offer.market_price_min and offer.market_price_max %}
+            <div class="flex items-baseline justify-between gap-2 border-t border-slate-200/80 pt-2">
+                <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Market sell</span>
+                <p class="text-sm font-bold text-ink-900">
+                    ₹{{ '{:,.0f}'.format(offer.market_price_min) }} – ₹{{ '{:,.0f}'.format(offer.market_price_max) }}
+                </p>
+            </div>
+            {% if offer.margin_max is not none %}
+            <div class="flex items-baseline justify-between gap-2">
+                <span class="text-[10px] font-bold uppercase tracking-wide text-emerald-600">Your margin up to</span>
+                <p class="text-sm font-bold text-emerald-700">₹{{ '{:,.0f}'.format(offer.margin_max) }}</p>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% if offer.commission_percent and offer.commission_percent > 0 %}
+            <p class="text-[11px] font-semibold text-emerald-700">+ {{ offer.commission_percent }}% order commission</p>
+            {% endif %}
         </div>
+
+        <a href="{{ url('partners:orders') }}"
+           class="mt-4 inline-flex items-center justify-center rounded-xl bg-gold-500 px-3 py-2.5 text-[11px] font-bold text-ink-900 hover:bg-gold-400">
+            Place order →
+        </a>
     </article>
     {% else %}
     <div class="dash-panel col-span-full p-10 text-center text-slate-500">No offers published yet.</div>

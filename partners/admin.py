@@ -28,7 +28,10 @@ class PartnerProfileAdmin(admin.ModelAdmin):
 
 @admin.register(ResellerOffer)
 class ResellerOfferAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price', 'commission_percent', 'is_active', 'sort_order')
+    list_display = (
+        'title', 'price', 'market_price_min', 'market_price_max',
+        'billing_note', 'commission_percent', 'is_active', 'sort_order',
+    )
     list_filter = ('is_active',)
     search_fields = ('title', 'description')
 

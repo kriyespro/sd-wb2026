@@ -13,25 +13,74 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         offers = [
             {
+                'title': 'Ecommerce Website',
+                'description': (
+                    'Full ecommerce store for manufacturers. Includes domain, server setup, '
+                    'and full technical support. Ideal starter package for factories going online.'
+                ),
+                'price': Decimal('15000.00'),
+                'market_price_min': Decimal('25000.00'),
+                'market_price_max': Decimal('30000.00'),
+                'billing_note': 'per year',
+                'commission_percent': Decimal('0.00'),
+                'sort_order': 1,
+            },
+            {
+                'title': 'Ecommerce Plus',
+                'description': (
+                    'Ecommerce store with enhanced catalog, payments, and growth-ready setup. '
+                    'Includes domain, server, and full technical support.'
+                ),
+                'price': Decimal('30000.00'),
+                'market_price_min': Decimal('45000.00'),
+                'market_price_max': Decimal('50000.00'),
+                'billing_note': 'one-time',
+                'commission_percent': Decimal('0.00'),
+                'sort_order': 2,
+            },
+            {
+                'title': 'Dropshipping Ecommerce + Auto Reseller Stores',
+                'description': (
+                    'Dropshipping ecommerce platform with auto reseller store create option. '
+                    'Includes domain, server, and full technical support so partners can launch '
+                    'multi-store reseller networks.'
+                ),
+                'price': Decimal('90000.00'),
+                'market_price_min': Decimal('120000.00'),
+                'market_price_max': Decimal('130000.00'),
+                'billing_note': 'one-time',
+                'commission_percent': Decimal('0.00'),
+                'sort_order': 3,
+            },
+            {
                 'title': 'Startup D2C Launch',
                 'description': 'Store setup + ads kickoff package for first-time D2C sellers.',
                 'price': Decimal('15000.00'),
+                'market_price_min': Decimal('20000.00'),
+                'market_price_max': Decimal('25000.00'),
+                'billing_note': 'one-time',
                 'commission_percent': Decimal('20.00'),
-                'sort_order': 1,
+                'sort_order': 10,
             },
             {
                 'title': 'Growth Ads Retainer',
                 'description': 'Monthly Meta + Google ads management for manufacturer brands.',
                 'price': Decimal('35000.00'),
+                'market_price_min': Decimal('45000.00'),
+                'market_price_max': Decimal('55000.00'),
+                'billing_note': 'per month',
                 'commission_percent': Decimal('15.00'),
-                'sort_order': 2,
+                'sort_order': 11,
             },
             {
                 'title': 'Full F2C Scale',
                 'description': 'Store, ads, ops SOPs, and WhatsApp commerce for scaling factories.',
                 'price': Decimal('75000.00'),
+                'market_price_min': Decimal('95000.00'),
+                'market_price_max': Decimal('120000.00'),
+                'billing_note': 'one-time',
                 'commission_percent': Decimal('12.00'),
-                'sort_order': 3,
+                'sort_order': 12,
             },
         ]
         for data in offers:
