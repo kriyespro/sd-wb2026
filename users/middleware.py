@@ -12,6 +12,8 @@ PORTAL_RULES = (
     ('/ops2/', OPS_ROLES),
 )
 
+DGC_PROFILE_PREFIX = '/dashboard/dgc/profile'
+
 
 class PortalAccessMiddleware:
     def __init__(self, get_response):
@@ -24,4 +26,10 @@ class PortalAccessMiddleware:
             for prefix, allowed_roles in PORTAL_RULES:
                 if path.startswith(prefix) and role not in allowed_roles:
                     return redirect(get_dashboard_url_for_user(request.user))
+
+            # Pending DGC partners may only use the KYC / profile page
+            if path.startswith('/dashboard/dgc/') and role in PARTNER_ROLES:
+                from partners.services import partner_is_approved
+                if not partner_is_approved(request.user) and not path.startswith(DGC_PROFILE_PREFIX):
+                    return redirect('partners:profile')
         return self.get_response(request)

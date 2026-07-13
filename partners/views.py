@@ -7,20 +7,25 @@ from users.mixins import DashboardContextMixin, PartnerPortalMixin
 from users.services import get_dashboard_url_for_user
 
 from .forms import (
+    PartnerKycForm,
     PartnerLeadForm,
     PartnerOrderForm,
     PartnerPayoutDetailsForm,
 )
 from .services import (
     DGC_NAV,
+    DGC_ONBOARDING_NAV,
     can_request_payout,
     create_partner_lead,
     create_payout_request,
     get_active_offers,
+    get_partner_application,
     get_partner_dashboard_stats,
     get_partner_profile,
     partner_commission_summary,
+    partner_is_approved,
     place_order,
+    submit_partner_kyc,
 )
 
 
@@ -32,10 +37,56 @@ class PartnerBaseMixin(DashboardContextMixin, PartnerPortalMixin):
         ctx = super().get_context_data(**kwargs)
         ctx['portal_name'] = self.portal_name
         ctx['dashboard_label'] = self.dashboard_label
-        ctx['sidebar_links'] = DGC_NAV
+        approved = partner_is_approved(self.request.user)
+        ctx['partner_approved'] = approved
+        ctx['sidebar_links'] = DGC_NAV if approved else DGC_ONBOARDING_NAV
         ctx['dashboard_url'] = get_dashboard_url_for_user(self.request.user)
         ctx['partner'] = get_partner_profile(self.request.user)
+        ctx['partner_application'] = get_partner_application(self.request.user)
         return ctx
+
+
+class PartnerProfileView(PartnerBaseMixin, TemplateView):
+    template_name = 'pages/dashboard/dgc/profile.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'DGC Profile / KYC'
+        app = ctx['partner_application']
+        if app:
+            form = PartnerKycForm(instance=app, user=self.request.user)
+        else:
+            form = PartnerKycForm(user=self.request.user)
+        locked = bool(app and app.status in (
+            app.STATUS_APPROVED, app.STATUS_PAUSED, app.STATUS_CANCELLED,
+        ))
+        if locked:
+            for field in form.fields.values():
+                field.disabled = True
+        ctx['form'] = form
+        ctx['can_submit'] = not locked and not ctx['partner_approved']
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        if partner_is_approved(request.user):
+            messages.info(request, 'Your DGC account is already approved.')
+            return redirect('partners:dashboard')
+        app = get_partner_application(request.user)
+        if app and app.status == app.STATUS_CANCELLED:
+            messages.error(request, 'This application was cancelled. Contact support.')
+            return redirect('partners:profile')
+        form = PartnerKycForm(request.POST, instance=app, user=request.user)
+        if form.is_valid():
+            submit_partner_kyc(request.user, form.cleaned_data)
+            messages.success(
+                request,
+                'KYC submitted. An admin will review and approve your DGC access.',
+            )
+            return redirect('partners:profile')
+        ctx = self.get_context_data()
+        ctx['form'] = form
+        ctx['can_submit'] = True
+        return self.render_to_response(ctx)
 
 
 class PartnerDashboardView(PartnerBaseMixin, TemplateView):

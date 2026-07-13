@@ -164,3 +164,72 @@ class DgcPartnerTests(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(PartnerLead.objects.filter(name='Surat Mill', partner__code='DGCLEAD1').exists())
+
+    def test_google_partner_kyc_then_admin_approve(self):
+        from partners.services import submit_partner_kyc
+        from users.services import provision_public_signup
+
+        user = User.objects.create_user('googledgc', 'googledgc@gmail.com', 'pass1234')
+        user.first_name = 'Google'
+        user.last_name = 'Partner'
+        user.save()
+        provision_public_signup(user, ROLE_PARTNER)
+        self.assertFalse(user.partner_profile.is_active)
+
+        self.client.login(username='googledgc', password='pass1234')
+        r = self.client.get(reverse('partners:offers'))
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.url, reverse('partners:profile'))
+
+        app = submit_partner_kyc(user, {
+            'name': 'Google Partner',
+            'email': 'googledgc@gmail.com',
+            'phone': '9876543210',
+            'city': 'Surat',
+            'address': 'Ring Road, Surat 395002',
+            'experience': '5 years sales',
+            'why': 'Want to resell ecommerce packages',
+            'pan_number': 'ABCDE1234F',
+            'aadhaar_last4': '4321',
+            'upi_id': 'google@upi',
+            'bank_account': '1234567890',
+            'bank_ifsc': 'HDFC0001234',
+        })
+        self.assertEqual(app.status, DgcApplication.STATUS_NEW)
+        self.assertEqual(app.partner_user_id, user.id)
+        self.assertEqual(app.pan_number, 'ABCDE1234F')
+
+        approved_user, temp = approve_dgc_application(app, self.admin)
+        self.assertEqual(approved_user.id, user.id)
+        self.assertEqual(temp, '')
+        user.partner_profile.refresh_from_db()
+        self.assertTrue(user.partner_profile.is_active)
+        self.assertEqual(user.partner_profile.upi_id, 'google@upi')
+
+        r = self.client.get(reverse('partners:offers'))
+        self.assertEqual(r.status_code, 200)
+
+    def test_kyc_form_post(self):
+        from users.services import provision_public_signup
+
+        user = User.objects.create_user('kycdgc', 'kycdgc@gmail.com', 'pass1234')
+        provision_public_signup(user, ROLE_PARTNER)
+        self.client.login(username='kycdgc', password='pass1234')
+        r = self.client.post(reverse('partners:profile'), {
+            'name': 'KYC Person',
+            'email': 'kycdgc@gmail.com',
+            'phone': '9000000001',
+            'city': 'Ahmedabad',
+            'address': 'SG Highway',
+            'experience': '2 years',
+            'why': 'Join DGC network',
+            'pan_number': 'ABCDE1234F',
+            'aadhaar_last4': '9999',
+            'upi_id': '',
+            'bank_account': '',
+            'bank_ifsc': '',
+        })
+        self.assertEqual(r.status_code, 302)
+        app = DgcApplication.objects.get(partner_user=user)
+        self.assertEqual(app.city, 'Ahmedabad')
+        self.assertEqual(app.status, DgcApplication.STATUS_NEW)

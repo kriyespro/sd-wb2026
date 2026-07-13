@@ -1,0 +1,130 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<section class="mb-6">
+    <h2 class="font-display text-2xl font-bold text-ink-900">Profile / KYC</h2>
+    <p class="mt-1 text-sm text-slate-600">
+        Complete your details after Google signup. An admin must approve before you can sell offers and earn commission.
+    </p>
+</section>
+
+{% if partner_application %}
+<div class="mb-6 rounded-2xl border px-5 py-4
+            {% if partner_application.status == 'approved' %}border-emerald-200 bg-emerald-50 text-emerald-900
+            {% elif partner_application.status == 'rejected' %}border-red-200 bg-red-50 text-red-900
+            {% elif partner_application.status == 'cancelled' %}border-slate-200 bg-slate-50 text-slate-700
+            {% else %}border-amber-200 bg-amber-50 text-amber-950{% endif %}">
+    <p class="text-sm font-semibold">Status: {{ partner_application.get_status_display() }}</p>
+    {% if partner_application.status == 'approved' %}
+    <p class="mt-1 text-sm">You're approved — full DGC portal is unlocked.</p>
+    {% elif partner_application.status == 'rejected' %}
+    <p class="mt-1 text-sm">Update your details below and resubmit for review.</p>
+    {% elif partner_application.status == 'new' or partner_application.status == 'review' %}
+    <p class="mt-1 text-sm">Submitted — waiting for admin approval. You can still update details until approved.</p>
+    {% endif %}
+</div>
+{% else %}
+<div class="mb-6 rounded-2xl border border-brand-200 bg-brand-50 px-5 py-4 text-brand-950">
+    <p class="text-sm font-semibold">Complete KYC to apply</p>
+    <p class="mt-1 text-sm">Fill contact, city, and identity details, then submit for admin approval.</p>
+</div>
+{% endif %}
+
+{% if partner %}
+<p class="mb-4 text-xs text-slate-500">Partner code: <code class="font-mono font-semibold text-ink-900">{{ partner.code }}</code>
+    · Portal: {% if partner_approved %}<span class="font-semibold text-emerald-700">Active</span>{% else %}<span class="font-semibold text-amber-700">Pending approval</span>{% endif %}
+</p>
+{% endif %}
+
+<form method="post" class="dash-panel space-y-6 p-6 sm:p-8">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <div>
+        <h3 class="font-display text-lg font-semibold text-ink-900">Contact</h3>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+                <label class="mb-1 block text-sm font-medium text-slate-700">Full name *</label>
+                {{ form.name }}
+                {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Email *</label>
+                {{ form.email }}
+                {% if form.email.errors %}<p class="mt-1 text-xs text-red-600">{{ form.email.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Phone *</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}<p class="mt-1 text-xs text-red-600">{{ form.phone.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">City *</label>
+                {{ form.city }}
+                {% if form.city.errors %}<p class="mt-1 text-xs text-red-600">{{ form.city.errors[0] }}</p>{% endif %}
+            </div>
+            <div class="sm:col-span-2">
+                <label class="mb-1 block text-sm font-medium text-slate-700">Full address *</label>
+                {{ form.address }}
+                {% if form.address.errors %}<p class="mt-1 text-xs text-red-600">{{ form.address.errors[0] }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h3 class="font-display text-lg font-semibold text-ink-900">About you</h3>
+        <div class="mt-4 space-y-4">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Experience *</label>
+                {{ form.experience }}
+                {% if form.experience.errors %}<p class="mt-1 text-xs text-red-600">{{ form.experience.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Why join as DGC? *</label>
+                {{ form.why }}
+                {% if form.why.errors %}<p class="mt-1 text-xs text-red-600">{{ form.why.errors[0] }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h3 class="font-display text-lg font-semibold text-ink-900">Identity (KYC)</h3>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">PAN *</label>
+                {{ form.pan_number }}
+                {% if form.pan_number.errors %}<p class="mt-1 text-xs text-red-600">{{ form.pan_number.errors[0] }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Aadhaar (last 4)</label>
+                {{ form.aadhaar_last4 }}
+                {% if form.aadhaar_last4.errors %}<p class="mt-1 text-xs text-red-600">{{ form.aadhaar_last4.errors[0] }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h3 class="font-display text-lg font-semibold text-ink-900">Payout details</h3>
+        <p class="mt-1 text-xs text-slate-500">Used after approval for commission payouts.</p>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+                <label class="mb-1 block text-sm font-medium text-slate-700">UPI ID</label>
+                {{ form.upi_id }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Bank account</label>
+                {{ form.bank_account }}
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">IFSC</label>
+                {{ form.bank_ifsc }}
+            </div>
+        </div>
+    </div>
+
+    {% if can_submit %}
+    <button type="submit" class="rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-500">
+        Submit for admin approval
+    </button>
+    {% endif %}
+</form>
+{% endblock %}

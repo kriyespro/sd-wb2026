@@ -462,10 +462,16 @@ class DgcApplicationApproveView(SuperAdminRequiredMixin, View):
         application = get_object_or_404(DgcApplication, pk=pk)
         try:
             user, temp_password = approve_dgc_application(application, request.user)
-            messages.success(
-                request,
-                f'Approved {application.name}. Share login → Username: {user.username} | Temp password: {temp_password} → /auth/login/ then /dashboard/dgc/',
-            )
+            if temp_password:
+                messages.success(
+                    request,
+                    f'Approved {application.name}. Share login → Username: {user.username} | Temp password: {temp_password} → /auth/login/ then /dashboard/dgc/',
+                )
+            else:
+                messages.success(
+                    request,
+                    f'Approved {application.name}. Google account unlocked — they can use /dashboard/dgc/ now.',
+                )
         except ValueError as exc:
             messages.error(request, str(exc))
         return redirect('operations:dgc_applications')

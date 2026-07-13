@@ -35,6 +35,7 @@ class ProvisionPublicSignupTests(TestCase):
         self.assertEqual(user.profile.role, ROLE_PARTNER)
         partner = PartnerProfile.objects.get(user=user)
         self.assertTrue(partner.code)
+        self.assertFalse(partner.is_active)
 
     def test_rejects_staff_role(self):
         user = User.objects.create_user('pm', 'pm@example.com', 'pass12345')

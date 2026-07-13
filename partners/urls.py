@@ -6,6 +6,7 @@ app_name = 'partners'
 
 urlpatterns = [
     path('', views.PartnerDashboardView.as_view(), name='dashboard'),
+    path('profile/', views.PartnerProfileView.as_view(), name='profile'),
     path('offers/', views.OffersView.as_view(), name='offers'),
     path('orders/', views.OrdersView.as_view(), name='orders'),
     path('orders/place/', views.OrderCreateView.as_view(), name='order_create'),

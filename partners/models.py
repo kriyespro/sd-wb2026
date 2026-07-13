@@ -25,8 +25,14 @@ class DgcApplication(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     city = models.CharField(max_length=120, blank=True)
+    address = models.CharField(max_length=300, blank=True)
     experience = models.CharField(max_length=200, blank=True)
     why = models.TextField()
+    pan_number = models.CharField(max_length=20, blank=True, help_text='PAN for KYC')
+    aadhaar_last4 = models.CharField(max_length=4, blank=True, help_text='Last 4 digits of Aadhaar')
+    upi_id = models.CharField(max_length=120, blank=True)
+    bank_account = models.CharField(max_length=120, blank=True)
+    bank_ifsc = models.CharField(max_length=20, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
     reviewed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -52,6 +58,10 @@ class DgcApplication(models.Model):
 
     def __str__(self):
         return f'{self.name} — {self.email}'
+
+    @property
+    def is_google_signup(self):
+        return bool(self.partner_user_id) and not self.temp_password
 
 
 class PartnerProfile(models.Model):

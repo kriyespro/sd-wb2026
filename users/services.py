@@ -51,7 +51,16 @@ def get_dashboard_url_name_for_user(user):
 
 
 def get_dashboard_url_for_user(user):
-    return reverse(get_dashboard_url_name_for_user(user))
+    url = reverse(get_dashboard_url_name_for_user(user))
+    if (
+        user.is_authenticated
+        and hasattr(user, 'profile')
+        and user.profile.role in PARTNER_ROLES
+    ):
+        from partners.services import partner_is_approved
+        if not partner_is_approved(user):
+            return reverse('partners:profile')
+    return url
 
 
 def _unique_partner_code(name):
@@ -108,7 +117,12 @@ def provision_public_signup(user, role):
     elif role == ROLE_PARTNER:
         if not PartnerProfile.objects.filter(user=user).exists():
             name = user.get_full_name() or user.username
-            PartnerProfile.objects.create(user=user, code=_unique_partner_code(name))
+            # Inactive until KYC submitted + admin approves
+            PartnerProfile.objects.create(
+                user=user,
+                code=_unique_partner_code(name),
+                is_active=False,
+            )
 
     # student: role only
     return user

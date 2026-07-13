@@ -7,7 +7,7 @@
             <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Partner desk</span>
             <h2 class="mt-2 font-display text-2xl font-bold">DGC Applications</h2>
             <p class="mt-1 max-w-xl text-sm text-slate-300">
-                Marketing partner applications from /dgc/. Approve to create portal login.
+                Google + KYC applications and /dgc/ form leads. Approve to unlock the DGC portal.
             </p>
             <p class="mt-2 text-xs text-slate-400">Total: {{ total_count }}</p>
         </div>
@@ -35,6 +35,7 @@
                 <tr>
                     <th class="px-4 py-3">Applicant</th>
                     <th class="px-4 py-3">City</th>
+                    <th class="px-4 py-3">KYC</th>
                     <th class="px-4 py-3">Experience</th>
                     <th class="px-4 py-3">Why</th>
                     <th class="px-4 py-3">Applied</th>
@@ -51,6 +52,13 @@
                         <p class="text-xs text-slate-500">{{ app.phone }}</p>
                     </td>
                     <td class="px-4 py-4 text-slate-600">{{ app.city or '—' }}</td>
+                    <td class="px-4 py-4 text-xs text-slate-600">
+                        {% if app.pan_number %}<p>PAN {{ app.pan_number }}</p>{% endif %}
+                        {% if app.aadhaar_last4 %}<p>Aadhaar ····{{ app.aadhaar_last4 }}</p>{% endif %}
+                        {% if app.address %}<p class="mt-1 max-w-[10rem] text-slate-500">{{ app.address }}</p>{% endif %}
+                        {% if app.partner_user %}<p class="mt-1 font-medium text-brand-600">Google signup</p>{% endif %}
+                        {% if not app.pan_number and not app.aadhaar_last4 and not app.address %}<span class="text-slate-400">—</span>{% endif %}
+                    </td>
                     <td class="px-4 py-4 text-xs text-slate-600">{{ app.experience or '—' }}</td>
                     <td class="px-4 py-4 max-w-xs text-xs text-slate-600">
                         <details>
@@ -84,7 +92,7 @@
                                     {% if app.temp_password %}
                                     <code class="ml-1 rounded bg-white px-1.5 py-0.5 font-mono font-semibold">{{ app.temp_password }}</code>
                                     {% else %}
-                                    <span class="ml-1 text-amber-700">—</span>
+                                    <span class="ml-1 text-emerald-700">Google login</span>
                                     {% endif %}
                                 </p>
                             </div>

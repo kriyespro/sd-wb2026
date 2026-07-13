@@ -19,6 +19,7 @@ from .models import (
 )
 
 DGC_NAV = [
+    {'title': 'Profile / KYC', 'icon': '🪪', 'url_name': 'partners:profile'},
     {'title': 'Offers', 'icon': '📦', 'url_name': 'partners:offers'},
     {'title': 'Orders', 'icon': '🛒', 'url_name': 'partners:orders'},
     {'title': 'Leads', 'icon': '📞', 'url_name': 'partners:leads'},
@@ -27,9 +28,26 @@ DGC_NAV = [
     {'title': 'Knowledge Base', 'icon': '📚', 'url_name': 'knowledge:index'},
 ]
 
+DGC_ONBOARDING_NAV = [
+    {'title': 'Profile / KYC', 'icon': '🪪', 'url_name': 'partners:profile'},
+]
+
 
 def get_partner_profile(user):
     return getattr(user, 'partner_profile', None)
+
+
+def get_partner_application(user):
+    return (
+        DgcApplication.objects.filter(partner_user=user)
+        .order_by('-created_at')
+        .first()
+    )
+
+
+def partner_is_approved(user):
+    partner = get_partner_profile(user)
+    return bool(partner and partner.is_active)
 
 
 def create_dgc_application(form):
@@ -46,44 +64,124 @@ def _unique_partner_code(name):
 
 
 @transaction.atomic
+def submit_partner_kyc(user, cleaned_data):
+    """Save full KYC details and queue application for admin approval."""
+    app = (
+        DgcApplication.objects.filter(partner_user=user)
+        .exclude(status__in=[
+            DgcApplication.STATUS_APPROVED,
+            DgcApplication.STATUS_PAUSED,
+            DgcApplication.STATUS_CANCELLED,
+        ])
+        .order_by('-created_at')
+        .first()
+    )
+    if app is None:
+        app = DgcApplication(partner_user=user)
+
+    for field in (
+        'name', 'email', 'phone', 'city', 'address', 'experience', 'why',
+        'pan_number', 'aadhaar_last4', 'upi_id', 'bank_account', 'bank_ifsc',
+    ):
+        setattr(app, field, cleaned_data.get(field, '') or '')
+
+    app.email = (cleaned_data.get('email') or user.email or '').strip().lower()
+    app.status = DgcApplication.STATUS_NEW
+    app.save()
+
+    profile = user.profile
+    profile.phone = app.phone
+    profile.save(update_fields=['phone'])
+
+    # Sync payout fields onto partner profile (still inactive until approve)
+    partner = get_partner_profile(user)
+    if partner:
+        partner.upi_id = app.upi_id
+        partner.bank_account = app.bank_account
+        partner.bank_ifsc = app.bank_ifsc
+        partner.save(update_fields=['upi_id', 'bank_account', 'bank_ifsc'])
+
+    # Keep user name in sync
+    parts = app.name.split()
+    if parts:
+        user.first_name = parts[0][:30]
+        user.last_name = ' '.join(parts[1:])[:30]
+        user.save(update_fields=['first_name', 'last_name'])
+
+    return app
+
+
+@transaction.atomic
 def approve_dgc_application(application, actor):
-    """Approve application and create partner login. Returns (user, temp_password)."""
+    """Approve application. Google users unlock portal; classic applicants get a login."""
     if application.status == DgcApplication.STATUS_APPROVED and application.partner_user_id:
-        raise ValueError('Application already approved')
+        partner = getattr(application.partner_user, 'partner_profile', None)
+        if partner and partner.is_active:
+            raise ValueError('Application already approved')
 
-    email = application.email.strip().lower()
-    username_base = email.split('@')[0][:20]
-    username = username_base
-    n = 1
-    while User.objects.filter(username=username).exists():
-        username = f'{username_base}{n}'
-        n += 1
+    temp_password = ''
 
-    temp_password = get_random_string(10)
-    user = User.objects.create_user(
-        username=username,
-        email=email,
-        password=temp_password,
-        first_name=application.name.split()[0][:30],
-        last_name=' '.join(application.name.split()[1:])[:30],
-    )
-    user.profile.role = ROLE_PARTNER
-    user.profile.phone = application.phone
-    user.profile.save(update_fields=['role', 'phone'])
+    if application.partner_user_id:
+        # Google (or already-linked) signup — activate portal, no new password.
+        user = application.partner_user
+        user.profile.role = ROLE_PARTNER
+        user.profile.phone = application.phone
+        user.profile.save(update_fields=['role', 'phone'])
+        if not user.is_active:
+            user.is_active = True
+            user.save(update_fields=['is_active'])
 
-    PartnerProfile.objects.create(
-        user=user,
-        code=_unique_partner_code(application.name),
-    )
+        partner = get_partner_profile(user)
+        if partner is None:
+            partner = PartnerProfile.objects.create(
+                user=user,
+                code=_unique_partner_code(application.name),
+                is_active=True,
+            )
+        else:
+            partner.is_active = True
+        partner.upi_id = application.upi_id or partner.upi_id
+        partner.bank_account = application.bank_account or partner.bank_account
+        partner.bank_ifsc = application.bank_ifsc or partner.bank_ifsc
+        partner.save()
+    else:
+        email = application.email.strip().lower()
+        username_base = email.split('@')[0][:20]
+        username = username_base
+        n = 1
+        while User.objects.filter(username=username).exists():
+            username = f'{username_base}{n}'
+            n += 1
+
+        temp_password = get_random_string(10)
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=temp_password,
+            first_name=application.name.split()[0][:30],
+            last_name=' '.join(application.name.split()[1:])[:30],
+        )
+        user.profile.role = ROLE_PARTNER
+        user.profile.phone = application.phone
+        user.profile.save(update_fields=['role', 'phone'])
+
+        PartnerProfile.objects.create(
+            user=user,
+            code=_unique_partner_code(application.name),
+            upi_id=application.upi_id,
+            bank_account=application.bank_account,
+            bank_ifsc=application.bank_ifsc,
+            is_active=True,
+        )
+        application.partner_user = user
 
     application.status = DgcApplication.STATUS_APPROVED
     application.reviewed_by = actor
-    application.partner_user = user
     application.temp_password = temp_password
     application.save(update_fields=[
         'status', 'reviewed_by', 'partner_user', 'temp_password', 'updated_at',
     ])
-    return user, temp_password
+    return application.partner_user or user, temp_password
 
 
 def _set_partner_access(application, *, active: bool):

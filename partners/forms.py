@@ -25,6 +25,77 @@ class DgcApplicationForm(forms.ModelForm):
         }
 
 
+class PartnerKycForm(forms.ModelForm):
+    """Full KYC profile after Google join — submitted for admin approval."""
+
+    class Meta:
+        model = DgcApplication
+        fields = [
+            'name', 'email', 'phone', 'city', 'address',
+            'experience', 'why',
+            'pan_number', 'aadhaar_last4',
+            'upi_id', 'bank_account', 'bank_ifsc',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Full legal name'}),
+            'email': forms.EmailInput(attrs={'class': 'wb-input', 'placeholder': 'Email'}),
+            'phone': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Mobile number'}),
+            'city': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'City'}),
+            'address': forms.TextInput(attrs={
+                'class': 'wb-input', 'placeholder': 'Full address (street, area, PIN)',
+            }),
+            'experience': forms.TextInput(attrs={
+                'class': 'wb-input',
+                'placeholder': 'Marketing / sales experience',
+            }),
+            'why': forms.Textarea(attrs={
+                'class': 'wb-input', 'rows': 4,
+                'placeholder': 'Why do you want to join as a DGC?',
+            }),
+            'pan_number': forms.TextInput(attrs={
+                'class': 'wb-input', 'placeholder': 'PAN number', 'style': 'text-transform:uppercase',
+            }),
+            'aadhaar_last4': forms.TextInput(attrs={
+                'class': 'wb-input', 'placeholder': 'Last 4 digits of Aadhaar', 'maxlength': '4',
+            }),
+            'upi_id': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'UPI ID'}),
+            'bank_account': forms.TextInput(attrs={
+                'class': 'wb-input', 'placeholder': 'Bank account number',
+            }),
+            'bank_ifsc': forms.TextInput(attrs={
+                'class': 'wb-input', 'placeholder': 'IFSC code', 'style': 'text-transform:uppercase',
+            }),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['city'].required = True
+        self.fields['address'].required = True
+        self.fields['phone'].required = True
+        self.fields['experience'].required = True
+        self.fields['pan_number'].required = True
+        if user and user.email and not self.initial.get('email'):
+            self.fields['email'].initial = user.email
+            self.fields['email'].widget.attrs['readonly'] = True
+        if user and user.get_full_name() and not self.initial.get('name'):
+            self.fields['name'].initial = user.get_full_name()
+
+    def clean_pan_number(self):
+        pan = (self.cleaned_data.get('pan_number') or '').strip().upper()
+        if pan and len(pan) != 10:
+            raise forms.ValidationError('PAN should be 10 characters.')
+        return pan
+
+    def clean_aadhaar_last4(self):
+        val = (self.cleaned_data.get('aadhaar_last4') or '').strip()
+        if val and (len(val) != 4 or not val.isdigit()):
+            raise forms.ValidationError('Enter exactly 4 digits.')
+        return val
+
+    def clean_bank_ifsc(self):
+        return (self.cleaned_data.get('bank_ifsc') or '').strip().upper()
+
+
 class PartnerOrderForm(forms.Form):
     offer = forms.ModelChoiceField(
         queryset=ResellerOffer.objects.none(),
