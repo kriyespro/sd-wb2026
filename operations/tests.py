@@ -102,3 +102,27 @@ class LeadPipelineTests(TestCase):
         self.client.login(username='sales1', password='pass1234')
         response = self.client.get(reverse('operations:dgc_leads'))
         self.assertEqual(response.status_code, 302)
+
+    def test_dgc_lead_status_won_creates_commission(self):
+        from decimal import Decimal
+
+        from users.roles import ROLE_PARTNER
+
+        partner_user = User.objects.create_user('dgcops2', 'dgcops2@test.com', 'pass1234')
+        partner_user.profile.role = ROLE_PARTNER
+        partner_user.profile.save()
+        partner = PartnerProfile.objects.create(user=partner_user, code='DGCOPS2')
+        lead = PartnerLead.objects.create(
+            partner=partner,
+            name='Won Via Ops',
+            phone='9000000002',
+            deal_value=Decimal('10000.00'),
+            status=PartnerLead.STATUS_NEW,
+        )
+        url = reverse('operations:dgc_lead_status', kwargs={'pk': lead.pk})
+        response = self.client.post(url, {'status': PartnerLead.STATUS_WON})
+        self.assertEqual(response.status_code, 200)
+        lead.refresh_from_db()
+        self.assertEqual(lead.status, PartnerLead.STATUS_WON)
+        self.assertTrue(lead.commissions.exists())
+        self.assertEqual(lead.commissions.first().amount, Decimal('2000.00'))

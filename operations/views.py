@@ -13,7 +13,7 @@ from partners.services import (
     cancel_dgc_application,
     pause_dgc_application,
     resume_dgc_application,
-    update_lead_status,
+    update_lead_status as update_partner_lead_status,
 )
 from website.models import JobApplication, Lead
 
@@ -481,7 +481,7 @@ class DgcLeadStatusUpdateView(SuperAdminRequiredMixin, View):
         status = request.POST.get('status')
         valid = {value for value, _ in PartnerLead.STATUS_CHOICES}
         if status in valid:
-            update_lead_status(lead, status)
+            update_partner_lead_status(lead, status)
             lead.refresh_from_db()
         return render(request, 'partials/ops/_dgc_lead_row.jinja', {
             'lead': lead,
