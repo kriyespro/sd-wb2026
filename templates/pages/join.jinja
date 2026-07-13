@@ -3,7 +3,7 @@
 {% block content %}
 {% set hero_eyebrow = 'Get started' %}
 {% set hero_title = 'Join Winning Blueprints' %}
-{% set hero_text = 'Pick how you want to work with us. Public accounts are ready in minutes — team roles apply through Careers.' %}
+{% set hero_text = 'Pick how you want to work with us. Sign up with Google in one tap — email verified automatically. Team roles apply through Careers.' %}
 {% include "components/page_hero.jinja" %}
 
 <section class="py-16 sm:py-20">
@@ -16,7 +16,7 @@
                 <p class="mt-2 text-sm leading-relaxed text-slate-600">
                     Factory or brand owners — track projects, goals, invoices, and support in one place.
                 </p>
-                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Create account →</span>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Continue with Google →</span>
             </a>
 
             <a href="{{ url('users:signup') }}?role=student"
@@ -26,7 +26,7 @@
                 <p class="mt-2 text-sm leading-relaxed text-slate-600">
                     Learners joining Academy courses — access your student dashboard after signup.
                 </p>
-                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Create account →</span>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Continue with Google →</span>
             </a>
 
             <a href="{{ url('users:signup') }}?role=partner"
@@ -36,7 +36,7 @@
                 <p class="mt-2 text-sm leading-relaxed text-slate-600">
                     Digital Growth Consultants — sell ecommerce packages, track leads, commissions, and payouts.
                 </p>
-                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Create account →</span>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Continue with Google →</span>
             </a>
 
             <a href="{{ url('website:careers') }}"
@@ -52,7 +52,7 @@
 
         <p class="mt-10 text-center text-sm text-slate-500">
             Already have an account?
-            <a href="{{ url('users:login') }}" class="font-semibold text-brand-600 hover:text-brand-700">Sign in</a>
+            <a href="{{ url('users:login') }}" class="font-semibold text-brand-600 hover:text-brand-700">Sign in with Google</a>
         </p>
     </div>
 </section>

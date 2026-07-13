@@ -21,35 +21,22 @@ class LoginForm(AuthenticationForm):
     )
 
 
-class PublicSignupForm(forms.Form):
+class ChooseRoleForm(forms.Form):
     role = forms.ChoiceField(
         choices=PUBLIC_SIGNUP_CHOICES,
         widget=forms.RadioSelect(attrs={'class': 'signup-role'}),
     )
-    first_name = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'First name'}),
-    )
-    last_name = forms.CharField(
-        max_length=30,
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Last name'}),
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'wb-input', 'placeholder': 'you@email.com'}),
-    )
-    phone = forms.CharField(
-        max_length=20,
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Phone (optional)'}),
-    )
-    password1 = forms.CharField(
-        min_length=8,
-        widget=forms.PasswordInput(attrs={'class': 'wb-input', 'placeholder': 'Password (min 8)'}),
-    )
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'wb-input', 'placeholder': 'Confirm password'}),
-    )
+
+
+# Kept for tests / admin provisioning helpers — not used on public signup UI.
+class PublicSignupForm(forms.Form):
+    role = forms.ChoiceField(choices=PUBLIC_SIGNUP_CHOICES)
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30, required=False)
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=20, required=False)
+    password1 = forms.CharField(min_length=8)
+    password2 = forms.CharField()
 
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
@@ -59,9 +46,7 @@ class PublicSignupForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        p1 = cleaned.get('password1')
-        p2 = cleaned.get('password2')
-        if p1 and p2 and p1 != p2:
+        if cleaned.get('password1') and cleaned.get('password2') and cleaned['password1'] != cleaned['password2']:
             self.add_error('password2', 'Passwords do not match.')
         return cleaned
 
@@ -74,10 +59,3 @@ class PublicSignupForm(forms.Form):
             last_name=self.cleaned_data.get('last_name', ''),
             phone=self.cleaned_data.get('phone', ''),
         )
-
-
-class ChooseRoleForm(forms.Form):
-    role = forms.ChoiceField(
-        choices=PUBLIC_SIGNUP_CHOICES,
-        widget=forms.RadioSelect(attrs={'class': 'signup-role'}),
-    )

@@ -1,12 +1,13 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.shortcuts import redirect, render
 from django.views import View
 from django.views.decorators.http import require_http_methods
 
-from .forms import ChooseRoleForm, LoginForm, PublicSignupForm
+from .forms import ChooseRoleForm, LoginForm
 from .services import (
+    PUBLIC_SIGNUP_CHOICES,
     PUBLIC_SIGNUP_ROLES,
     SESSION_NEEDS_ROLE,
     SESSION_SIGNUP_ROLE,
@@ -44,28 +45,28 @@ def dashboard_redirect(request):
 
 @require_http_methods(['GET', 'POST'])
 def signup(request):
+    """Google-only signup: pick a public role, then continue with Google."""
     if request.user.is_authenticated and not request.session.get(SESSION_NEEDS_ROLE):
         return redirect(get_dashboard_url_for_user(request.user))
 
-    initial_role = request.GET.get('role', '').strip()
-    if initial_role not in PUBLIC_SIGNUP_ROLES:
-        initial_role = ''
-
+    selected_role = request.GET.get('role', '').strip()
     if request.method == 'POST':
-        form = PublicSignupForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            request.session.pop(SESSION_NEEDS_ROLE, None)
-            request.session.pop(SESSION_SIGNUP_ROLE, None)
-            return redirect(get_dashboard_url_for_user(user))
-    else:
-        form = PublicSignupForm(initial={'role': initial_role} if initial_role else None)
+        selected_role = request.POST.get('role', '').strip()
+
+    if selected_role and selected_role not in PUBLIC_SIGNUP_ROLES:
+        selected_role = ''
+
+    # POST with a valid role → store session and start Google OAuth
+    if request.method == 'POST' and selected_role:
+        request.session[SESSION_SIGNUP_ROLE] = selected_role
+        request.session.pop(SESSION_NEEDS_ROLE, None)
+        return redirect('/accounts/google/login/')
 
     return render(request, 'pages/auth/signup.jinja', {
-        'form': form,
         'page_title': 'Create account',
-        'selected_role': initial_role or (form.data.get('role') if form.is_bound else ''),
+        'role_choices': PUBLIC_SIGNUP_CHOICES,
+        'selected_role': selected_role,
+        'error': 'Please choose how you are joining.' if request.method == 'POST' else '',
     })
 
 

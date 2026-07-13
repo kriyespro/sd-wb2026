@@ -8,6 +8,7 @@ from users.roles import ROLE_CLIENT_OWNER, ROLE_PARTNER, ROLE_PM, ROLE_STUDENT
 from users.services import (
     PUBLIC_SIGNUP_ROLES,
     SESSION_NEEDS_ROLE,
+    SESSION_SIGNUP_ROLE,
     create_public_user,
     provision_public_signup,
 )
@@ -60,54 +61,25 @@ class SignupViewTests(TestCase):
         r = self.client.get(reverse('website:join'))
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'Client portal')
-        self.assertContains(r, 'DGC Partner')
+        self.assertContains(r, 'Continue with Google')
 
     def test_signup_page_prefills_role(self):
         r = self.client.get(reverse('users:signup') + '?role=student')
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'value="student"')
+        self.assertContains(r, 'Continue with Google')
+        self.assertNotContains(r, 'Confirm password')
 
-    def test_email_signup_client(self):
-        r = self.client.post(reverse('users:signup'), {
-            'role': ROLE_CLIENT_OWNER,
-            'first_name': 'Riya',
-            'last_name': 'Shah',
-            'email': 'riya@example.com',
-            'phone': '9999999999',
-            'password1': 'securepass1',
-            'password2': 'securepass1',
-        })
+    def test_signup_post_starts_google(self):
+        r = self.client.post(reverse('users:signup'), {'role': ROLE_PARTNER})
         self.assertEqual(r.status_code, 302)
-        user = User.objects.get(email='riya@example.com')
-        self.assertEqual(user.profile.role, ROLE_CLIENT_OWNER)
-        self.assertTrue(ClientAccount.objects.filter(user=user).exists())
-        self.assertEqual(r.url, reverse('clients:dashboard'))
+        self.assertIn('/accounts/google/login/', r.url)
+        self.assertEqual(self.client.session.get(SESSION_SIGNUP_ROLE), ROLE_PARTNER)
 
-    def test_email_signup_partner(self):
-        r = self.client.post(reverse('users:signup'), {
-            'role': ROLE_PARTNER,
-            'first_name': 'Dev',
-            'email': 'devpartner@example.com',
-            'password1': 'securepass1',
-            'password2': 'securepass1',
-        })
-        self.assertEqual(r.status_code, 302)
-        user = User.objects.get(email='devpartner@example.com')
-        self.assertEqual(user.profile.role, ROLE_PARTNER)
-        self.assertTrue(PartnerProfile.objects.filter(user=user).exists())
-        self.assertEqual(r.url, reverse('partners:dashboard'))
-
-    def test_rejects_duplicate_email(self):
-        User.objects.create_user('exist', 'exist@example.com', 'pass12345')
-        r = self.client.post(reverse('users:signup'), {
-            'role': ROLE_STUDENT,
-            'first_name': 'X',
-            'email': 'exist@example.com',
-            'password1': 'securepass1',
-            'password2': 'securepass1',
-        })
+    def test_signup_post_requires_role(self):
+        r = self.client.post(reverse('users:signup'), {})
         self.assertEqual(r.status_code, 200)
-        self.assertContains(r, 'already exists')
+        self.assertContains(r, 'Please choose how you are joining')
 
     def test_choose_role_after_flag(self):
         user = User.objects.create_user('newg', 'newg@example.com', 'pass12345')
@@ -127,7 +99,7 @@ class SignupViewTests(TestCase):
         self.assertIn('/accounts/google/login/', r.url)
         self.assertEqual(self.client.session.get('signup_role'), ROLE_PARTNER)
 
-    def test_login_still_redirects_by_portal(self):
+    def test_staff_password_login_still_works(self):
         user = create_public_user(
             email='stu2@example.com',
             password='securepass1',
@@ -149,3 +121,4 @@ class LoginPageTests(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'Continue with Google')
         self.assertContains(r, reverse('website:join'))
+        self.assertContains(r, 'Staff? Sign in with username')
