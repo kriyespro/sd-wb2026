@@ -7,3 +7,4 @@ psycopg2-binary>=2.9
 django-redis>=5.4
 redis>=5.0
 django-allauth>=65.0
+requests>=2.31
