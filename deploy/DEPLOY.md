@@ -25,11 +25,20 @@ python3 -c "from django.core.management.utils import get_random_secret_key; prin
 #   DJANGO_SECRET_KEY
 #   POSTGRES_PASSWORD
 #   EMAIL_HOST_PASSWORD
+#   GOOGLE_OAUTH_CLIENT_ID
+#   GOOGLE_OAUTH_CLIENT_SECRET
 ```
 
 Key values already set:
 - `DJANGO_ALLOWED_HOSTS=winningblueprints.com,www.winningblueprints.com,159.195.52.197`
 - `CSRF_TRUSTED_ORIGINS=https://winningblueprints.com,https://www.winningblueprints.com,https://159.195.52.197`
+
+Google OAuth redirect URIs (Cloud Console):
+- `https://winningblueprints.com/accounts/google/login/callback/`
+- `https://www.winningblueprints.com/accounts/google/login/callback/`
+- `http://localhost:8000/accounts/google/login/callback/` (dev)
+
+After first migrate, set Django Sites domain to `winningblueprints.com` in `/sd/` (Sites) so allauth builds correct absolute URLs.
 
 ## 3. SSL certificates
 

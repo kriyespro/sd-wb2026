@@ -8,6 +8,9 @@ app_name = 'users'
 urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('signup/', views.signup, name='signup'),
+    path('choose-role/', views.choose_role, name='choose_role'),
+    path('google/', views.google_start, name='google_start'),
     path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
     path('password-reset/', auth_views.PasswordResetView.as_view(
         template_name='pages/auth/password_reset.jinja',

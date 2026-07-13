@@ -240,6 +240,15 @@ def careers(request):
     )
 
 
+def join(request):
+    return _page(
+        request,
+        'pages/join.jinja',
+        'Join',
+        'Create your Winning Blueprints account — business client, student, DGC partner, or apply to the team.',
+    )
+
+
 @require_http_methods(['GET', 'POST'])
 def job_apply_submit(request):
     form = JobApplicationForm(request.POST or None, role_choices=_role_titles())

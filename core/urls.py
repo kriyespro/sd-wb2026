@@ -11,6 +11,7 @@ urlpatterns = [
     path('health/', health_check, name='health'),
     path('sd/', admin.site.urls),
     path('auth/', include('users.urls')),
+    path('accounts/', include('allauth.urls')),
     path('dashboard/client/', include('clients.urls')),
     path('dashboard/student/', include('academy.dashboard_urls')),
     path('dashboard/dgc/', include('partners.urls')),

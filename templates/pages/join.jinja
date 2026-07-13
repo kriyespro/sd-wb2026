@@ -1,0 +1,59 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+{% set hero_eyebrow = 'Get started' %}
+{% set hero_title = 'Join Winning Blueprints' %}
+{% set hero_text = 'Pick how you want to work with us. Public accounts are ready in minutes — team roles apply through Careers.' %}
+{% include "components/page_hero.jinja" %}
+
+<section class="py-16 sm:py-20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-5 sm:grid-cols-2">
+            <a href="{{ url('users:signup') }}?role=client_owner"
+               class="group rounded-3xl border border-slate-200 bg-white p-7 transition hover:border-brand-300 hover:shadow-lg">
+                <p class="text-xs font-semibold uppercase tracking-widest text-brand-600">Business</p>
+                <h2 class="mt-2 font-display text-xl font-bold text-ink-900 group-hover:text-brand-700">Client portal</h2>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                    Factory or brand owners — track projects, goals, invoices, and support in one place.
+                </p>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Create account →</span>
+            </a>
+
+            <a href="{{ url('users:signup') }}?role=student"
+               class="group rounded-3xl border border-slate-200 bg-white p-7 transition hover:border-brand-300 hover:shadow-lg">
+                <p class="text-xs font-semibold uppercase tracking-widest text-brand-600">Academy</p>
+                <h2 class="mt-2 font-display text-xl font-bold text-ink-900 group-hover:text-brand-700">Student</h2>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                    Learners joining Academy courses — access your student dashboard after signup.
+                </p>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Create account →</span>
+            </a>
+
+            <a href="{{ url('users:signup') }}?role=partner"
+               class="group rounded-3xl border border-slate-200 bg-white p-7 transition hover:border-brand-300 hover:shadow-lg">
+                <p class="text-xs font-semibold uppercase tracking-widest text-brand-600">Reseller</p>
+                <h2 class="mt-2 font-display text-xl font-bold text-ink-900 group-hover:text-brand-700">DGC Partner</h2>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                    Digital Growth Consultants — sell ecommerce packages, track leads, commissions, and payouts.
+                </p>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">Create account →</span>
+            </a>
+
+            <a href="{{ url('website:careers') }}"
+               class="group rounded-3xl border border-slate-200 bg-slate-50 p-7 transition hover:border-gold-400 hover:shadow-lg">
+                <p class="text-xs font-semibold uppercase tracking-widest text-gold-600">Team</p>
+                <h2 class="mt-2 font-display text-xl font-bold text-ink-900 group-hover:text-brand-700">Careers & freelancers</h2>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                    Apply for full-time, internship, or delivery roles. Staff accounts are created after hiring.
+                </p>
+                <span class="mt-5 inline-flex text-sm font-semibold text-brand-600">View openings →</span>
+            </a>
+        </div>
+
+        <p class="mt-10 text-center text-sm text-slate-500">
+            Already have an account?
+            <a href="{{ url('users:login') }}" class="font-semibold text-brand-600 hover:text-brand-700">Sign in</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

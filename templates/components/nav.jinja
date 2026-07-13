@@ -12,6 +12,7 @@
         {'label': 'About', 'url': 'website:about'},
         {'label': 'Industries', 'url': 'website:industries'},
         {'label': 'Careers', 'url': 'website:careers'},
+        {'label': 'Join', 'url': 'website:join'},
         {'label': 'Join as DGC', 'url': 'partners_public:landing'},
         {'label': 'Pricing', 'url': 'website:pricing'}
     ]},
@@ -59,6 +60,7 @@
             <a href="{{ url('users:dashboard_redirect') }}" class="text-sm font-medium text-slate-600 hover:text-brand-600">Dashboard</a>
             {% else %}
             <a href="{{ url('users:login') }}" class="text-sm font-medium text-slate-600 hover:text-brand-600">Login</a>
+            <a href="{{ url('website:join') }}" class="text-sm font-medium text-slate-600 hover:text-brand-600">Join</a>
             {% endif %}
             <a href="{{ url('website:contact') }}" class="btn-primary !px-6 !py-3">Get a Quote →</a>
         </div>
@@ -81,6 +83,12 @@
                 <a href="{{ url(group.url) }}" class="rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50">{{ group.label }}</a>
                 {% endif %}
             {% endfor %}
+            {% if user.is_authenticated %}
+            <a href="{{ url('users:dashboard_redirect') }}" class="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Dashboard</a>
+            {% else %}
+            <a href="{{ url('users:login') }}" class="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Login</a>
+            <a href="{{ url('website:join') }}" class="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Join</a>
+            {% endif %}
             <a href="{{ url('website:contact') }}" class="btn-primary mt-3 text-center">Get a Quote →</a>
         </nav>
     </div>

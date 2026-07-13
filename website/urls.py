@@ -18,6 +18,7 @@ urlpatterns = [
     path('startup/', views.startup, name='startup'),
     path('careers/', views.careers, name='careers'),
     path('careers/apply/', views.job_apply_submit, name='job_apply'),
+    path('join/', views.join, name='join'),
     path('contact/', views.contact, name='contact'),
     path('lead/submit/', views.lead_submit, name='lead_submit'),
 ]
