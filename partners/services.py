@@ -24,6 +24,7 @@ DGC_NAV = [
     {'title': 'Leads', 'icon': '📞', 'url_name': 'partners:leads'},
     {'title': 'Commissions', 'icon': '💰', 'url_name': 'partners:commissions'},
     {'title': 'Payouts', 'icon': '🏦', 'url_name': 'partners:payouts'},
+    {'title': 'Knowledge Base', 'icon': '📚', 'url_name': 'knowledge:index'},
 ]
 
 
@@ -170,6 +171,23 @@ def update_order_status(order, status):
         raise ValueError('Invalid order status')
     order.status = status
     order.save(update_fields=['status'])
+    return order
+
+
+@transaction.atomic
+def assign_order(order, user, due_at=None, work_notes=''):
+    order.assigned_to = user
+    update_fields = ['assigned_to']
+    if due_at is not None:
+        order.due_at = due_at
+        update_fields.append('due_at')
+    if work_notes is not None:
+        order.work_notes = work_notes
+        update_fields.append('work_notes')
+    if order.status == PartnerOrder.STATUS_PENDING and user:
+        order.status = PartnerOrder.STATUS_CONFIRMED
+        update_fields.append('status')
+    order.save(update_fields=update_fields)
     return order
 
 

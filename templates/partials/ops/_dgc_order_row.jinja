@@ -18,15 +18,26 @@
         <p class="font-medium text-slate-700">{{ order.created_at.strftime('%d %b %Y') }}</p>
         <p>{{ order.created_at.strftime('%H:%M') }}</p>
     </td>
-    <td class="px-4 py-4 max-w-xs">
-        {% if order.notes %}
-        <details class="text-xs text-slate-600">
-            <summary class="cursor-pointer font-medium text-brand-600">View</summary>
-            <p class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 p-2">{{ order.notes }}</p>
-        </details>
-        {% else %}
-        <span class="text-xs text-slate-400">—</span>
-        {% endif %}
+    <td class="px-4 py-4 min-w-[12rem]">
+        <form hx-post="{{ url('operations:dgc_order_assign', kwargs={'pk': order.id}) }}"
+              hx-target="#dgc-order-{{ order.id }}"
+              hx-swap="outerHTML"
+              class="space-y-1.5">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <select name="assigned_to" class="ops-select text-xs" onchange="htmx.trigger(this.form, 'submit')">
+                <option value="">Unassigned</option>
+                {% for u in delivery_users|default([]) %}
+                <option value="{{ u.id }}" {% if order.assigned_to_id == u.id %}selected{% endif %}>
+                    {{ u.get_full_name() or u.username }}
+                </option>
+                {% endfor %}
+            </select>
+            <input type="date" name="due_at" class="ops-select text-[10px]"
+                   value="{{ order.due_at.strftime('%Y-%m-%d') if order.due_at else '' }}"
+                   onchange="htmx.trigger(this.form, 'submit')">
+            <textarea name="work_notes" rows="2" class="ops-textarea text-[10px]" placeholder="Work brief…"
+                      onblur="htmx.trigger(this.form, 'submit')">{{ order.work_notes }}</textarea>
+        </form>
     </td>
     <td class="px-4 py-4">
         <form hx-post="{{ url('operations:dgc_order_status', kwargs={'pk': order.id}) }}"

@@ -5,18 +5,20 @@ from django.views.generic import TemplateView
 from academy.models import AdmissionApplication, MentorAllocation
 from projects.models import Deliverable, Project
 from users.mixins import DashboardContextMixin, OpsPortalMixin
-from users.roles import ROLE_SUPER_ADMIN
 from users.services import get_dashboard_url_for_user
 from partners.models import DgcApplication, PartnerLead, PartnerOrder
 from partners.services import (
     approve_dgc_application,
+    assign_order,
     cancel_dgc_application,
     pause_dgc_application,
     resume_dgc_application,
     update_lead_status as update_partner_lead_status,
     update_order_status,
 )
-from website.models import JobApplication, Lead
+from users.roles import DELIVERY_ROLES, ROLE_SUPER_ADMIN
+from website.models import JobApplication, Lead, LeadFollowUp
+from website.services import ensure_lead_followups, toggle_lead_followup
 
 from .forms import (
     JobApplicationStatusForm,
@@ -25,13 +27,16 @@ from .forms import (
     LeadNotesForm,
     LeadStatusForm,
     MentorAllocationForm,
+    OrderAssignForm,
     ProjectAssignmentForm,
 )
 from .lead_services import (
     assign_lead,
     convert_lead_to_client,
+    get_office_desk_users,
     get_sales_executives,
     save_handoff_notes,
+    set_next_follow_up,
     update_lead_status,
 )
 from .services import (
@@ -248,22 +253,27 @@ class PerformanceView(OpsBaseMixin, TemplateView):
 
 
 def _lead_row_context(lead):
+    ensure_lead_followups(lead)
     return {
         'lead': lead,
         'status_choices': Lead.STATUS_CHOICES,
-        'sales_executives': get_sales_executives(),
+        'sales_executives': get_office_desk_users(),
+        'followups': lead.followups.all(),
     }
 
 
 def _leads_list_context():
+    leads = list(get_recent_leads(100))
+    for lead in leads:
+        ensure_lead_followups(lead)
     return {
-        'leads': get_recent_leads(100),
+        'leads': leads,
         'status_choices': Lead.STATUS_CHOICES,
         'status_counts': {
             status: Lead.objects.filter(status=status).count()
             for status, _ in Lead.STATUS_CHOICES
         },
-        'sales_executives': get_sales_executives(),
+        'sales_executives': get_office_desk_users(),
     }
 
 
@@ -319,6 +329,71 @@ class LeadConvertView(OpsPortalMixin, View):
                 pass
         lead.refresh_from_db()
         return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
+
+
+class LeadFollowUpToggleView(OpsPortalMixin, View):
+    def post(self, request, pk):
+        followup = get_object_or_404(LeadFollowUp.objects.select_related('lead'), pk=pk)
+        toggle_lead_followup(followup, request.user)
+        return render(request, 'partials/_lead_row.jinja', _lead_row_context(followup.lead))
+
+
+class LeadNextFollowUpView(OpsPortalMixin, View):
+    def post(self, request, pk):
+        from datetime import datetime, time
+        from django.utils.dateparse import parse_datetime, parse_date
+        from django.utils import timezone as tz
+
+        lead = get_object_or_404(Lead, pk=pk)
+        raw = (request.POST.get('next_follow_up_at') or '').strip()
+        when = None
+        if raw:
+            when = parse_datetime(raw)
+            if when is None:
+                d = parse_date(raw)
+                if d:
+                    when = tz.make_aware(datetime.combine(d, time(hour=10)))
+            elif tz.is_naive(when):
+                when = tz.make_aware(when)
+        set_next_follow_up(lead, when)
+        return render(request, 'partials/_lead_row.jinja', _lead_row_context(lead))
+
+
+class FollowUpsView(OpsBaseMixin, TemplateView):
+    """Office desk — assigned enquiries + checklist progress."""
+
+    template_name = 'pages/ops/follow_ups.jinja'
+
+    def get_context_data(self, **kwargs):
+        from django.utils import timezone as tz
+
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'Office Follow-ups'
+        user = self.request.user
+        open_statuses = [
+            Lead.STATUS_NEW, Lead.STATUS_CONTACTED,
+            Lead.STATUS_QUALIFIED, Lead.STATUS_PROPOSAL,
+        ]
+        mine = Lead.objects.filter(
+            assigned_to=user, status__in=open_statuses,
+        ).prefetch_related('followups')
+        unassigned = Lead.objects.filter(
+            assigned_to__isnull=True, status__in=open_statuses,
+        ).prefetch_related('followups')[:20]
+        due_soon = Lead.objects.filter(
+            status__in=open_statuses,
+            next_follow_up_at__lte=tz.now() + tz.timedelta(days=1),
+            next_follow_up_at__isnull=False,
+        ).select_related('assigned_to').prefetch_related('followups')[:20]
+        for qs in (mine, unassigned, due_soon):
+            for lead in qs:
+                ensure_lead_followups(lead)
+        ctx['my_leads'] = mine
+        ctx['unassigned_leads'] = unassigned
+        ctx['due_soon'] = due_soon
+        ctx['status_choices'] = Lead.STATUS_CHOICES
+        ctx['sales_executives'] = get_office_desk_users()
+        return ctx
 
 
 class OpsInvoicesView(OpsBaseMixin, TemplateView):
@@ -496,7 +571,7 @@ class DgcOrdersView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         orders = PartnerOrder.objects.select_related(
-            'partner', 'partner__user', 'offer',
+            'partner', 'partner__user', 'offer', 'assigned_to',
         ).all()
         ctx['page_title'] = 'DGC Orders'
         ctx['orders'] = orders
@@ -506,24 +581,81 @@ class DgcOrdersView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
             for status, _ in PartnerOrder.STATUS_CHOICES
         }
         ctx['total_count'] = orders.count()
+        ctx['delivery_users'] = _delivery_users()
         return ctx
 
 
-class DgcOrderStatusUpdateView(SuperAdminRequiredMixin, View):
+class DgcOrderStatusUpdateView(OpsPortalMixin, View):
+    """Admin or assigned delivery user can update order status."""
+
     def post(self, request, pk):
         order = get_object_or_404(
-            PartnerOrder.objects.select_related('partner', 'partner__user', 'offer'),
+            PartnerOrder.objects.select_related('partner', 'partner__user', 'offer', 'assigned_to'),
             pk=pk,
         )
+        is_assignee = order.assigned_to_id == request.user.id
+        if not (_is_superuser(request.user) or is_assignee):
+            return redirect(get_dashboard_url_for_user(request.user))
         status = request.POST.get('status')
         valid = {value for value, _ in PartnerOrder.STATUS_CHOICES}
         if status in valid:
             update_order_status(order, status)
             order.refresh_from_db()
-        return render(request, 'partials/ops/_dgc_order_row.jinja', {
-            'order': order,
-            'status_choices': PartnerOrder.STATUS_CHOICES,
-        })
+        if request.headers.get('HX-Request'):
+            return render(request, 'partials/ops/_dgc_order_row.jinja', _dgc_order_row_context(order))
+        return redirect('operations:my_work')
+
+
+def _delivery_users():
+    from django.contrib.auth.models import User
+    return User.objects.filter(
+        profile__role__in=DELIVERY_ROLES,
+        is_active=True,
+    ).select_related('profile').order_by('first_name', 'username')
+
+
+def _dgc_order_row_context(order):
+    return {
+        'order': order,
+        'status_choices': PartnerOrder.STATUS_CHOICES,
+        'delivery_users': _delivery_users(),
+    }
+
+
+class DgcOrderAssignView(SuperAdminRequiredMixin, View):
+    def post(self, request, pk):
+        order = get_object_or_404(
+            PartnerOrder.objects.select_related('partner', 'partner__user', 'offer', 'assigned_to'),
+            pk=pk,
+        )
+        form = OrderAssignForm(request.POST)
+        if form.is_valid():
+            assign_order(
+                order,
+                form.cleaned_data.get('assigned_to'),
+                due_at=form.cleaned_data.get('due_at'),
+                work_notes=form.cleaned_data.get('work_notes') or '',
+            )
+            order.refresh_from_db()
+        return render(request, 'partials/ops/_dgc_order_row.jinja', _dgc_order_row_context(order))
+
+
+class MyWorkView(OpsBaseMixin, TemplateView):
+    """Delivery desk — orders assigned to the logged-in freelancer/dev."""
+
+    template_name = 'pages/ops/my_work.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'My Work'
+        orders = PartnerOrder.objects.filter(
+            assigned_to=self.request.user,
+        ).exclude(
+            status=PartnerOrder.STATUS_CANCELLED,
+        ).select_related('partner', 'partner__user', 'offer')
+        ctx['orders'] = orders
+        ctx['status_choices'] = PartnerOrder.STATUS_CHOICES
+        return ctx
 
 
 class OpsDashboardV2View(OpsBaseMixin, TemplateView):

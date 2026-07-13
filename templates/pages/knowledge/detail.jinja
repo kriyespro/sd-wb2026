@@ -1,0 +1,15 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<a href="{{ url('knowledge:index') }}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">← Knowledge Base</a>
+<article class="dash-panel mt-4 max-w-3xl p-6 sm:p-8">
+    {% if article.category %}
+    <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">{{ article.category }}</p>
+    {% endif %}
+    <h1 class="mt-2 font-display text-2xl font-bold text-ink-900">{{ article.title }}</h1>
+    {% if article.summary %}
+    <p class="mt-2 text-sm text-slate-600">{{ article.summary }}</p>
+    {% endif %}
+    <div class="mt-6 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{{ article.body }}</div>
+</article>
+{% endblock %}

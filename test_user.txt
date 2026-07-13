@@ -40,6 +40,24 @@ email: winningblueprints@gmail.com
 password: sales1234
 portal: /ops/
 
+# Office manager (enquiry follow-ups)
+username: office1
+email: winningblueprints@gmail.com
+password: office1234
+portal: /ops/follow-ups/
+
+# Web developer (delivery / my work)
+username: dev1
+email: winningblueprints@gmail.com
+password: dev1234
+portal: /ops/my-work/
+
+# Freelancer (delivery / my work)
+username: freelance1
+email: winningblueprints@gmail.com
+password: free1234
+portal: /ops/my-work/
+
 # DGC partner (Digital Growth Consultant)
 username: dgc1
 email: winningblueprints@gmail.com
@@ -47,6 +65,10 @@ password: dgc1234
 portal: /dashboard/dgc/
 public apply: /dgc/
 seed: python manage.py seed_partners
+
+# Knowledge base
+# /knowledge/ — role-filtered SOPs
+seed: python manage.py seed_knowledge
 
 # Mission Control demo data (Indian textile / D2C context)
 # Fills /ops/ with leads, jobs, academy, DGC, invoices, QA

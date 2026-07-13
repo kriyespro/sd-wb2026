@@ -24,6 +24,18 @@ urlpatterns = [
     path('leads/<int:pk>/assign/', views.LeadAssignView.as_view(), name='lead_assign'),
     path('leads/<int:pk>/notes/', views.LeadNotesUpdateView.as_view(), name='lead_notes'),
     path('leads/<int:pk>/convert/', views.LeadConvertView.as_view(), name='lead_convert'),
+    path(
+        'leads/followups/<int:pk>/toggle/',
+        views.LeadFollowUpToggleView.as_view(),
+        name='lead_followup_toggle',
+    ),
+    path(
+        'leads/<int:pk>/next-follow-up/',
+        views.LeadNextFollowUpView.as_view(),
+        name='lead_next_follow_up',
+    ),
+    path('follow-ups/', views.FollowUpsView.as_view(), name='follow_ups'),
+    path('my-work/', views.MyWorkView.as_view(), name='my_work'),
     path('invoices/', views.OpsInvoicesView.as_view(), name='invoices'),
     path('job-applications/', views.JobApplicationsView.as_view(), name='job_applications'),
     path(
@@ -68,5 +80,10 @@ urlpatterns = [
         'dgc-orders/<int:pk>/status/',
         views.DgcOrderStatusUpdateView.as_view(),
         name='dgc_order_status',
+    ),
+    path(
+        'dgc-orders/<int:pk>/assign/',
+        views.DgcOrderAssignView.as_view(),
+        name='dgc_order_assign',
     ),
 ]

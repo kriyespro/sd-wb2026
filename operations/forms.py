@@ -79,3 +79,31 @@ class JobApplicationStatusForm(forms.Form):
         choices=JobApplication.STATUS_CHOICES,
         widget=forms.Select(attrs={'class': 'wb-input text-sm'}),
     )
+
+
+class OrderAssignForm(forms.Form):
+    assigned_to = forms.ModelChoiceField(
+        queryset=None,
+        required=False,
+        empty_label='Unassigned',
+        widget=forms.Select(attrs={'class': 'ops-select text-xs'}),
+    )
+    due_at = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'class': 'ops-select text-xs', 'type': 'date'}),
+    )
+    work_notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'ops-textarea text-xs', 'rows': 2,
+            'placeholder': 'Brief for developer / freelancer…',
+        }),
+    )
+
+    def __init__(self, *args, **kwargs):
+        from users.roles import DELIVERY_ROLES
+        from django.contrib.auth.models import User
+        super().__init__(*args, **kwargs)
+        self.fields['assigned_to'].queryset = User.objects.filter(
+            profile__role__in=DELIVERY_ROLES, is_active=True,
+        ).select_related('profile')

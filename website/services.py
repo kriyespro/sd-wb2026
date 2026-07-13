@@ -4,15 +4,55 @@ import threading
 from django.conf import settings
 from django.core.mail import send_mail
 
-from .models import JobApplication, Lead
+import logging
+import threading
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.utils import timezone
+
+from .models import JobApplication, Lead, LeadFollowUp
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_FOLLOWUPS = [
+    ('called', 'Call / connect attempted'),
+    ('message_sent', 'WhatsApp or email sent'),
+    ('need_confirmed', 'Client need confirmed'),
+    ('quote_shared', 'Quote / package shared'),
+    ('followup_set', 'Next follow-up scheduled'),
+]
+
+
+def ensure_lead_followups(lead):
+    existing = set(lead.followups.values_list('key', flat=True))
+    to_create = [
+        LeadFollowUp(lead=lead, key=key, label=label, sort_order=i)
+        for i, (key, label) in enumerate(DEFAULT_FOLLOWUPS)
+        if key not in existing
+    ]
+    if to_create:
+        LeadFollowUp.objects.bulk_create(to_create)
+    return lead.followups.all()
+
+
+def toggle_lead_followup(followup, actor, is_done=None):
+    followup.is_done = (not followup.is_done) if is_done is None else bool(is_done)
+    if followup.is_done:
+        followup.done_at = timezone.now()
+        followup.done_by = actor
+    else:
+        followup.done_at = None
+        followup.done_by = None
+    followup.save(update_fields=['is_done', 'done_at', 'done_by'])
+    return followup
 
 
 def create_lead(form, source_page=''):
     lead = form.save(commit=False)
     lead.source_page = source_page
     lead.save()
+    ensure_lead_followups(lead)
     notify_lead_created(lead)
     return lead
 

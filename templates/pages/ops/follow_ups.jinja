@@ -1,0 +1,68 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<section class="relative mb-6 overflow-hidden rounded-[1.75rem] bg-ink-900 px-6 py-7 text-white sm:px-8">
+    <div class="relative">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Office desk</span>
+        <h2 class="mt-2 font-display text-2xl font-bold">Enquiry follow-ups</h2>
+        <p class="mt-1 max-w-xl text-sm text-slate-300">
+            Own assigned leads, complete the contact checklist, and set the next follow-up date.
+        </p>
+    </div>
+</section>
+
+{% macro lead_card(lead) %}
+<article class="dash-panel p-4">
+    <div class="flex flex-wrap items-start justify-between gap-2">
+        <div>
+            <p class="font-semibold text-ink-900">{{ lead.name }}</p>
+            <p class="text-xs text-slate-500">{{ lead.company or lead.service_interest or 'General' }}</p>
+            <a href="mailto:{{ lead.email }}" class="text-xs text-brand-600">{{ lead.email }}</a>
+            {% if lead.phone %}<p class="text-xs text-slate-500">{{ lead.phone }}</p>{% endif %}
+        </div>
+        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600">{{ lead.get_status_display() }}</span>
+    </div>
+    {% set done_count, total_count = lead.followup_progress %}
+    <p class="mt-3 text-[11px] font-semibold text-slate-500">Checklist {{ done_count }}/{{ total_count }}</p>
+    <ul class="mt-1 space-y-1">
+        {% for step in lead.followups.all() %}
+        <li class="flex items-center gap-2 text-xs {% if step.is_done %}text-slate-400 line-through{% else %}text-slate-700{% endif %}">
+            <span class="h-1.5 w-1.5 rounded-full {% if step.is_done %}bg-emerald-500{% else %}bg-amber-400{% endif %}"></span>
+            {{ step.label }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% if lead.next_follow_up_at %}
+    <p class="mt-2 text-[11px] font-semibold text-amber-700">Next: {{ lead.next_follow_up_at.strftime('%d %b %Y %H:%M') }}</p>
+    {% endif %}
+    <a href="{{ url('operations:leads') }}#lead-{{ lead.id }}" class="mt-3 inline-block text-[11px] font-bold text-brand-600">Open in leads →</a>
+</article>
+{% endmacro %}
+
+<div class="grid gap-6 lg:grid-cols-3">
+    <section>
+        <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Assigned to me</h3>
+        <div class="space-y-3">
+            {% for lead in my_leads %}{{ lead_card(lead) }}{% else %}
+            <p class="text-sm text-slate-400">No open leads assigned to you.</p>
+            {% endfor %}
+        </div>
+    </section>
+    <section>
+        <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Unassigned</h3>
+        <div class="space-y-3">
+            {% for lead in unassigned_leads %}{{ lead_card(lead) }}{% else %}
+            <p class="text-sm text-slate-400">All enquiries are owned.</p>
+            {% endfor %}
+        </div>
+    </section>
+    <section>
+        <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Due soon / overdue</h3>
+        <div class="space-y-3">
+            {% for lead in due_soon %}{{ lead_card(lead) }}{% else %}
+            <p class="text-sm text-slate-400">No follow-ups due in the next day.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -13,6 +13,9 @@ from .models import ProjectAssignment, Team
 
 OPS_NAV = [
     {'title': 'Mission Control v2', 'icon': '🛰️', 'url_name': 'ops2:dashboard'},
+    {'title': 'Office Follow-ups', 'icon': '📞', 'url_name': 'operations:follow_ups'},
+    {'title': 'My Work', 'icon': '🛠️', 'url_name': 'operations:my_work'},
+    {'title': 'Knowledge Base', 'icon': '📚', 'url_name': 'knowledge:index'},
     {'title': 'Quality Check', 'icon': '✔️', 'url_name': 'operations:quality_check'},
     {'title': 'Projects', 'icon': '📁', 'url_name': 'operations:projects'},
     {'title': 'Talent Pipeline', 'icon': '🔄', 'url_name': 'operations:pipeline'},

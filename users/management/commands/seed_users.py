@@ -4,12 +4,15 @@ from django.contrib.auth.models import User
 from users.models import Profile
 from users.roles import (
     ROLE_CLIENT_OWNER,
+    ROLE_FREELANCER,
     ROLE_INTERN,
     ROLE_MENTOR,
+    ROLE_OFFICE,
     ROLE_PM,
     ROLE_SALES,
     ROLE_STUDENT,
     ROLE_SUPER_ADMIN,
+    ROLE_WEB_DEV,
 )
 
 TEST_USERS = [
@@ -20,6 +23,9 @@ TEST_USERS = [
     ('pm1', 'winningblueprints@gmail.com', 'pm1234', ROLE_PM, 'Test', 'PM'),
     ('mentor1', 'winningblueprints@gmail.com', 'mentor1234', ROLE_MENTOR, 'Test', 'Mentor'),
     ('sales1', 'winningblueprints@gmail.com', 'sales1234', ROLE_SALES, 'Test', 'Sales'),
+    ('office1', 'winningblueprints@gmail.com', 'office1234', ROLE_OFFICE, 'Office', 'Manager'),
+    ('dev1', 'winningblueprints@gmail.com', 'dev1234', ROLE_WEB_DEV, 'Web', 'Developer'),
+    ('freelance1', 'winningblueprints@gmail.com', 'free1234', ROLE_FREELANCER, 'Free', 'Lancer'),
 ]
 
 

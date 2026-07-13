@@ -34,6 +34,7 @@ class Lead(models.Model):
         related_name='assigned_leads',
     )
     handoff_notes = models.TextField(blank=True)
+    next_follow_up_at = models.DateTimeField(null=True, blank=True)
     converted_client = models.ForeignKey(
         'clients.ClientAccount',
         on_delete=models.SET_NULL,
@@ -53,6 +54,40 @@ class Lead(models.Model):
     @property
     def is_converted(self):
         return self.converted_client_id is not None
+
+    @property
+    def followup_progress(self):
+        total = self.followups.count()
+        if not total:
+            return 0, 0
+        done = self.followups.filter(is_done=True).count()
+        return done, total
+
+
+class LeadFollowUp(models.Model):
+    """Office checklist steps for an inbound enquiry."""
+
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='followups')
+    key = models.CharField(max_length=40)
+    label = models.CharField(max_length=120)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+    is_done = models.BooleanField(default=False)
+    done_at = models.DateTimeField(null=True, blank=True)
+    done_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='completed_lead_followups',
+    )
+    note = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        ordering = ['sort_order', 'id']
+        unique_together = [('lead', 'key')]
+
+    def __str__(self):
+        return f'{self.lead_id}: {self.label}'
 
 
 class JobApplication(models.Model):

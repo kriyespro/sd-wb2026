@@ -6,12 +6,27 @@ from django.utils.text import slugify
 from clients.models import ClientAccount
 from projects.models import Project
 from users.models import Profile
-from users.roles import ROLE_CLIENT_OWNER, ROLE_SALES
+from users.roles import OFFICE_DESK_ROLES, ROLE_CLIENT_OWNER
 from website.models import Lead
+from website.services import ensure_lead_followups
 
 
 def get_sales_executives():
-    return User.objects.filter(profile__role=ROLE_SALES).select_related('profile')
+    """Legacy alias — office desk assignees."""
+    return get_office_desk_users()
+
+
+def get_office_desk_users():
+    return User.objects.filter(
+        profile__role__in=OFFICE_DESK_ROLES,
+        is_active=True,
+    ).select_related('profile').order_by('first_name', 'username')
+
+
+def set_next_follow_up(lead, when):
+    lead.next_follow_up_at = when
+    lead.save(update_fields=['next_follow_up_at', 'updated_at'])
+    return lead
 
 
 def update_lead_status(lead, status):
@@ -23,6 +38,7 @@ def update_lead_status(lead, status):
 def assign_lead(lead, user):
     lead.assigned_to = user
     lead.save(update_fields=['assigned_to', 'updated_at'])
+    ensure_lead_followups(lead)
     return lead
 
 

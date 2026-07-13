@@ -9,6 +9,7 @@ PORTAL_RULES = (
     ('/dashboard/student/', STUDENT_ROLES),
     ('/dashboard/dgc/', PARTNER_ROLES),
     ('/ops/', OPS_ROLES),
+    ('/ops2/', OPS_ROLES),
 )
 
 

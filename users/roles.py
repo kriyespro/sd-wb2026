@@ -2,6 +2,7 @@
 ROLE_SUPER_ADMIN = 'super_admin'
 ROLE_DIRECTOR = 'director'
 ROLE_SALES = 'sales_executive'
+ROLE_OFFICE = 'office_manager'
 ROLE_PM = 'project_manager'
 ROLE_ACCOUNT_MANAGER = 'account_manager'
 ROLE_SEO = 'seo_specialist'
@@ -11,6 +12,7 @@ ROLE_WEB_DEV = 'web_developer'
 ROLE_DESIGNER = 'ui_ux_designer'
 ROLE_CONTENT = 'content_writer'
 ROLE_QA = 'qa_specialist'
+ROLE_FREELANCER = 'freelancer'
 
 # Academy roles
 ROLE_ACADEMY_ADMIN = 'academy_admin'
@@ -31,6 +33,7 @@ ROLE_CHOICES = [
     (ROLE_SUPER_ADMIN, 'Super Admin'),
     (ROLE_DIRECTOR, 'Director'),
     (ROLE_SALES, 'Sales Executive'),
+    (ROLE_OFFICE, 'Office Manager'),
     (ROLE_PM, 'Project Manager'),
     (ROLE_ACCOUNT_MANAGER, 'Account Manager'),
     (ROLE_SEO, 'SEO Specialist'),
@@ -40,6 +43,7 @@ ROLE_CHOICES = [
     (ROLE_DESIGNER, 'UI/UX Designer'),
     (ROLE_CONTENT, 'Content Writer'),
     (ROLE_QA, 'QA Specialist'),
+    (ROLE_FREELANCER, 'Freelancer'),
     (ROLE_ACADEMY_ADMIN, 'Academy Admin'),
     (ROLE_MENTOR, 'Mentor'),
     (ROLE_TRAINER, 'Trainer'),
@@ -55,10 +59,17 @@ CLIENT_ROLES = {ROLE_CLIENT_OWNER, ROLE_CLIENT_MEMBER}
 STUDENT_ROLES = {ROLE_STUDENT, ROLE_INTERN}
 PARTNER_ROLES = {ROLE_PARTNER}
 OPS_ROLES = {
-    ROLE_SUPER_ADMIN, ROLE_DIRECTOR, ROLE_SALES, ROLE_PM, ROLE_ACCOUNT_MANAGER,
-    ROLE_SEO, ROLE_GOOGLE_ADS, ROLE_META_ADS, ROLE_WEB_DEV, ROLE_DESIGNER,
-    ROLE_CONTENT, ROLE_QA, ROLE_ACADEMY_ADMIN, ROLE_MENTOR, ROLE_TRAINER,
-    ROLE_PLACEMENT,
+    ROLE_SUPER_ADMIN, ROLE_DIRECTOR, ROLE_SALES, ROLE_OFFICE, ROLE_PM,
+    ROLE_ACCOUNT_MANAGER, ROLE_SEO, ROLE_GOOGLE_ADS, ROLE_META_ADS, ROLE_WEB_DEV,
+    ROLE_DESIGNER, ROLE_CONTENT, ROLE_QA, ROLE_FREELANCER, ROLE_ACADEMY_ADMIN,
+    ROLE_MENTOR, ROLE_TRAINER, ROLE_PLACEMENT,
+}
+# Desk users who own enquiry follow-up
+OFFICE_DESK_ROLES = {ROLE_SALES, ROLE_OFFICE, ROLE_ACCOUNT_MANAGER}
+# Delivery assignees for DGC orders
+DELIVERY_ROLES = {
+    ROLE_WEB_DEV, ROLE_DESIGNER, ROLE_FREELANCER, ROLE_SEO, ROLE_CONTENT,
+    ROLE_QA, ROLE_PM,
 }
 
 PORTAL_CLIENT = 'client'

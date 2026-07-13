@@ -94,6 +94,33 @@
                         Save notes
                     </button>
                 </form>
+                <div class="rounded-xl border border-slate-100 bg-white p-2.5">
+                    <p class="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Follow-up checklist</p>
+                    <ul class="space-y-1">
+                        {% for step in lead.followups.all() %}
+                        <li>
+                            <form hx-post="{{ url('operations:lead_followup_toggle', kwargs={'pk': step.id}) }}"
+                                  hx-target="#lead-{{ lead.id }}"
+                                  hx-swap="outerHTML"
+                                  class="flex items-start gap-2">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <button type="submit" class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[9px]
+                                    {% if step.is_done %}border-emerald-500 bg-emerald-500 text-white{% else %}border-slate-300 text-transparent{% endif %}">✓</button>
+                                <span class="{% if step.is_done %}text-slate-400 line-through{% else %}text-slate-700{% endif %}">{{ step.label }}</span>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <form hx-post="{{ url('operations:lead_next_follow_up', kwargs={'pk': lead.id}) }}"
+                          hx-target="#lead-{{ lead.id }}"
+                          hx-swap="outerHTML"
+                          class="mt-2 flex items-center gap-1.5">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        <input type="date" name="next_follow_up_at" class="ops-select text-[10px]"
+                               value="{{ lead.next_follow_up_at.strftime('%Y-%m-%d') if lead.next_follow_up_at else '' }}">
+                        <button type="submit" class="rounded-lg bg-slate-900 px-2 py-1 text-[9px] font-bold text-white">Set</button>
+                    </form>
+                </div>
             </div>
         </details>
     </td>

@@ -38,9 +38,10 @@ class ResellerOfferAdmin(admin.ModelAdmin):
 
 @admin.register(PartnerOrder)
 class PartnerOrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'partner', 'offer', 'quantity', 'total', 'status', 'created_at')
+    list_display = ('id', 'partner', 'offer', 'quantity', 'total', 'status', 'assigned_to', 'due_at', 'created_at')
     list_filter = ('status',)
-    search_fields = ('partner__code', 'offer__title')
+    search_fields = ('partner__code', 'offer__title', 'assigned_to__username')
+    raw_id_fields = ('assigned_to',)
 
 
 @admin.register(PartnerLead)

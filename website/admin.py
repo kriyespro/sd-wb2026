@@ -1,13 +1,13 @@
 from django.contrib import admin
 
-from .models import JobApplication, Lead
+from .models import JobApplication, Lead, LeadFollowUp
 
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
     list_display = (
         'name', 'email', 'phone', 'company', 'service_interest', 'status',
-        'source_page', 'assigned_to', 'created_at',
+        'source_page', 'assigned_to', 'next_follow_up_at', 'created_at',
     )
     list_filter = ('status', 'source_page', 'created_at')
     search_fields = ('name', 'email', 'phone', 'company', 'message', 'handoff_notes')
@@ -20,12 +20,19 @@ class LeadAdmin(admin.ModelAdmin):
             'fields': ('name', 'email', 'phone', 'company', 'service_interest', 'message', 'source_page'),
         }),
         ('Pipeline', {
-            'fields': ('status', 'assigned_to', 'handoff_notes', 'converted_client'),
+            'fields': ('status', 'assigned_to', 'handoff_notes', 'next_follow_up_at', 'converted_client'),
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
         }),
     )
+
+
+@admin.register(LeadFollowUp)
+class LeadFollowUpAdmin(admin.ModelAdmin):
+    list_display = ('lead', 'label', 'is_done', 'done_at', 'done_by')
+    list_filter = ('is_done', 'key')
+    search_fields = ('lead__name', 'label')
 
 
 @admin.register(JobApplication)
