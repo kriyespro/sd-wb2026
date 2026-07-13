@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 
 from billing.services import get_client_invoices
 from core.pagination import paginate
-from projects.models import Meeting, Project, Report
+from projects.models import Meeting, Project, ReportMetric
 from users.mixins import ClientPortalMixin, DashboardContextMixin
 from users.services import get_dashboard_url_for_user
 
@@ -188,11 +188,9 @@ class AnalyticsView(ClientBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Analytics'
         account = ctx['account']
-        reports = get_client_reports(account).prefetch_related('metrics')
-        metrics = []
-        for report in reports:
-            metrics.extend(report.metrics.all())
-        ctx['metrics'] = metrics[:8]
+        ctx['metrics'] = ReportMetric.objects.filter(
+            report__project__client_account=account,
+        ).order_by('-report__created_at')[:8]
         return ctx
 
 

@@ -25,7 +25,7 @@ class Lead(models.Model):
     service_interest = models.CharField(max_length=120, blank=True)
     message = models.TextField(blank=True)
     source_page = models.CharField(max_length=120, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW, db_index=True)
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -126,7 +126,7 @@ class JobApplication(models.Model):
     portfolio_url = models.CharField(max_length=300, blank=True)
     linkedin_url = models.CharField(max_length=300, blank=True)
     cover_letter = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

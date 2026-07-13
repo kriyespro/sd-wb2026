@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from billing.models import Invoice
-from projects.models import Deliverable, Meeting, Project
+from projects.models import Deliverable, Meeting, Project, Report, ReportMetric
 
 from .models import ClientAccount, SupportTicket
 
@@ -61,6 +61,15 @@ class ClientPortalListPaginationTests(TestCase):
         response = self.client.get(reverse('clients:support'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.count(b'Ticket '), 20)
+
+    def test_analytics_view_caps_metrics_at_eight(self):
+        for r in range(3):
+            report = Report.objects.create(project=self.project, title=f'Report {r}')
+            for m in range(4):
+                ReportMetric.objects.create(report=report, label=f'M{r}-{m}', value='10')
+        response = self.client.get(reverse('clients:analytics'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.count(b'M0-') + response.content.count(b'M1-') + response.content.count(b'M2-'), 8)
 
     def test_roi_view_counts(self):
         Project.objects.create(

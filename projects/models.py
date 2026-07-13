@@ -76,7 +76,9 @@ class Deliverable(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     file_url = models.URLField(blank=True)
-    approval_status = models.CharField(max_length=20, choices=APPROVAL_CHOICES, default=APPROVAL_PENDING)
+    approval_status = models.CharField(
+        max_length=20, choices=APPROVAL_CHOICES, default=APPROVAL_PENDING, db_index=True,
+    )
     approved_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='approved_deliverables',

@@ -148,7 +148,7 @@ class PartnerOrder(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     total = models.DecimalField(max_digits=12, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING, db_index=True)
     notes = models.TextField(blank=True)
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -190,7 +190,7 @@ class PartnerLead(models.Model):
     interest = models.CharField(max_length=200, blank=True)
     notes = models.TextField(blank=True)
     deal_value = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -223,7 +223,7 @@ class Commission(models.Model):
     )
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING, db_index=True)
     order = models.ForeignKey(
         PartnerOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='commissions',
     )
