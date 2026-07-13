@@ -155,7 +155,11 @@ class LeadPipelineTests(TestCase):
         self.assertContains(response, 'DGCORD1')
 
         url = reverse('operations:dgc_order_status', kwargs={'pk': order.pk})
-        response = self.client.post(url, {'status': PartnerOrder.STATUS_FULFILLED})
+        response = self.client.post(
+            url,
+            {'status': PartnerOrder.STATUS_FULFILLED},
+            HTTP_HX_REQUEST='true',
+        )
         self.assertEqual(response.status_code, 200)
         order.refresh_from_db()
         self.assertEqual(order.status, PartnerOrder.STATUS_FULFILLED)
