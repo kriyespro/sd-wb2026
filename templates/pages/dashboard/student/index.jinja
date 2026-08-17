@@ -1,6 +1,23 @@
 {% extends "layouts/dashboard.jinja" %}
 
 {% block dashboard_content %}
+{% include "partials/dashboard/_attention.jinja" %}
+<a href="{{ url('academy_dashboard:fourd') }}" class="dash-panel mb-6 block p-5 transition hover:border-brand-200 sm:p-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Today's 4D Score</p>
+            <p class="mt-1 font-display text-3xl font-bold text-ink-900">{{ daily_score }}<span class="text-base text-slate-500">/100</span></p>
+        </div>
+        <div class="flex gap-2">
+            {% for pillar in ['learn', 'teach', 'field', 'earn'] %}
+            <span class="dash-badge {% if pillar_status[pillar] %}bg-emerald-100 text-emerald-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                {% if pillar_status[pillar] %}✓{% endif %} {{ pillar|capitalize }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+</a>
+
 <div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
     {% set label = 'Enrolled Courses' %}{% set value = stats.courses_count %}{% set value_color = 'text-ink-900' %}{% include "partials/dashboard/_stat_card.jinja" %}
     {% set label = 'Pending Assignments' %}{% set value = stats.pending_assignments %}{% set value_color = 'text-orange-600' %}{% include "partials/dashboard/_stat_card.jinja" %}

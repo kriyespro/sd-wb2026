@@ -6,16 +6,29 @@
     {% for task in tasks %}
     <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-            <h3 class="font-medium text-brand-950">{{ task.title }}</h3>
+            <div class="flex flex-wrap items-center gap-2">
+                {% if task.stage != 'general' %}
+                <span class="dash-badge bg-brand-50 text-brand-700">{{ task.get_stage_display() }}</span>
+                {% endif %}
+                <h3 class="font-medium text-brand-950">{{ task.title }}</h3>
+            </div>
             {% if task.description %}<p class="mt-1 text-sm text-slate-600">{{ task.description }}</p>{% endif %}
             {% if task.due_date %}<p class="mt-1 text-xs text-slate-500">Due: {{ task.due_date }}</p>{% endif %}
         </div>
-        <span class="rounded-full px-3 py-1 text-xs font-medium
-            {% if task.status == 'done' %}bg-green-100 text-green-700
-            {% elif task.status == 'in_progress' %}bg-blue-100 text-blue-700
-            {% else %}bg-slate-100 text-slate-600{% endif %}">
-            {{ task.get_status_display() }}
-        </span>
+        <div class="flex items-center gap-3">
+            <span class="rounded-full px-3 py-1 text-xs font-medium
+                {% if task.status == 'done' %}bg-green-100 text-green-700
+                {% elif task.status == 'in_progress' %}bg-blue-100 text-blue-700
+                {% else %}bg-slate-100 text-slate-600{% endif %}">
+                {{ task.get_status_display() }}
+            </span>
+            {% if task.status != 'done' %}
+            <form method="post" action="{{ url('academy_dashboard:task_complete', kwargs={'pk': task.id}) }}">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="rounded-full border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50">Mark done</button>
+            </form>
+            {% endif %}
+        </div>
     </div>
     {% endfor %}
 </div>

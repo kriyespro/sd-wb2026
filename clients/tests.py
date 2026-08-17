@@ -1,13 +1,15 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from billing.models import Invoice
-from projects.models import Deliverable, Meeting, Project, Report, ReportMetric
+from projects.models import Deliverable, Meeting, Milestone, Project, Report, ReportMetric
 
-from .models import ClientAccount, SupportTicket
+from .models import ClientAccount, SupportMessage, SupportTicket
+from .services import get_client_attention_items
 
 
 class ClientPortalListPaginationTests(TestCase):
@@ -77,3 +79,57 @@ class ClientPortalListPaginationTests(TestCase):
         )
         response = self.client.get(reverse('clients:roi'))
         self.assertEqual(response.status_code, 200)
+
+
+class ClientAttentionItemsTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('client2', 'client2@test.com', 'pass1234')
+        self.user.profile.role = 'client_owner'
+        self.user.profile.save()
+        self.account = ClientAccount.objects.create(user=self.user, company_name='Beta Co')
+        self.project = Project.objects.create(client_account=self.account, name='Beta Project')
+        self.client.login(username='client2', password='pass1234')
+
+    def test_all_clear_when_nothing_needs_attention(self):
+        self.assertEqual(get_client_attention_items(self.account), [])
+        response = self.client.get(reverse('clients:dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'All clear')
+
+    def test_all_clear_for_no_account(self):
+        self.assertEqual(get_client_attention_items(None), [])
+
+    def test_surfaces_overdue_invoice_milestone_meeting_and_ticket_reply(self):
+        Invoice.objects.create(
+            client_account=self.account, invoice_number='INV-OD1', title='Retainer',
+            due_date=date(2026, 1, 1), status=Invoice.STATUS_OVERDUE,
+        )
+        Milestone.objects.create(
+            project=self.project, title='Kickoff', due_date=date(2026, 1, 1),
+            status=Milestone.STATUS_PENDING,
+        )
+        Meeting.objects.create(
+            client_account=self.account, title='Check-in',
+            scheduled_at=timezone.now() + timedelta(days=2),
+            status=Meeting.STATUS_SCHEDULED,
+        )
+        staff = User.objects.create_user('staffreply', 'staffreply@test.com', 'pass1234')
+        ticket = SupportTicket.objects.create(client_account=self.account, subject='Question')
+        SupportMessage.objects.create(ticket=ticket, sender=staff, body='We are looking into it')
+
+        items = get_client_attention_items(self.account)
+        tones_by_href = {item['href_name']: item['tone'] for item in items}
+        self.assertEqual(tones_by_href['clients:invoices'], 'rose')
+        self.assertEqual(tones_by_href['clients:projects'], 'orange')
+        self.assertEqual(tones_by_href['clients:meetings'], 'brand')
+        self.assertEqual(tones_by_href['clients:support'], 'teal')
+
+        response = self.client.get(reverse('clients:dashboard'))
+        self.assertContains(response, 'Needs your attention')
+        self.assertContains(response, 'overdue invoice')
+
+    def test_ticket_not_flagged_when_client_sent_last_message(self):
+        ticket = SupportTicket.objects.create(client_account=self.account, subject='Question')
+        SupportMessage.objects.create(ticket=ticket, sender=self.user, body='Any update?')
+        items = get_client_attention_items(self.account)
+        self.assertFalse(any(item['href_name'] == 'clients:support' for item in items))

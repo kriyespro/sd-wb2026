@@ -116,11 +116,26 @@ class StudentTask(models.Model):
         (STATUS_DONE, 'Done'),
     ]
 
+    STAGE_GENERAL = 'general'
+    STAGE_LEARN = 'learn'
+    STAGE_TEACH = 'teach'
+    STAGE_FIELD = 'field'
+    STAGE_EARN = 'earn'
+    STAGE_CHOICES = [
+        (STAGE_GENERAL, 'General'),
+        (STAGE_LEARN, 'Learn'),
+        (STAGE_TEACH, 'Teach'),
+        (STAGE_FIELD, 'Field'),
+        (STAGE_EARN, 'Earn'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_tasks')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_TODO)
+    stage = models.CharField(max_length=20, choices=STAGE_CHOICES, default=STAGE_GENERAL)
     due_date = models.DateField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
     assigned_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='tasks_assigned',
@@ -149,12 +164,24 @@ class StudentProject(models.Model):
         (STATUS_ACTIVE, 'Active'),
         (STATUS_COMPLETED, 'Completed'),
     ]
+    PAYMENT_UNPAID = 'unpaid'
+    PAYMENT_PARTIAL = 'partial'
+    PAYMENT_PAID = 'paid'
+    PAYMENT_CHOICES = [
+        (PAYMENT_UNPAID, 'Unpaid'),
+        (PAYMENT_PARTIAL, 'Partially Paid'),
+        (PAYMENT_PAID, 'Paid'),
+    ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_projects')
     title = models.CharField(max_length=200)
     description = models.TextField()
     project_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_MOCK)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+    client_name = models.CharField(max_length=200, blank=True)
+    project_value = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    revenue_collected = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default=PAYMENT_UNPAID)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -252,6 +279,117 @@ class PlacementApplication(models.Model):
 
     def __str__(self):
         return f'{self.company} — {self.role}'
+
+
+class TeachingSession(models.Model):
+    STATUS_SUBMITTED = 'submitted'
+    STATUS_EVALUATED = 'evaluated'
+    STATUS_CHOICES = [
+        (STATUS_SUBMITTED, 'Submitted'),
+        (STATUS_EVALUATED, 'Evaluated'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='teaching_sessions')
+    topic = models.CharField(max_length=200)
+    explanation = models.TextField(blank=True)
+    resource_url = models.URLField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_SUBMITTED, db_index=True)
+    evaluated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='teaching_evaluations',
+    )
+    score = models.PositiveSmallIntegerField(null=True, blank=True)
+    feedback = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    evaluated_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user.username} — {self.topic}'
+
+
+class StudentLead(models.Model):
+    STATUS_NEW = 'new'
+    STATUS_CONTACTED = 'contacted'
+    STATUS_INTERESTED = 'interested'
+    STATUS_WON = 'won'
+    STATUS_LOST = 'lost'
+    STATUS_CHOICES = [
+        (STATUS_NEW, 'New'),
+        (STATUS_CONTACTED, 'Contacted'),
+        (STATUS_INTERESTED, 'Interested'),
+        (STATUS_WON, 'Won'),
+        (STATUS_LOST, 'Lost'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='field_leads')
+    business_name = models.CharField(max_length=200)
+    contact_name = models.CharField(max_length=120, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    interest = models.CharField(max_length=200, blank=True)
+    notes = models.TextField(blank=True)
+    deal_value = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.business_name} — {self.get_status_display()}'
+
+
+class DailyFourD(models.Model):
+    """The student's daily reflection record. Pillar completion and score are
+    always derived live from Submission/TeachingSession/StudentLead/StudentTask
+    evidence (see academy.fourd_services) — this model only stores the notes,
+    so nothing here can drift out of sync with what actually happened."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='daily_fourd_logs')
+    date = models.DateField()
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'date']
+        ordering = ['-date']
+
+    def __str__(self):
+        return f'{self.user.username} — {self.date}'
+
+
+class ActivityLog(models.Model):
+    """A student's own free-form record of what they did for a pillar today.
+    Purely descriptive — never read by fourd_services.pillar_status/daily_score,
+    so it can't be used to fake evidence-based scoring. Exists so progress
+    tracking has a human narrative alongside the structured evidence."""
+
+    PILLAR_LEARN = 'learn'
+    PILLAR_TEACH = 'teach'
+    PILLAR_FIELD = 'field'
+    PILLAR_EARN = 'earn'
+    PILLAR_CHOICES = [
+        (PILLAR_LEARN, 'Learn'),
+        (PILLAR_TEACH, 'Teach'),
+        (PILLAR_FIELD, 'Field'),
+        (PILLAR_EARN, 'Earn'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='activity_logs')
+    pillar = models.CharField(max_length=20, choices=PILLAR_CHOICES)
+    title = models.CharField(max_length=200)
+    details = models.TextField(blank=True)
+    logged_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-logged_at']
+
+    def __str__(self):
+        return f'{self.user.username} — {self.title}'
 
 
 class AdmissionApplication(models.Model):

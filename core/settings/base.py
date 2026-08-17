@@ -1,7 +1,13 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Local dev convenience only — in Docker/prod, real env vars are already set
+# via env_file (.env.prod) and this is a harmless no-op since no .env exists.
+load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
@@ -189,6 +195,9 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '5'))
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'winningblueprints@gmail.com')
 LEAD_NOTIFICATION_EMAIL = os.environ.get('LEAD_NOTIFICATION_EMAIL', 'winningblueprints@gmail.com')
+
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = [

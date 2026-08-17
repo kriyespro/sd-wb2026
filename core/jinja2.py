@@ -1,8 +1,11 @@
+import json
+
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.template.defaultfilters import timesince
 from django.urls import reverse
 from django.utils import timezone
 from jinja2 import Environment
+from markupsafe import Markup
 
 
 def timeago(value):
@@ -32,6 +35,14 @@ def timeago(value):
     return value.strftime('%d %b')
 
 
+def tojson(value):
+    """Safe JS-literal embedding inside a <script> block — escapes
+    </script>-breakout characters the way Django's own json_script does."""
+    dumped = json.dumps(value)
+    dumped = dumped.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+    return Markup(dumped)
+
+
 def environment(**options):
     env = Environment(**options)
     env.globals.update({
@@ -40,4 +51,5 @@ def environment(**options):
         'timesince': timesince,
         'timeago': timeago,
     })
+    env.filters['tojson'] = tojson
     return env

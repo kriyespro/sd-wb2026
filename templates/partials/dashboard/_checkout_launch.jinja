@@ -1,0 +1,35 @@
+{% if error %}
+<p class="text-xs font-medium text-red-600">{{ error }}</p>
+{% else %}
+<form id="rzp-verify-form-{{ invoice.pk }}" method="post" action="{{ verify_url }}" class="hidden">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input type="hidden" name="razorpay_order_id" value="{{ order_id }}">
+    <input type="hidden" name="razorpay_payment_id" id="rzp-payment-id-{{ invoice.pk }}">
+    <input type="hidden" name="razorpay_signature" id="rzp-signature-{{ invoice.pk }}">
+</form>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function () {
+    var options = {
+        key: {{ key_id|tojson }},
+        amount: {{ amount_paise }},
+        currency: 'INR',
+        order_id: {{ order_id|tojson }},
+        name: 'Winning Blueprints',
+        description: {{ invoice.title|tojson }},
+        prefill: {
+            name: {{ (user.get_full_name() or user.username)|tojson }},
+            email: {{ user.email|tojson }},
+        },
+        theme: { color: '#1e3a6e' },
+        handler: function (response) {
+            document.getElementById('rzp-payment-id-{{ invoice.pk }}').value = response.razorpay_payment_id;
+            document.getElementById('rzp-signature-{{ invoice.pk }}').value = response.razorpay_signature;
+            document.getElementById('rzp-verify-form-{{ invoice.pk }}').submit();
+        },
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+})();
+</script>
+{% endif %}

@@ -9,7 +9,7 @@
                     <p class="ops-feed-meta" title="{{ deliverable.project.name }}">{{ deliverable.project.name }}</p>
                 </div>
                 <a href="{{ url('operations:quality_check') }}"
-                   class="shrink-0 rounded-md bg-orange-50 px-2 py-1 text-[10px] font-bold text-orange-700 hover:bg-orange-100">
+                   class="shrink-0 rounded-md bg-orange-50 px-2 py-1 text-xs font-bold text-orange-700 hover:bg-orange-100">
                     Review
                 </a>
             </div>
@@ -19,6 +19,6 @@
 </div>
 {% else %}
 <div class="flex min-h-[7rem] items-center justify-center py-6">
-    <p class="text-[11px] text-slate-400">All clear — nothing in QA.</p>
+    <p class="text-[11px] text-slate-500">All clear — nothing in QA.</p>
 </div>
 {% endif %}

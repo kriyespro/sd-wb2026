@@ -20,13 +20,13 @@
             <a href="mailto:{{ lead.email }}" class="text-xs text-brand-600">{{ lead.email }}</a>
             {% if lead.phone %}<p class="text-xs text-slate-500">{{ lead.phone }}</p>{% endif %}
         </div>
-        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600">{{ lead.get_status_display() }}</span>
+        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold uppercase text-slate-600">{{ lead.get_status_display() }}</span>
     </div>
     {% set done_count, total_count = lead.followup_progress %}
     <p class="mt-3 text-[11px] font-semibold text-slate-500">Checklist {{ done_count }}/{{ total_count }}</p>
     <ul class="mt-1 space-y-1">
         {% for step in lead.followups.all() %}
-        <li class="flex items-center gap-2 text-xs {% if step.is_done %}text-slate-400 line-through{% else %}text-slate-700{% endif %}">
+        <li class="flex items-center gap-2 text-xs {% if step.is_done %}text-slate-500 line-through{% else %}text-slate-700{% endif %}">
             <span class="h-1.5 w-1.5 rounded-full {% if step.is_done %}bg-emerald-500{% else %}bg-amber-400{% endif %}"></span>
             {{ step.label }}
         </li>
@@ -44,7 +44,7 @@
         <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Assigned to me</h3>
         <div class="space-y-3">
             {% for lead in my_leads %}{{ lead_card(lead) }}{% else %}
-            <p class="text-sm text-slate-400">No open leads assigned to you.</p>
+            <p class="text-sm text-slate-500">No open leads assigned to you.</p>
             {% endfor %}
         </div>
     </section>
@@ -52,7 +52,7 @@
         <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Unassigned</h3>
         <div class="space-y-3">
             {% for lead in unassigned_leads %}{{ lead_card(lead) }}{% else %}
-            <p class="text-sm text-slate-400">All enquiries are owned.</p>
+            <p class="text-sm text-slate-500">All enquiries are owned.</p>
             {% endfor %}
         </div>
     </section>
@@ -60,7 +60,7 @@
         <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Due soon / overdue</h3>
         <div class="space-y-3">
             {% for lead in due_soon %}{{ lead_card(lead) }}{% else %}
-            <p class="text-sm text-slate-400">No follow-ups due in the next day.</p>
+            <p class="text-sm text-slate-500">No follow-ups due in the next day.</p>
             {% endfor %}
         </div>
     </section>

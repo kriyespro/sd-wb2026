@@ -25,7 +25,7 @@
         </div>
         <div class="overflow-x-auto">
             <table class="w-full min-w-[720px] text-left text-sm">
-                <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                     <tr>
                         <th class="px-4 py-3">Lead</th>
                         <th class="px-4 py-3">Company</th>
@@ -46,7 +46,7 @@
                         <td class="px-4 py-3 text-slate-600">{{ lead.interest or '—' }}</td>
                         <td class="px-4 py-3">₹{{ lead.deal_value }}</td>
                         <td class="px-4 py-3">
-                            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase
+                            <span class="rounded-full px-2 py-0.5 text-xs font-bold uppercase
                                 {% if lead.status == 'won' %}bg-emerald-100 text-emerald-800
                                 {% elif lead.status == 'lost' %}bg-slate-100 text-slate-600
                                 {% elif lead.status == 'contacted' %}bg-sky-100 text-sky-800

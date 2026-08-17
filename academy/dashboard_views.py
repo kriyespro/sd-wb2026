@@ -1,5 +1,7 @@
+from django.contrib import messages
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -7,16 +9,33 @@ from core.pagination import paginate
 from users.mixins import DashboardContextMixin, StudentPortalMixin
 from users.services import get_dashboard_url_for_user
 
-from .forms import PortfolioItemForm, SubmissionForm
-from .models import Assignment, Course, Enrollment, Submission
+from . import fourd_services
+from .forms import (
+    ActivityLogForm,
+    DailyFourDForm,
+    PortfolioItemForm,
+    StudentLeadForm,
+    StudentLeadStatusForm,
+    StudentProjectUpdateForm,
+    SubmissionForm,
+    TeachingSessionForm,
+)
+from .models import Assignment, Course, Enrollment, StudentLead, StudentTask, Submission
 from .services import (
     STUDENT_NAV,
     add_portfolio_item,
+    create_student_lead,
+    create_teaching_session,
     get_enrolled_courses,
     get_mentor_for_student,
     get_student_assignments,
+    get_student_attention_items,
     get_student_stats,
+    log_activity,
+    mark_task_done,
+    save_daily_notes,
     submit_assignment,
+    update_student_lead_status,
 )
 
 
@@ -38,8 +57,11 @@ class StudentDashboardView(StudentBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Student Dashboard'
         ctx['stats'] = get_student_stats(self.request.user)
+        ctx['attention_items'] = get_student_attention_items(self.request.user)
         ctx['recent_tasks'] = self.request.user.student_tasks.all()[:5]
         ctx['mentor'] = get_mentor_for_student(self.request.user)
+        ctx['pillar_status'] = fourd_services.pillar_status(self.request.user, timezone.localdate())
+        ctx['daily_score'] = fourd_services.daily_score(self.request.user)
         return ctx
 
 
@@ -112,6 +134,14 @@ class TasksView(StudentBaseMixin, TemplateView):
         return ctx
 
 
+class TaskCompleteView(StudentPortalMixin, View):
+    def post(self, request, pk):
+        task = get_object_or_404(StudentTask, pk=pk, user=request.user)
+        if task.status != StudentTask.STATUS_DONE:
+            mark_task_done(task)
+        return redirect('academy_dashboard:tasks')
+
+
 class ProjectsView(StudentBaseMixin, TemplateView):
     template_name = 'pages/dashboard/student/projects.jinja'
 
@@ -119,7 +149,17 @@ class ProjectsView(StudentBaseMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'Projects'
         ctx['projects'] = self.request.user.student_projects.all()
+        ctx['form'] = StudentProjectUpdateForm()
         return ctx
+
+
+class ProjectUpdateView(StudentPortalMixin, View):
+    def post(self, request, pk):
+        project = get_object_or_404(request.user.student_projects, pk=pk)
+        form = StudentProjectUpdateForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+        return redirect('academy_dashboard:projects')
 
 
 class MentorView(StudentBaseMixin, TemplateView):
@@ -214,3 +254,114 @@ class PlacementView(StudentBaseMixin, TemplateView):
         ctx['page_title'] = 'Placement'
         ctx['applications'] = self.request.user.placement_applications.all()
         return ctx
+
+
+class FourDPlannerView(StudentBaseMixin, TemplateView):
+    template_name = 'pages/dashboard/student/fourd.jinja'
+    feature_tag = '4D'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = self.request.user
+        today = timezone.localdate()
+        ctx['page_title'] = 'Daily 4D'
+        ctx['pillar_status'] = fourd_services.pillar_status(user, today)
+        ctx['pillar_weights'] = fourd_services.PILLAR_WEIGHTS
+        ctx['daily_score'] = fourd_services.daily_score(user, today)
+        ctx['score_level'] = fourd_services.score_level(ctx['daily_score'])
+        ctx['rolling_average'] = fourd_services.rolling_average(user)
+        ctx['today_tasks'] = user.student_tasks.exclude(status=StudentTask.STATUS_DONE).exclude(
+            stage=StudentTask.STAGE_GENERAL,
+        )
+        ctx['today_log'] = user.daily_fourd_logs.filter(date=today).first()
+        ctx['form'] = DailyFourDForm(initial={'notes': ctx['today_log'].notes if ctx['today_log'] else ''})
+        ctx['activity_form'] = ActivityLogForm()
+        ctx['recent_activity'] = fourd_services.get_activity_feed(user, limit=5)
+        return ctx
+
+
+class FourDSubmitView(StudentPortalMixin, View):
+    def post(self, request):
+        form = DailyFourDForm(request.POST)
+        if form.is_valid():
+            save_daily_notes(request.user, timezone.localdate(), form.cleaned_data['notes'])
+            messages.success(request, "Today's 4D log saved.")
+        return redirect('academy_dashboard:fourd')
+
+
+class ActivityLogCreateView(StudentPortalMixin, View):
+    def post(self, request):
+        form = ActivityLogForm(request.POST)
+        if form.is_valid():
+            log_activity(request.user, form.cleaned_data)
+            messages.success(request, 'Activity logged.')
+        redirect_to = 'academy_dashboard:progress' if request.POST.get('next') == 'progress' else 'academy_dashboard:fourd'
+        return redirect(redirect_to)
+
+
+class ProgressView(StudentBaseMixin, TemplateView):
+    template_name = 'pages/dashboard/student/progress.jinja'
+    feature_tag = '4D'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = self.request.user
+        ctx['page_title'] = 'My Progress'
+        ctx['daily_score'] = fourd_services.daily_score(user)
+        ctx['score_level'] = fourd_services.score_level(ctx['daily_score'])
+        ctx['score_history'] = fourd_services.get_score_history(user)
+        ctx['activity_feed'] = fourd_services.get_activity_feed(user)
+        ctx['pillar_totals'] = fourd_services.get_pillar_totals(user)
+        ctx['streak'] = fourd_services.current_streak(user)
+        ctx['activity_form'] = ActivityLogForm()
+        return ctx
+
+
+class TeachingListView(StudentBaseMixin, TemplateView):
+    template_name = 'pages/dashboard/student/teaching.jinja'
+    feature_tag = '4D'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'Teaching'
+        ctx['sessions'] = self.request.user.teaching_sessions.all()
+        ctx['form'] = TeachingSessionForm()
+        return ctx
+
+
+class TeachingCreateView(StudentPortalMixin, View):
+    def post(self, request):
+        form = TeachingSessionForm(request.POST)
+        if form.is_valid():
+            create_teaching_session(request.user, form.cleaned_data)
+        return redirect('academy_dashboard:teaching')
+
+
+class FieldLeadsView(StudentBaseMixin, TemplateView):
+    template_name = 'pages/dashboard/student/field.jinja'
+    feature_tag = '4D'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'Field CRM'
+        ctx['leads'] = self.request.user.field_leads.all()
+        ctx['form'] = StudentLeadForm()
+        ctx['status_form'] = StudentLeadStatusForm()
+        return ctx
+
+
+class FieldLeadCreateView(StudentPortalMixin, View):
+    def post(self, request):
+        form = StudentLeadForm(request.POST)
+        if form.is_valid():
+            create_student_lead(request.user, form.cleaned_data)
+        return redirect('academy_dashboard:field_leads')
+
+
+class FieldLeadStatusView(StudentPortalMixin, View):
+    def post(self, request, pk):
+        lead = get_object_or_404(StudentLead, pk=pk, user=request.user)
+        form = StudentLeadStatusForm(request.POST)
+        if form.is_valid():
+            update_student_lead_status(lead, form.cleaned_data['status'])
+        return redirect('academy_dashboard:field_leads')

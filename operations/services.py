@@ -21,6 +21,7 @@ OPS_NAV = [
     {'title': 'Talent Pipeline', 'icon': '🔄', 'url_name': 'operations:pipeline'},
     {'title': 'Project Allocation', 'icon': '🔗', 'url_name': 'operations:allocation'},
     {'title': 'Mentor Allocation', 'icon': '🎓', 'url_name': 'operations:mentors'},
+    {'title': '4D Academy', 'icon': '🎯', 'url_name': 'operations:academy_4d', 'new': True},
     {'title': 'Team', 'icon': '👥', 'url_name': 'operations:team'},
     {'title': 'Performance', 'icon': '📊', 'url_name': 'operations:performance'},
     {'title': 'Leads', 'icon': '📞', 'url_name': 'operations:leads'},

@@ -1,8 +1,12 @@
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
-from academy.models import AdmissionApplication, MentorAllocation
+from academy import fourd_services
+from academy.forms import TeachingEvaluationForm
+from academy.models import AdmissionApplication, MentorAllocation, TeachingSession
+from academy.services import evaluate_teaching_session, get_student_stats
 from core.pagination import paginate
 from projects.models import Deliverable, Project
 from users.mixins import DashboardContextMixin, NarrowerOpsRoleMixin, OpsPortalMixin
@@ -22,11 +26,14 @@ from users.roles import (
     OFFICE_DESK_ROLES,
     ROLE_ACADEMY_ADMIN,
     ROLE_DIRECTOR,
+    ROLE_MENTOR,
     ROLE_OFFICE,
     ROLE_PLACEMENT,
     ROLE_PM,
     ROLE_QA,
     ROLE_SUPER_ADMIN,
+    ROLE_TRAINER,
+    STUDENT_ROLES,
 )
 from website.models import JobApplication, Lead, LeadFollowUp
 from website.services import ensure_lead_followups, ensure_lead_followups_bulk, toggle_lead_followup
@@ -109,6 +116,22 @@ class QaRequiredMixin(NarrowerOpsRoleMixin):
     delivery role (web_developer, content_writer, freelancer, ...) can't
     self-approve their own work straight to client-visible status."""
     extra_allowed_roles = {ROLE_QA, ROLE_PM, ROLE_OFFICE, ROLE_DIRECTOR}
+
+
+class AcademyStaffRequiredMixin(NarrowerOpsRoleMixin):
+    """Grading a student's teaching session, and viewing per-student 4D
+    scores/mentor pairings, restricted to academy leadership and
+    mentors/trainers who actually run the training — any other ops role
+    (freelancer, seo_specialist, ...) has no business reading a student's
+    individual progress or evaluation data."""
+    extra_allowed_roles = {ROLE_MENTOR, ROLE_TRAINER, ROLE_ACADEMY_ADMIN, ROLE_DIRECTOR}
+
+
+class ManagementRequiredMixin(NarrowerOpsRoleMixin):
+    """Confidential staff performance reviews restricted to management —
+    any ops role (freelancer, content_writer, ...) could otherwise browse
+    every colleague's ratings and notes."""
+    extra_allowed_roles = {ROLE_DIRECTOR, ROLE_OFFICE, ROLE_PM}
 
 
 class OpsBaseMixin(DashboardContextMixin, OpsPortalMixin):
@@ -242,7 +265,7 @@ class AllocationCreateView(AllocationRequiredMixin, OpsPortalMixin, View):
         return redirect('operations:allocation')
 
 
-class MentorsView(OpsBaseMixin, TemplateView):
+class MentorsView(AcademyStaffRequiredMixin, OpsBaseMixin, TemplateView):
     template_name = 'pages/ops/mentors.jinja'
 
     def get_context_data(self, **kwargs):
@@ -278,7 +301,7 @@ class TeamView(OpsBaseMixin, TemplateView):
         return ctx
 
 
-class PerformanceView(OpsBaseMixin, TemplateView):
+class PerformanceView(ManagementRequiredMixin, OpsBaseMixin, TemplateView):
     template_name = 'pages/ops/performance.jinja'
 
     def get_context_data(self, **kwargs):
@@ -286,6 +309,53 @@ class PerformanceView(OpsBaseMixin, TemplateView):
         ctx['page_title'] = 'Performance'
         from .models import PerformanceReview
         ctx['reviews'] = PerformanceReview.objects.select_related('user', 'reviewer')
+        return ctx
+
+
+class Academy4DDashboardView(AcademyStaffRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/academy_4d.jinja'
+    feature_tag = '4D'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = '4D Academy'
+        ctx['batch_health'] = fourd_services.get_batch_health()
+        leaderboard = fourd_services.get_leaderboard()
+        ctx['leaderboard'] = leaderboard
+        ctx['at_risk'] = [row for row in leaderboard if row['avg_score'] < 50]
+        ctx['pending_evaluations'] = fourd_services.pending_teaching_evaluations()
+        ctx['evaluation_form'] = TeachingEvaluationForm()
+        return ctx
+
+
+class TeachingEvaluateView(AcademyStaffRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        session = get_object_or_404(TeachingSession, pk=pk)
+        form = TeachingEvaluationForm(request.POST)
+        if form.is_valid():
+            evaluate_teaching_session(
+                session, request.user,
+                form.cleaned_data['score'], form.cleaned_data['feedback'],
+            )
+        return redirect('operations:academy_4d')
+
+
+class StudentProgressView(AcademyStaffRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/student_progress.jinja'
+    feature_tag = '4D'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        student = get_object_or_404(User, pk=kwargs['pk'], profile__role__in=STUDENT_ROLES)
+        ctx['page_title'] = f'Progress — {student.get_full_name() or student.username}'
+        ctx['student'] = student
+        ctx['daily_score'] = fourd_services.daily_score(student)
+        ctx['score_level'] = fourd_services.score_level(ctx['daily_score'])
+        ctx['score_history'] = fourd_services.get_score_history(student)
+        ctx['activity_feed'] = fourd_services.get_activity_feed(student)
+        ctx['pillar_totals'] = fourd_services.get_pillar_totals(student)
+        ctx['streak'] = fourd_services.current_streak(student)
+        ctx['student_stats'] = get_student_stats(student)
         return ctx
 
 
@@ -627,11 +697,17 @@ class DgcOrderStatusUpdateView(OpsPortalMixin, View):
             PartnerOrder.objects.select_related('partner', 'partner__user', 'offer', 'assigned_to'),
             pk=pk,
         )
+        is_superuser = _is_superuser(request.user)
         is_assignee = order.assigned_to_id == request.user.id
-        if not (_is_superuser(request.user) or is_assignee):
+        if not (is_superuser or is_assignee):
             return redirect(get_dashboard_url_for_user(request.user))
         status = request.POST.get('status')
         valid = {value for value, _ in PartnerOrder.STATUS_CHOICES}
+        if not is_superuser:
+            # Cancelling voids the partner's commission — a delivery-desk
+            # assignee can move work forward but can't unilaterally kill
+            # someone else's earnings; that stays with ops management.
+            valid = valid - {PartnerOrder.STATUS_CANCELLED}
         if status in valid:
             update_order_status(order, status)
             order.refresh_from_db()
@@ -688,7 +764,9 @@ class MyWorkView(OpsBaseMixin, TemplateView):
             status=PartnerOrder.STATUS_CANCELLED,
         ).select_related('partner', 'partner__user', 'offer')
         ctx['orders'] = orders
-        ctx['status_choices'] = PartnerOrder.STATUS_CHOICES
+        ctx['status_choices'] = [
+            c for c in PartnerOrder.STATUS_CHOICES if c[0] != PartnerOrder.STATUS_CANCELLED
+        ]
         return ctx
 
 

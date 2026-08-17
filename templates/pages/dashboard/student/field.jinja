@@ -1,0 +1,63 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="grid gap-6 lg:grid-cols-3">
+    <div class="dash-panel lg:col-span-1">
+        {% set title = 'Log a lead' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            <form method="post" action="{{ url('academy_dashboard:field_lead_add') }}" class="space-y-3">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                {{ form.business_name }}
+                {{ form.contact_name }}
+                {{ form.phone }}
+                {{ form.email }}
+                {{ form.interest }}
+                {{ form.deal_value }}
+                {{ form.notes }}
+                <button type="submit" class="btn-primary w-full">Add Lead</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="dash-panel lg:col-span-2">
+        {% set title = 'Your pipeline' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if leads %}
+            <ul class="space-y-3">
+                {% for lead in leads %}
+                <li class="rounded-xl border border-slate-100 px-4 py-3">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="font-medium text-ink-900">{{ lead.business_name }}</p>
+                            {% if lead.contact_name or lead.phone %}
+                            <p class="text-xs text-slate-500">{{ lead.contact_name }}{% if lead.phone %} · {{ lead.phone }}{% endif %}</p>
+                            {% endif %}
+                        </div>
+                        <form method="post" action="{{ url('academy_dashboard:field_lead_status', kwargs={'pk': lead.id}) }}">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <select name="status" class="ops-select text-xs font-semibold
+                                {% if lead.status == 'won' %}border-emerald-300 bg-emerald-50 text-emerald-800
+                                {% elif lead.status == 'lost' %}border-slate-300 bg-slate-50 text-slate-600
+                                {% elif lead.status == 'interested' %}border-amber-300 bg-amber-50 text-amber-800
+                                {% elif lead.status == 'contacted' %}border-sky-300 bg-sky-50 text-sky-800
+                                {% else %}border-slate-200{% endif %}"
+                                onchange="this.form.submit()">
+                                {% for value, label in status_form.status.field.choices %}
+                                <option value="{{ value }}" {% if lead.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                    {% if lead.deal_value %}
+                    <p class="mt-2 text-sm text-slate-600">Deal value: ₹{{ lead.deal_value }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">No leads logged yet. Add your first prospect.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

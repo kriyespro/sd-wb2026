@@ -32,10 +32,10 @@
                 </option>
                 {% endfor %}
             </select>
-            <input type="date" name="due_at" class="ops-select text-[10px]"
+            <input type="date" name="due_at" class="ops-select text-xs"
                    value="{{ order.due_at.strftime('%Y-%m-%d') if order.due_at else '' }}"
                    onchange="htmx.trigger(this.form, 'submit')">
-            <textarea name="work_notes" rows="2" class="ops-textarea text-[10px]" placeholder="Work brief…"
+            <textarea name="work_notes" rows="2" class="ops-textarea text-xs" placeholder="Work brief…"
                       onblur="htmx.trigger(this.form, 'submit')">{{ order.work_notes }}</textarea>
         </form>
     </td>

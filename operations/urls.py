@@ -17,6 +17,17 @@ urlpatterns = [
     path('allocation/add/', views.AllocationCreateView.as_view(), name='allocation_add'),
     path('mentors/', views.MentorsView.as_view(), name='mentors'),
     path('mentors/allocate/', views.MentorAllocateView.as_view(), name='mentor_allocate'),
+    path('academy-4d/', views.Academy4DDashboardView.as_view(), name='academy_4d'),
+    path(
+        'academy-4d/teaching/<int:pk>/evaluate/',
+        views.TeachingEvaluateView.as_view(),
+        name='teaching_evaluate',
+    ),
+    path(
+        'academy-4d/students/<int:pk>/',
+        views.StudentProgressView.as_view(),
+        name='student_progress',
+    ),
     path('team/', views.TeamView.as_view(), name='team'),
     path('performance/', views.PerformanceView.as_view(), name='performance'),
     path('leads/', views.LeadsView.as_view(), name='leads'),

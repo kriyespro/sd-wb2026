@@ -1,20 +1,24 @@
 from django.contrib import admin
 
 from .models import (
+    ActivityLog,
     AdmissionApplication,
     Assignment,
     Attendance,
     Certificate,
     Course,
     CourseModule,
+    DailyFourD,
     Enrollment,
     Lesson,
     MentorAllocation,
     PlacementApplication,
     PortfolioItem,
+    StudentLead,
     StudentProject,
     StudentTask,
     Submission,
+    TeachingSession,
 )
 
 
@@ -62,14 +66,38 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 @admin.register(StudentTask)
 class StudentTaskAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'status', 'due_date')
-    list_filter = ('status',)
+    list_display = ('title', 'user', 'stage', 'status', 'due_date')
+    list_filter = ('stage', 'status')
 
 
 @admin.register(StudentProject)
 class StudentProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'project_type', 'status')
-    list_filter = ('project_type', 'status')
+    list_display = ('title', 'user', 'project_type', 'status', 'payment_status', 'project_value')
+    list_filter = ('project_type', 'status', 'payment_status')
+
+
+@admin.register(TeachingSession)
+class TeachingSessionAdmin(admin.ModelAdmin):
+    list_display = ('topic', 'user', 'status', 'score', 'created_at')
+    list_filter = ('status',)
+
+
+@admin.register(StudentLead)
+class StudentLeadAdmin(admin.ModelAdmin):
+    list_display = ('business_name', 'user', 'status', 'deal_value', 'created_at')
+    list_filter = ('status',)
+
+
+@admin.register(DailyFourD)
+class DailyFourDAdmin(admin.ModelAdmin):
+    list_display = ('user', 'date', 'created_at')
+    list_filter = ('date',)
+
+
+@admin.register(ActivityLog)
+class ActivityLogAdmin(admin.ModelAdmin):
+    list_display = ('title', 'user', 'pillar', 'logged_at')
+    list_filter = ('pillar',)
 
 
 @admin.register(MentorAllocation)

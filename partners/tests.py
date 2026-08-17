@@ -1,10 +1,11 @@
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from partners.models import (
     Commission,
@@ -18,6 +19,7 @@ from partners.services import (
     can_request_payout,
     cancel_dgc_application,
     create_payout_request,
+    get_partner_attention_items,
     pause_dgc_application,
     place_order,
     resume_dgc_application,
@@ -138,6 +140,28 @@ class DgcPartnerTests(TestCase):
             phone='8888888888',
             deal_value=Decimal('50000.00'),
         )
+        update_lead_status(lead, PartnerLead.STATUS_WON)
+        self.assertTrue(Commission.objects.filter(lead=lead).exists())
+
+    def test_reverting_won_lead_voids_pending_commission(self):
+        user = User.objects.create_user('dgcy2', 'dgcy2@test.com', 'pass1234')
+        user.profile.role = ROLE_PARTNER
+        user.profile.save()
+        partner = PartnerProfile.objects.create(user=user, code='DGC8887')
+        lead = PartnerLead.objects.create(
+            partner=partner,
+            name='Mistaken Lead',
+            phone='8888888887',
+            deal_value=Decimal('50000.00'),
+        )
+        update_lead_status(lead, PartnerLead.STATUS_WON)
+        self.assertTrue(Commission.objects.filter(lead=lead).exists())
+
+        update_lead_status(lead, PartnerLead.STATUS_CONTACTED)
+        self.assertFalse(Commission.objects.filter(lead=lead).exists())
+
+        # Re-winning creates a fresh commission rather than being blocked by
+        # a stale one that should have been voided on revert.
         update_lead_status(lead, PartnerLead.STATUS_WON)
         self.assertTrue(Commission.objects.filter(lead=lead).exists())
 
@@ -264,3 +288,57 @@ class DgcPartnerTests(TestCase):
         app = DgcApplication.objects.get(partner_user=user)
         self.assertEqual(app.city, 'Ahmedabad')
         self.assertEqual(app.status, DgcApplication.STATUS_NEW)
+
+
+class PartnerAttentionItemsTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('attnpartner', 'attnpartner@test.com', 'pass1234')
+        self.user.profile.role = ROLE_PARTNER
+        self.user.profile.save()
+        self.partner = PartnerProfile.objects.create(user=self.user, code='ATTNDGC1')
+        self.client.login(username='attnpartner', password='pass1234')
+
+    def test_all_clear_for_no_partner(self):
+        self.assertEqual(get_partner_attention_items(None), [])
+
+    def test_all_clear_when_nothing_needs_attention(self):
+        self.assertEqual(get_partner_attention_items(self.partner), [])
+        response = self.client.get(reverse('partners:dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'All clear')
+
+    def test_payout_window_open_surfaced_with_pending_commission(self):
+        lead = PartnerLead.objects.create(
+            partner=self.partner, name='Factory Lead', phone='9998887776',
+            deal_value=Decimal('50000.00'),
+        )
+        update_lead_status(lead, PartnerLead.STATUS_WON)
+        with patch('partners.services.timezone.localdate', return_value=date(2026, 8, 21)):
+            items = get_partner_attention_items(self.partner)
+        tones = {item['href_name']: item['tone'] for item in items}
+        self.assertEqual(tones['partners:payouts'], 'emerald')
+
+    def test_payout_item_absent_outside_window(self):
+        lead = PartnerLead.objects.create(
+            partner=self.partner, name='Factory Lead2', phone='9998887775',
+            deal_value=Decimal('50000.00'),
+        )
+        update_lead_status(lead, PartnerLead.STATUS_WON)
+        with patch('partners.services.timezone.localdate', return_value=date(2026, 8, 10)):
+            items = get_partner_attention_items(self.partner)
+        self.assertFalse(any(i['href_name'] == 'partners:payouts' for i in items))
+
+    def test_stale_lead_needs_follow_up(self):
+        lead = PartnerLead.objects.create(
+            partner=self.partner, name='Cold Lead', phone='9998887774',
+        )
+        stale = timezone.now() - timedelta(days=5)
+        PartnerLead.objects.filter(pk=lead.pk).update(updated_at=stale)
+        items = get_partner_attention_items(self.partner)
+        tones = {item['href_name']: item['tone'] for item in items}
+        self.assertEqual(tones['partners:leads'], 'amber')
+
+    def test_recent_lead_not_flagged(self):
+        PartnerLead.objects.create(partner=self.partner, name='Fresh Lead', phone='9998887773')
+        items = get_partner_attention_items(self.partner)
+        self.assertFalse(any(i['href_name'] == 'partners:leads' for i in items))

@@ -33,6 +33,10 @@ class Invoice(models.Model):
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    razorpay_order_id = models.CharField(max_length=64, blank=True)
+    razorpay_payment_id = models.CharField(max_length=64, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         ordering = ['-issued_at', '-created_at']
 

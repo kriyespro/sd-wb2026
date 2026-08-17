@@ -12,7 +12,7 @@
 
         <div class="mt-4 space-y-2 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
             <div class="flex items-baseline justify-between gap-2">
-                <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Your cost</span>
+                <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Your cost</span>
                 <p class="font-display text-xl font-bold text-brand-700">
                     ₹{{ '{:,.0f}'.format(offer.price) }}
                     {% if offer.billing_note %}<span class="text-xs font-semibold text-slate-500">{{ offer.billing_note }}</span>{% endif %}
@@ -20,14 +20,14 @@
             </div>
             {% if offer.market_price_min and offer.market_price_max %}
             <div class="flex items-baseline justify-between gap-2 border-t border-slate-200/80 pt-2">
-                <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Market sell</span>
+                <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Market sell</span>
                 <p class="text-sm font-bold text-ink-900">
                     ₹{{ '{:,.0f}'.format(offer.market_price_min) }} – ₹{{ '{:,.0f}'.format(offer.market_price_max) }}
                 </p>
             </div>
             {% if offer.margin_max is not none %}
             <div class="flex items-baseline justify-between gap-2">
-                <span class="text-[10px] font-bold uppercase tracking-wide text-emerald-600">Your margin up to</span>
+                <span class="text-xs font-bold uppercase tracking-wide text-emerald-600">Your margin up to</span>
                 <p class="text-sm font-bold text-emerald-700">₹{{ '{:,.0f}'.format(offer.margin_max) }}</p>
             </div>
             {% endif %}

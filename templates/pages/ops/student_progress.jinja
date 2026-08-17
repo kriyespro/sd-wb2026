@@ -1,0 +1,101 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+{% set level_colors = {
+    'excellent': ('text-emerald-600', '#10b981'),
+    'good': ('text-brand-600', '#1e3a6e'),
+    'developing': ('text-amber-600', '#c9a227'),
+    'at_risk': ('text-red-600', '#ef4444'),
+} %}
+{% set ring_color = level_colors[score_level][1] %}
+{% set ring_offset = (339.292 - (daily_score / 100 * 339.292))|round(1) %}
+
+<a href="{{ url('operations:academy_4d') }}" class="mb-4 inline-block text-sm font-semibold text-brand-600 hover:text-brand-700">← Back to 4D Academy</a>
+
+<div class="dash-panel mb-6 p-5 sm:p-6">
+    <div class="flex flex-wrap items-center justify-between gap-6">
+        <div class="flex items-center gap-5">
+            <div class="relative h-20 w-20 shrink-0">
+                <svg width="80" height="80" viewBox="0 0 120 120" class="-rotate-90">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#f1f5f9" stroke-width="12"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="{{ ring_color }}" stroke-width="12"
+                        stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="{{ ring_offset }}"/>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center font-display text-lg font-bold {{ level_colors[score_level][0] }}">{{ daily_score }}</div>
+            </div>
+            <div>
+                <h2 class="font-display text-xl font-bold text-ink-900">{{ student.get_full_name() or student.username }}</h2>
+                <p class="text-sm text-slate-500">{{ student.email }}</p>
+                <p class="mt-1 text-xs text-slate-500">🔥 {{ streak }} day streak</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-right sm:grid-cols-4">
+            <div><p class="text-xs text-slate-500">Courses</p><p class="font-display text-lg font-bold text-ink-900">{{ student_stats.courses_count }}</p></div>
+            <div><p class="text-xs text-slate-500">Pending</p><p class="font-display text-lg font-bold text-orange-600">{{ student_stats.pending_assignments }}</p></div>
+            <div><p class="text-xs text-slate-500">Projects</p><p class="font-display text-lg font-bold text-ink-900">{{ student_stats.active_projects }}</p></div>
+            <div><p class="text-xs text-slate-500">Portfolio</p><p class="font-display text-lg font-bold text-ink-900">{{ student_stats.portfolio_count }}</p></div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% for pillar in ['learn', 'teach', 'field', 'earn'] %}
+    <div class="pillar-card pillar-{{ pillar }}">
+        <span class="pillar-chip pillar-{{ pillar }}"><span class="pillar-dot pillar-{{ pillar }}"></span>{{ pillar|capitalize }}</span>
+        <p class="mt-2 font-display text-2xl font-bold text-ink-900">{{ pillar_totals[pillar] }}<span class="text-sm text-slate-500"> total</span></p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="dash-panel mb-6">
+    {% set title = 'Last 30 days' %}{% include "partials/dashboard/_panel_header.jinja" %}
+    <div class="p-5 sm:p-6">
+        <div class="flex flex-wrap gap-1.5">
+            {% for day in score_history %}
+            <div class="heatmap-cell
+                {% if day.score == 0 %}bg-slate-100
+                {% elif day.score < 50 %}bg-brand-200
+                {% elif day.score < 70 %}bg-brand-400
+                {% elif day.score < 85 %}bg-brand-600
+                {% else %}bg-brand-800{% endif %}"
+                title="{{ day.date.strftime('%d %b %Y') }} — score {{ day.score }}/100"></div>
+            {% endfor %}
+        </div>
+        <div class="mt-4 flex items-center gap-2 text-xs text-slate-500">
+            <span>Less</span>
+            <div class="heatmap-cell bg-slate-100"></div>
+            <div class="heatmap-cell bg-brand-200"></div>
+            <div class="heatmap-cell bg-brand-400"></div>
+            <div class="heatmap-cell bg-brand-600"></div>
+            <div class="heatmap-cell bg-brand-800"></div>
+            <span>More</span>
+        </div>
+    </div>
+</div>
+
+<div class="dash-panel">
+    {% set title = 'Activity timeline' %}{% include "partials/dashboard/_panel_header.jinja" %}
+    <div class="p-5 sm:p-6">
+        {% if activity_feed %}
+        <ul class="space-y-4">
+            {% for item in activity_feed %}
+            <li class="flex items-start gap-3">
+                <span class="pillar-dot pillar-{{ item.pillar }} mt-1.5"></span>
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <p class="font-medium text-ink-900">{{ item.title }}</p>
+                        <span class="pillar-chip pillar-{{ item.pillar }}">{{ item.pillar|capitalize }}</span>
+                        {% if item.source == 'note' %}<span class="dash-badge bg-slate-100 text-slate-500">student note</span>{% endif %}
+                    </div>
+                    {% if item.detail %}<p class="mt-0.5 text-sm text-slate-600">{{ item.detail }}</p>{% endif %}
+                    <p class="mt-0.5 text-xs text-slate-500">{{ item.timestamp.strftime('%d %b %Y, %H:%M') }}</p>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-sm text-slate-500">No activity logged yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

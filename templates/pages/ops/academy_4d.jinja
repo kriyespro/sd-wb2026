@@ -1,0 +1,105 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="mb-6 grid gap-4 lg:grid-cols-3">
+    <div class="dash-panel flex items-center gap-4 p-5">
+        <div>
+            <p class="text-sm font-medium text-slate-500">Batch Avg Score</p>
+            <p class="mt-1 font-display text-4xl font-bold text-brand-600">{{ batch_health.avg_score }}<span class="text-lg text-slate-500">/100</span></p>
+            <p class="mt-1 text-xs text-slate-500">{{ batch_health.total_students }} active students</p>
+        </div>
+    </div>
+
+    <div class="dash-panel p-5 lg:col-span-2">
+        <p class="mb-3 text-sm font-medium text-slate-500">Pillar completion today</p>
+        <div class="space-y-2.5">
+            {% for pillar in ['learn', 'teach', 'field', 'earn'] %}
+            {% set rate = batch_health.pillar_rates[pillar] %}
+            <div class="flex items-center gap-3">
+                <span class="pillar-chip pillar-{{ pillar }} w-20 shrink-0"><span class="pillar-dot pillar-{{ pillar }}"></span>{{ pillar|capitalize }}</span>
+                <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div class="pillar-bar-fill pillar-{{ pillar }} h-2 rounded-full" style="width: {{ rate }}%"></div>
+                </div>
+                <span class="w-10 text-right text-xs font-semibold text-slate-500">{{ rate }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+    <div class="dash-panel lg:col-span-2">
+        {% set title = '7-day Leaderboard' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wide text-slate-500">
+                        <th class="px-5 py-3">Student</th>
+                        <th class="px-4 py-3">Avg Score</th>
+                        <th class="px-4 py-3">Leads Won</th>
+                        <th class="px-4 py-3">Revenue</th>
+                        <th class="px-4 py-3">Active Projects</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in leaderboard %}
+                    <tr class="border-b border-slate-50 last:border-0 transition hover:bg-slate-50/80">
+                        <td class="px-5 py-3 font-medium text-ink-900">
+                            <a href="{{ url('operations:student_progress', kwargs={'pk': row.user.id}) }}" class="hover:text-brand-600 hover:underline">
+                                {% if loop.index <= 3 %}{{ ['🥇', '🥈', '🥉'][loop.index0] }}{% endif %}
+                                {{ row.user.get_full_name() or row.user.username }}
+                            </a>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="dash-badge {% if row.avg_score >= 85 %}bg-emerald-100 text-emerald-700{% elif row.avg_score >= 50 %}bg-brand-50 text-brand-700{% else %}bg-red-100 text-red-700{% endif %}">{{ row.avg_score }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600">{{ row.leads_won }}</td>
+                        <td class="px-4 py-3 text-slate-600">₹{{ row.revenue }}</td>
+                        <td class="px-4 py-3 text-slate-600">{{ row.projects_active }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td class="px-5 py-6 text-sm text-slate-500" colspan="5">No students enrolled yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        {% set title = 'Pending teaching evaluations' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if pending_evaluations %}
+            <ul class="space-y-4">
+                {% for session in pending_evaluations %}
+                <li class="rounded-xl border border-slate-100 p-4">
+                    <p class="font-medium text-ink-900">{{ session.topic }}</p>
+                    <p class="text-xs text-slate-500">{{ session.user.get_full_name() or session.user.username }} · {{ session.created_at.strftime('%d %b %Y') }}</p>
+                    {% if session.explanation %}<p class="mt-2 text-sm text-slate-600">{{ session.explanation }}</p>{% endif %}
+                    {% if session.resource_url %}<a href="{{ session.resource_url }}" target="_blank" class="mt-1 inline-block text-xs text-brand-600 hover:underline">View resource →</a>{% endif %}
+                    <form method="post" action="{{ url('operations:teaching_evaluate', kwargs={'pk': session.id}) }}" class="mt-3 flex items-center gap-2">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        <input type="number" name="score" min="0" max="100" placeholder="Score" class="ops-select w-20 text-xs" required>
+                        <input type="text" name="feedback" placeholder="Feedback (optional)" class="ops-select flex-1 text-xs">
+                        <button type="submit" class="rounded-full bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700">Evaluate</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">No teaching sessions awaiting evaluation.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if at_risk %}
+<div class="dash-panel mt-6 border-red-200">
+    {% set title = '🔴 At-risk students (avg score below 50)' %}{% include "partials/dashboard/_panel_header.jinja" %}
+    <div class="flex flex-wrap gap-2 p-5 sm:p-6">
+        {% for row in at_risk %}
+        <a href="{{ url('operations:student_progress', kwargs={'pk': row.user.id}) }}" class="dash-badge bg-red-50 text-red-700 hover:bg-red-100">{{ row.user.get_full_name() or row.user.username }} — {{ row.avg_score }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

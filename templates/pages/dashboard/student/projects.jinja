@@ -14,6 +14,30 @@
         </div>
         <h3 class="mt-3 font-semibold text-brand-950">{{ project.title }}</h3>
         <p class="mt-2 text-sm text-slate-600">{{ project.description }}</p>
+        {% if project.project_type == 'real' %}
+        <form method="post" action="{{ url('academy_dashboard:project_update', kwargs={'pk': project.id}) }}" class="mt-4 space-y-2 border-t border-slate-100 pt-4">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <label class="block text-xs font-medium text-slate-500">Client</label>
+            <input type="text" name="client_name" value="{{ project.client_name }}" class="wb-input py-2 text-sm" placeholder="Client name">
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500">Project value (₹)</label>
+                    <input type="number" name="project_value" value="{{ project.project_value }}" class="wb-input py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500">Collected (₹)</label>
+                    <input type="number" name="revenue_collected" value="{{ project.revenue_collected }}" class="wb-input py-2 text-sm">
+                </div>
+            </div>
+            <label class="block text-xs font-medium text-slate-500">Payment status</label>
+            <select name="payment_status" class="wb-input py-2 text-sm">
+                {% for value, label in project.PAYMENT_CHOICES %}
+                <option value="{{ value }}" {% if project.payment_status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-primary w-full py-2 text-xs">Save</button>
+        </form>
+        {% endif %}
     </div>
     {% endfor %}
 </div>

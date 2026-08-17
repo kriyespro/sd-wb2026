@@ -1,6 +1,7 @@
 {% extends "layouts/dashboard.jinja" %}
 
 {% block dashboard_content %}
+{% include "partials/dashboard/_attention.jinja" %}
 {% if account %}
 <div class="mb-6 rounded-2xl border border-brand-200/60 bg-brand-50/50 px-5 py-4">
     <p class="font-display font-semibold text-ink-900">{{ account.company_name }}</p>

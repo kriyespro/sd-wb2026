@@ -1,0 +1,55 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<div class="grid gap-6 lg:grid-cols-2">
+    <div class="dash-panel">
+        {% set title = 'Log a teaching session' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            <form method="post" action="{{ url('academy_dashboard:teaching_add') }}" class="space-y-4">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Topic</label>
+                    {{ form.topic }}
+                </div>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Explanation</label>
+                    {{ form.explanation }}
+                </div>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Recording / deck link</label>
+                    {{ form.resource_url }}
+                </div>
+                <button type="submit" class="btn-primary w-full">Submit Session</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        {% set title = 'Your teaching sessions' %}{% include "partials/dashboard/_panel_header.jinja" %}
+        <div class="p-5 sm:p-6">
+            {% if sessions %}
+            <ul class="space-y-3">
+                {% for session in sessions %}
+                <li class="rounded-xl border border-slate-100 px-4 py-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="font-medium text-ink-900">{{ session.topic }}</p>
+                        {% if session.status == 'evaluated' %}
+                        <span class="dash-badge bg-emerald-100 text-emerald-700">{{ session.score }}/100</span>
+                        {% else %}
+                        <span class="dash-badge bg-slate-100 text-slate-600">Awaiting evaluation</span>
+                        {% endif %}
+                    </div>
+                    <p class="mt-1 text-xs text-slate-500">{{ session.created_at.strftime('%d %b %Y') }}</p>
+                    {% if session.feedback %}
+                    <p class="mt-2 text-sm text-slate-600">"{{ session.feedback }}"</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-slate-500">No teaching sessions logged yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

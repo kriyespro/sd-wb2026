@@ -21,6 +21,7 @@ from .services import (
     create_payout_request,
     get_active_offers,
     get_partner_application,
+    get_partner_attention_items,
     get_partner_dashboard_stats,
     get_partner_profile,
     partner_commission_summary,
@@ -102,6 +103,7 @@ class PartnerDashboardView(PartnerBaseMixin, TemplateView):
         partner = ctx['partner']
         if partner:
             ctx['stats'] = get_partner_dashboard_stats(partner)
+            ctx['attention_items'] = get_partner_attention_items(partner)
             ctx['recent_leads'] = partner.leads.all()[:5]
             ctx['recent_orders'] = partner.orders.select_related('offer')[:5]
             ctx['recent_commissions'] = partner.commissions.all()[:5]

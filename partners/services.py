@@ -1,3 +1,4 @@
+from datetime import timedelta
 from decimal import Decimal
 
 from django.contrib.auth.models import User
@@ -306,6 +307,10 @@ def update_lead_status(lead, status):
     prev = lead.status
     lead.status = status
     lead.save(update_fields=['status', 'updated_at'])
+    if prev == PartnerLead.STATUS_WON and status != PartnerLead.STATUS_WON:
+        # Mirror update_order_status: a lead reverted off WON must not leave
+        # a payable commission behind from the mistaken run.
+        lead.commissions.filter(status=Commission.STATUS_PENDING).delete()
     if status == PartnerLead.STATUS_WON and prev != PartnerLead.STATUS_WON:
         if not lead.commissions.exists() and lead.deal_value > 0:
             # A won lead isn't tied to any particular offer, so its commission
@@ -377,6 +382,36 @@ def create_payout_request(partner, today=None):
     except IntegrityError:
         raise ValueError('Payout already requested for this month')
     return payout
+
+
+def get_partner_attention_items(partner):
+    """Priority alerts for the partner (DGC) dashboard header."""
+    items = []
+    if not partner:
+        return items
+
+    summary = partner_commission_summary(partner)
+    if summary['pending'] > 0 and can_request_payout():
+        items.append({
+            'label': f"Payout window open — ₹{summary['pending']} ready",
+            'href_name': 'partners:payouts',
+            'tone': 'emerald',
+        })
+
+    stale_cutoff = timezone.now() - timedelta(days=3)
+    stale_leads = PartnerLead.objects.filter(
+        partner=partner,
+        status__in=[PartnerLead.STATUS_NEW, PartnerLead.STATUS_CONTACTED],
+        updated_at__lt=stale_cutoff,
+    ).count()
+    if stale_leads:
+        items.append({
+            'label': f"{stale_leads} lead{'s' if stale_leads != 1 else ''} need follow-up",
+            'href_name': 'partners:leads',
+            'tone': 'amber',
+        })
+
+    return items
 
 
 def get_partner_dashboard_stats(partner):

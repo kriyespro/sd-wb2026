@@ -66,9 +66,15 @@ class NarrowerOpsRoleMixin:
 
 
 class DashboardContextMixin:
+    # Set on a subclass to tag its pages for the layout's review banner
+    # (e.g. 'feature_tag = "4D"' tints the page so new work is easy to spot
+    # while reviewing). Remove once the feature is no longer "new".
+    feature_tag = None
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['dashboard_url'] = get_dashboard_url_for_user(self.request.user)
+        ctx['feature_tag'] = self.feature_tag
         if 'modules' in ctx:
             ctx['sidebar_links'] = ctx['modules']
         return ctx

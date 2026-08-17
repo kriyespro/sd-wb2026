@@ -222,6 +222,86 @@ class LeadPipelineTests(TestCase):
         self.client.login(username='sales1', password='pass1234')
         self.assertEqual(self.client.get(reverse('operations:dgc_orders')).status_code, 302)
 
+    def test_assignee_cannot_cancel_order_only_ops_can(self):
+        """A delivery assignee can move their own order forward but must not
+        be able to cancel it — cancelling voids the partner's commission,
+        which is an ops-management decision."""
+        from decimal import Decimal
+
+        from partners.models import PartnerOrder, ResellerOffer
+        from partners.services import place_order
+        from users.roles import ROLE_PARTNER
+
+        partner_user = User.objects.create_user('dgcord2', 'dgcord2@test.com', 'pass1234')
+        partner_user.profile.role = ROLE_PARTNER
+        partner_user.profile.save()
+        partner = PartnerProfile.objects.create(user=partner_user, code='DGCORD2')
+        offer = ResellerOffer.objects.create(
+            title='Ops Offer 2',
+            price=Decimal('15000.00'),
+            commission_percent=Decimal('10.00'),
+        )
+        order = place_order(partner, offer, quantity=1)
+        order.assigned_to = self.freelancer
+        order.save(update_fields=['assigned_to'])
+
+        self.client.login(username='free1', password='pass1234')
+        url = reverse('operations:dgc_order_status', kwargs={'pk': order.pk})
+        response = self.client.post(url, {'status': PartnerOrder.STATUS_CANCELLED})
+        self.assertEqual(response.status_code, 302)
+        order.refresh_from_db()
+        self.assertNotEqual(order.status, PartnerOrder.STATUS_CANCELLED)
+        self.assertTrue(order.commissions.exists())
+
+        # The assignee can still move it forward legitimately.
+        response = self.client.post(url, {'status': PartnerOrder.STATUS_FULFILLED})
+        self.assertEqual(response.status_code, 302)
+        order.refresh_from_db()
+        self.assertEqual(order.status, PartnerOrder.STATUS_FULFILLED)
+
+        # Ops/superuser retains the ability to cancel.
+        self.client.login(username='admin', password='pass1234')
+        response = self.client.post(url, {'status': PartnerOrder.STATUS_CANCELLED})
+        self.assertEqual(response.status_code, 302)
+        order.refresh_from_db()
+        self.assertEqual(order.status, PartnerOrder.STATUS_CANCELLED)
+        self.assertFalse(order.commissions.exists())
+
+    def test_academy_views_forbidden_for_non_academy_ops_role(self):
+        """Mentor Allocation, 4D Academy batch dashboard, and per-student
+        progress must stay restricted to academy staff — a random ops role
+        (freelancer) shouldn't be able to browse student scores/mentor
+        pairings."""
+        from academy.models import StudentTask
+        from users.roles import ROLE_STUDENT
+
+        student = User.objects.create_user('stud_ops1', 'stud_ops1@test.com', 'pass1234')
+        student.profile.role = ROLE_STUDENT
+        student.profile.save()
+
+        self.client.login(username='free1', password='pass1234')
+        self.assertEqual(self.client.get(reverse('operations:mentors')).status_code, 302)
+        self.assertEqual(self.client.get(reverse('operations:academy_4d')).status_code, 302)
+        self.assertEqual(
+            self.client.get(
+                reverse('operations:student_progress', kwargs={'pk': student.pk}),
+            ).status_code,
+            302,
+        )
+
+        self.client.login(username='admin', password='pass1234')
+        self.assertEqual(self.client.get(reverse('operations:mentors')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('operations:academy_4d')).status_code, 200)
+
+    def test_performance_view_forbidden_for_non_management_role(self):
+        """Performance reviews are confidential — restricted to
+        director/office-manager/PM management roles, not every ops role."""
+        self.client.login(username='free1', password='pass1234')
+        self.assertEqual(self.client.get(reverse('operations:performance')).status_code, 302)
+
+        self.client.login(username='admin', password='pass1234')
+        self.assertEqual(self.client.get(reverse('operations:performance')).status_code, 200)
+
     def test_ops2_mission_control(self):
         response = self.client.get(reverse('ops2:dashboard'))
         self.assertEqual(response.status_code, 200)

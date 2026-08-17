@@ -21,7 +21,7 @@
 <div class="mb-5 flex flex-wrap gap-2">
     {% for value, label in status_choices %}
     <span class="ops-chip">
-        <span class="text-slate-400">{{ label }}</span>
+        <span class="text-slate-500">{{ label }}</span>
         <span class="font-bold text-ink-900">{{ status_counts[value] }}</span>
     </span>
     {% endfor %}
@@ -31,7 +31,7 @@
 <div class="dash-panel overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full min-w-[900px] text-left text-sm">
-            <thead class="border-b border-slate-100 bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
+            <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                 <tr>
                     <th class="px-4 py-3">Applicant</th>
                     <th class="px-4 py-3">City</th>
@@ -57,7 +57,7 @@
                         {% if app.aadhaar_last4 %}<p>Aadhaar ····{{ app.aadhaar_last4 }}</p>{% endif %}
                         {% if app.address %}<p class="mt-1 max-w-[10rem] text-slate-500">{{ app.address }}</p>{% endif %}
                         {% if app.partner_user %}<p class="mt-1 font-medium text-brand-600">Google signup</p>{% endif %}
-                        {% if not app.pan_number and not app.aadhaar_last4 and not app.address %}<span class="text-slate-400">—</span>{% endif %}
+                        {% if not app.pan_number and not app.aadhaar_last4 and not app.address %}<span class="text-slate-500">—</span>{% endif %}
                     </td>
                     <td class="px-4 py-4 text-xs text-slate-600">{{ app.experience or '—' }}</td>
                     <td class="px-4 py-4 max-w-xs text-xs text-slate-600">
@@ -73,11 +73,11 @@
                         <div class="flex flex-col gap-2">
                             <form method="post" action="{{ url('operations:dgc_application_approve', kwargs={'pk': app.id}) }}">
                                 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                <button type="submit" class="w-full rounded-lg bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-emerald-500">Approve</button>
+                                <button type="submit" class="w-full rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500">Approve</button>
                             </form>
                             <form method="post" action="{{ url('operations:dgc_application_reject', kwargs={'pk': app.id}) }}">
                                 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                <button type="submit" class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-50">Reject</button>
+                                <button type="submit" class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Reject</button>
                             </form>
                         </div>
                         {% elif app.partner_user %}
@@ -100,32 +100,32 @@
                             <div class="flex flex-col gap-1.5">
                                 <form method="post" action="{{ url('operations:dgc_application_pause', kwargs={'pk': app.id}) }}">
                                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                    <button type="submit" class="w-full rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-[10px] font-bold text-amber-800 hover:bg-amber-100">Pause</button>
+                                    <button type="submit" class="w-full rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100">Pause</button>
                                 </form>
                                 <form method="post" action="{{ url('operations:dgc_application_cancel', kwargs={'pk': app.id}) }}"
                                       onsubmit="return confirm('Cancel this DGC partner permanently? Login will be disabled.');">
                                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                    <button type="submit" class="w-full rounded-lg border border-red-200 px-3 py-1.5 text-[10px] font-semibold text-red-700 hover:bg-red-50">Cancel</button>
+                                    <button type="submit" class="w-full rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50">Cancel</button>
                                 </form>
                             </div>
                             {% elif app.status == 'paused' %}
                             <div class="flex flex-col gap-1.5">
                                 <form method="post" action="{{ url('operations:dgc_application_resume', kwargs={'pk': app.id}) }}">
                                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                    <button type="submit" class="w-full rounded-lg bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-emerald-500">Resume</button>
+                                    <button type="submit" class="w-full rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500">Resume</button>
                                 </form>
                                 <form method="post" action="{{ url('operations:dgc_application_cancel', kwargs={'pk': app.id}) }}"
                                       onsubmit="return confirm('Cancel this DGC partner permanently? Login will be disabled.');">
                                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                    <button type="submit" class="w-full rounded-lg border border-red-200 px-3 py-1.5 text-[10px] font-semibold text-red-700 hover:bg-red-50">Cancel</button>
+                                    <button type="submit" class="w-full rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50">Cancel</button>
                                 </form>
                             </div>
                             {% elif app.status == 'cancelled' %}
-                            <p class="text-[10px] font-semibold text-red-600">Cancelled — login off</p>
+                            <p class="text-xs font-semibold text-red-600">Cancelled — login off</p>
                             {% endif %}
                         </div>
                         {% else %}
-                        <span class="text-xs text-slate-400">—</span>
+                        <span class="text-xs text-slate-500">—</span>
                         {% endif %}
                     </td>
                 </tr>

@@ -8,7 +8,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <p class="font-semibold text-ink-900">{{ lead.name }}</p>
                     {% if lead.is_converted %}
-                    <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-800">Converted</span>
+                    <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-emerald-800">Converted</span>
                     {% endif %}
                 </div>
                 <a href="mailto:{{ lead.email }}" class="block truncate text-xs text-brand-600 hover:underline">{{ lead.email }}</a>
@@ -24,7 +24,7 @@
         {% endif %}
         <p class="text-xs text-slate-500">{{ lead.service_interest or 'General inquiry' }}</p>
         {% if lead.source_page %}
-        <p class="mt-1 text-[10px] text-slate-400">via {{ lead.source_page }}</p>
+        <p class="mt-1 text-xs text-slate-500">via {{ lead.source_page }}</p>
         {% endif %}
     </td>
     <td class="px-4 py-4 whitespace-nowrap text-xs text-slate-500">
@@ -80,7 +80,7 @@
             <div class="mt-2 space-y-2">
                 {% if lead.message %}
                 <div class="rounded-xl border border-slate-100 bg-slate-50 p-2.5 leading-relaxed text-slate-600">
-                    <p class="mb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Message</p>
+                    <p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">Message</p>
                     <p class="whitespace-pre-wrap">{{ lead.message }}</p>
                 </div>
                 {% endif %}
@@ -90,12 +90,12 @@
                       class="space-y-2">
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                     <textarea name="handoff_notes" rows="2" class="ops-textarea text-xs" placeholder="Handoff notes…">{{ lead.handoff_notes }}</textarea>
-                    <button type="submit" class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold text-slate-700 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700">
+                    <button type="submit" class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700">
                         Save notes
                     </button>
                 </form>
                 <div class="rounded-xl border border-slate-100 bg-white p-2.5">
-                    <p class="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Follow-up checklist</p>
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wide text-slate-500">Follow-up checklist</p>
                     <ul class="space-y-1">
                         {% for step in lead.followups.all() %}
                         <li>
@@ -104,9 +104,9 @@
                                   hx-swap="outerHTML"
                                   class="flex items-start gap-2">
                                 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                <button type="submit" class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[9px]
+                                <button type="submit" class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[11px]
                                     {% if step.is_done %}border-emerald-500 bg-emerald-500 text-white{% else %}border-slate-300 text-transparent{% endif %}">✓</button>
-                                <span class="{% if step.is_done %}text-slate-400 line-through{% else %}text-slate-700{% endif %}">{{ step.label }}</span>
+                                <span class="{% if step.is_done %}text-slate-500 line-through{% else %}text-slate-700{% endif %}">{{ step.label }}</span>
                             </form>
                         </li>
                         {% endfor %}
@@ -116,9 +116,9 @@
                           hx-swap="outerHTML"
                           class="mt-2 flex items-center gap-1.5">
                         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                        <input type="date" name="next_follow_up_at" class="ops-select text-[10px]"
+                        <input type="date" name="next_follow_up_at" class="ops-select text-xs"
                                value="{{ lead.next_follow_up_at.strftime('%Y-%m-%d') if lead.next_follow_up_at else '' }}">
-                        <button type="submit" class="rounded-lg bg-slate-900 px-2 py-1 text-[9px] font-bold text-white">Set</button>
+                        <button type="submit" class="rounded-lg bg-slate-900 px-2 py-1 text-[11px] font-bold text-white">Set</button>
                     </form>
                 </div>
             </div>
@@ -137,7 +137,7 @@
               class="min-w-[10rem] space-y-1.5">
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
             <input type="text" name="project_name" placeholder="Project name" class="ops-select text-xs">
-            <button type="submit" class="w-full rounded-xl bg-gold-500 px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-ink-900 transition hover:bg-gold-400">
+            <button type="submit" class="w-full rounded-xl bg-gold-500 px-3 py-2 text-xs font-bold uppercase tracking-wide text-ink-900 transition hover:bg-gold-400">
                 Convert
             </button>
         </form>

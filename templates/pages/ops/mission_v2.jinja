@@ -56,7 +56,7 @@
         <section class="dash-panel lg:col-span-2 overflow-hidden p-4 sm:p-5">
             <div class="mb-3 flex items-center justify-between gap-2">
                 <h3 class="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Inbound pipeline</h3>
-                <a href="{{ url('operations:leads') }}" class="text-[10px] font-bold text-brand-600 hover:text-brand-700">Manage →</a>
+                <a href="{{ url('operations:leads') }}" class="text-xs font-bold text-brand-600 hover:text-brand-700">Manage →</a>
             </div>
             <div id="ops2-pipeline">
                 {% include "partials/ops/_pipeline_bar.jinja" %}
@@ -79,7 +79,7 @@
                     <span class="h-2.5 w-2.5 shrink-0 rounded-full {{ tone }}"></span>
                     <h3 class="truncate font-display text-sm font-semibold text-ink-900">{{ title }}</h3>
                 </div>
-                <a href="{{ href }}" class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">{{ label }}</a>
+                <a href="{{ href }}" class="shrink-0 text-xs font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">{{ label }}</a>
             </header>
             <div id="{{ feed_id }}" class="min-w-0 flex-1 px-4 pb-2 pt-1">
                 {% include partial %}

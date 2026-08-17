@@ -21,7 +21,7 @@
                     <span class="h-2 w-2 shrink-0 rounded-full {{ tone }}"></span>
                     <h2 class="truncate text-[13px] font-semibold text-ink-900">{{ title }}</h2>
                 </div>
-                <a href="{{ href }}" class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">{{ link_label }}</a>
+                <a href="{{ href }}" class="shrink-0 text-xs font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">{{ link_label }}</a>
             </header>
             <div id="{{ feed_id }}" class="min-w-0 flex-1 px-3.5 pb-2 pt-0.5">
                 {% include partial %}
@@ -47,9 +47,9 @@
                 <div class="flex min-w-0 items-center gap-2">
                     <span class="h-2 w-2 shrink-0 rounded-full bg-violet-500"></span>
                     <h2 class="truncate text-[13px] font-semibold text-ink-900">Job applications</h2>
-                    <span id="ops-hiring-chips" class="hidden truncate text-[10px] font-medium text-slate-400 sm:inline">{{ stats.new_job_applications }} new</span>
+                    <span id="ops-hiring-chips" class="hidden truncate text-xs font-medium text-slate-500 sm:inline">{{ stats.new_job_applications }} new</span>
                 </div>
-                <a href="{{ url('operations:job_applications') }}" class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">Open →</a>
+                <a href="{{ url('operations:job_applications') }}" class="shrink-0 text-xs font-bold uppercase tracking-wide text-brand-600 hover:text-brand-700">Open →</a>
             </header>
             <div id="ops-jobs-feed" class="min-w-0 flex-1 px-3.5 pb-2 pt-0.5">
                 {% include "partials/ops/_jobs_feed.jinja" %}

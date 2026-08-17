@@ -1,4 +1,9 @@
-from projects.models import Deliverable, Meeting, Project, Report
+from datetime import timedelta
+
+from django.utils import timezone
+
+from billing.models import Invoice
+from projects.models import Deliverable, Meeting, Milestone, Project, Report
 
 from .models import ClientAccount, SupportMessage, SupportTicket
 
@@ -61,6 +66,66 @@ def get_client_stats(account):
         'upcoming_meetings': account.meetings.filter(status=Meeting.STATUS_SCHEDULED).count(),
         'open_tickets': account.tickets.exclude(status=SupportTicket.STATUS_RESOLVED).count(),
     }
+
+
+def get_client_attention_items(account):
+    """Priority alerts for the client dashboard header."""
+    items = []
+    if not account:
+        return items
+
+    overdue_invoices = Invoice.objects.filter(
+        client_account=account, status=Invoice.STATUS_OVERDUE,
+    ).count()
+    if overdue_invoices:
+        items.append({
+            'label': f"{overdue_invoices} overdue invoice{'s' if overdue_invoices != 1 else ''}",
+            'href_name': 'clients:invoices',
+            'tone': 'rose',
+        })
+
+    today = timezone.localdate()
+    overdue_milestones = Milestone.objects.filter(
+        project__client_account=account, due_date__lt=today,
+    ).exclude(status=Milestone.STATUS_DONE).count()
+    if overdue_milestones:
+        items.append({
+            'label': f"{overdue_milestones} milestone{'s' if overdue_milestones != 1 else ''} overdue",
+            'href_name': 'clients:projects',
+            'tone': 'orange',
+        })
+
+    week_end = today + timedelta(days=7)
+    upcoming_meetings = account.meetings.filter(
+        status=Meeting.STATUS_SCHEDULED,
+        scheduled_at__date__gte=today, scheduled_at__date__lte=week_end,
+    ).count()
+    if upcoming_meetings:
+        items.append({
+            'label': f"{upcoming_meetings} meeting{'s' if upcoming_meetings != 1 else ''} this week",
+            'href_name': 'clients:meetings',
+            'tone': 'brand',
+        })
+
+    # A ticket needs the client's attention only when the most recent message
+    # on it was posted by someone else (staff) — not when the client is the
+    # one waiting on a reply.
+    open_tickets = account.tickets.exclude(
+        status=SupportTicket.STATUS_RESOLVED,
+    ).prefetch_related('messages')
+    awaiting_reply = 0
+    for ticket in open_tickets:
+        messages = list(ticket.messages.all())
+        if messages and messages[-1].sender_id != account.user_id:
+            awaiting_reply += 1
+    if awaiting_reply:
+        items.append({
+            'label': f"{awaiting_reply} ticket{'s' if awaiting_reply != 1 else ''} awaiting your reply",
+            'href_name': 'clients:support',
+            'tone': 'teal',
+        })
+
+    return items
 
 
 def create_ticket(account, subject, body, sender):

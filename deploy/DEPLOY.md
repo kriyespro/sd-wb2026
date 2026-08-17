@@ -27,6 +27,8 @@ python3 -c "from django.core.management.utils import get_random_secret_key; prin
 #   EMAIL_HOST_PASSWORD
 #   GOOGLE_OAUTH_CLIENT_ID
 #   GOOGLE_OAUTH_CLIENT_SECRET
+#   RAZORPAY_KEY_ID
+#   RAZORPAY_KEY_SECRET
 ```
 
 Key values already set:

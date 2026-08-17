@@ -1,9 +1,14 @@
+import razorpay
+from django.contrib import messages
+from django.conf import settings
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
 
-from billing.services import get_client_invoices
+from billing.models import Invoice
+from billing.services import create_razorpay_order, get_client_invoices, verify_and_mark_paid
 from core.pagination import paginate
 from projects.models import Meeting, Project, ReportMetric
 from users.mixins import ClientPortalMixin, DashboardContextMixin
@@ -17,6 +22,7 @@ from .services import (
     create_ticket,
     get_approved_deliverables,
     get_client_account,
+    get_client_attention_items,
     get_client_meetings,
     get_client_projects,
     get_client_reports,
@@ -48,6 +54,7 @@ class ClientDashboardView(ClientBaseMixin, TemplateView):
         account = ctx['account']
         ctx['page_title'] = 'Client Dashboard'
         ctx['stats'] = get_client_stats(account)
+        ctx['attention_items'] = get_client_attention_items(account)
         ctx['recent_projects'] = get_client_projects(account)[:4]
         ctx['upcoming_meetings'] = get_client_meetings(account).filter(
             status=Meeting.STATUS_SCHEDULED,
@@ -127,6 +134,49 @@ class InvoicesView(ClientBaseMixin, TemplateView):
         ctx['invoices'] = page.object_list
         ctx['paginator_page'] = page
         return ctx
+
+
+class InvoicePayView(ClientBaseMixin, View):
+    """Creates a Razorpay order for the invoice and returns the checkout
+    launch partial (inline script that opens Razorpay Checkout)."""
+
+    def post(self, request, pk):
+        account = get_client_account(request.user)
+        invoice = get_object_or_404(Invoice, pk=pk, client_account=account)
+        try:
+            order = create_razorpay_order(invoice)
+        except ValueError:
+            return render(request, 'partials/dashboard/_checkout_launch.jinja', {'error': 'This invoice is already paid.'})
+        except razorpay.errors.BadRequestError:
+            return render(request, 'partials/dashboard/_checkout_launch.jinja', {'error': 'Could not start payment. Please try again.'})
+        return render(request, 'partials/dashboard/_checkout_launch.jinja', {
+            'invoice': invoice,
+            'order_id': order['id'],
+            'amount_paise': order['amount'],
+            'key_id': settings.RAZORPAY_KEY_ID,
+            'verify_url': reverse('clients:invoice_verify', kwargs={'pk': invoice.pk}),
+            'user': request.user,
+        })
+
+
+class InvoiceVerifyView(ClientBaseMixin, View):
+    """Razorpay Checkout's success handler submits a hidden form here —
+    the payment is only trusted after the signature is verified server-side."""
+
+    def post(self, request, pk):
+        account = get_client_account(request.user)
+        invoice = get_object_or_404(Invoice, pk=pk, client_account=account)
+        try:
+            verify_and_mark_paid(
+                invoice,
+                request.POST.get('razorpay_order_id', ''),
+                request.POST.get('razorpay_payment_id', ''),
+                request.POST.get('razorpay_signature', ''),
+            )
+            messages.success(request, f'Payment received for invoice {invoice.invoice_number}.')
+        except (ValueError, razorpay.errors.SignatureVerificationError):
+            messages.error(request, 'Payment could not be verified. If you were charged, contact support.')
+        return redirect('clients:invoices')
 
 
 class SupportView(ClientBaseMixin, TemplateView):

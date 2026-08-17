@@ -15,7 +15,7 @@
         <p class="max-w-[12rem] font-medium text-slate-800">{{ app.role }}</p>
     </td>
     <td class="px-4 py-4">
-        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600">
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-slate-600">
             {{ app.get_application_type_display() }}
         </span>
     </td>
@@ -31,7 +31,7 @@
             <a href="{{ app.linkedin_url }}" target="_blank" rel="noopener" class="font-medium text-brand-600 hover:underline">LinkedIn</a>
             {% endif %}
             {% if not app.portfolio_url and not app.linkedin_url %}
-            <span class="text-slate-400">—</span>
+            <span class="text-slate-500">—</span>
             {% endif %}
         </div>
     </td>

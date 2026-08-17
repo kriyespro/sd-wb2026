@@ -77,23 +77,56 @@
   }
 
   .ops-feed-title {
-    @apply block min-w-0 max-w-full truncate text-[13px] font-semibold capitalize leading-snug text-ink-900;
+    @apply block min-w-0 max-w-full truncate text-sm font-semibold capitalize leading-snug text-ink-900;
   }
 
   .ops-feed-meta {
-    @apply mt-0.5 block min-w-0 max-w-full truncate text-[11px] leading-snug text-slate-500;
+    @apply mt-0.5 block min-w-0 max-w-full truncate text-xs leading-snug text-slate-600;
   }
 
   .ops-feed-time {
-    @apply shrink-0 whitespace-nowrap text-[10px] font-semibold tabular-nums text-slate-400;
+    @apply shrink-0 whitespace-nowrap text-[11px] font-semibold tabular-nums text-slate-500;
   }
 
   .ops-pill {
-    @apply inline-flex max-w-full shrink-0 truncate rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide;
+    @apply inline-flex max-w-full shrink-0 truncate rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide;
   }
 
   .ops-feed-tags {
     @apply mt-1 flex min-w-0 flex-wrap items-center gap-1;
+  }
+
+  /* 4D Academy — fixed categorical colors, one per pillar. Validated with the
+     dataviz skill's palette checker (CVD-safe, lightness/chroma pass at
+     --mode light). Always paired with a visible text label in the templates
+     that use these — never color-alone identity. */
+  .pillar-learn { --pillar-color: #3b82f6; }
+  .pillar-teach { --pillar-color: #ec4899; }
+  .pillar-field { --pillar-color: #c9a227; }
+  .pillar-earn { --pillar-color: #10b981; }
+
+  .pillar-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--pillar-color) 12%, white);
+    color: color-mix(in srgb, var(--pillar-color) 70%, black);
+  }
+
+  .pillar-dot {
+    @apply inline-block h-2.5 w-2.5 shrink-0 rounded-full;
+    background-color: var(--pillar-color);
+  }
+
+  .pillar-card {
+    @apply dash-stat border-l-4;
+    border-left-color: var(--pillar-color);
+  }
+
+  .pillar-bar-fill {
+    background-color: var(--pillar-color);
+  }
+
+  .heatmap-cell {
+    @apply h-3.5 w-3.5 rounded-sm;
   }
 }
 

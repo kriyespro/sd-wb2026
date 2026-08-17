@@ -16,3 +16,6 @@ folder plan/
 .vscode/
 node_modules/
 deploy/certs/*.pem
+rzp-key.csv
+*-key.csv
+*secret*.csv

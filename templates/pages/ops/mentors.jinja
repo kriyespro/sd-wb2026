@@ -33,7 +33,7 @@
                 <p class="text-sm font-medium text-slate-700">{{ alloc.student.get_full_name() or alloc.student.username }}</p>
                 <p class="text-xs text-slate-500">Mentor: {{ alloc.mentor.get_full_name() or alloc.mentor.username }}</p>
             </div>
-            <span class="text-xs text-slate-400">{{ alloc.allocated_at.strftime('%d %b %Y') }}</span>
+            <span class="text-xs text-slate-500">{{ alloc.allocated_at.strftime('%d %b %Y') }}</span>
         </div>
         {% endfor %}
         {% else %}

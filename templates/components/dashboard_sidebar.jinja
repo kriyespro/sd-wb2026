@@ -1,12 +1,14 @@
 {% set dash_href = dashboard_url|default('#') %}
 
-{# Desktop sidebar #}
-<aside class="hidden w-64 shrink-0 flex-col border-r border-slate-200/80 bg-ink-900 text-white md:flex">
+{# Desktop sidebar — sticky to the viewport so it stays reachable on long
+   pages (long ops tables, etc); only its own nav scrolls internally when
+   the module list overflows the screen height. #}
+<aside class="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200/80 bg-ink-900 text-white md:flex">
     <div class="flex h-16 items-center gap-2.5 border-b border-white/10 px-5">
         <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-xs font-bold shadow-lg shadow-brand-600/30">WB</span>
         <div class="leading-tight">
             <div class="text-sm font-semibold">{{ portal_name|default('Dashboard') }}</div>
-            <div class="text-[10px] text-slate-400">Winning Blueprints</div>
+            <div class="text-xs text-slate-400">Winning Blueprints</div>
         </div>
     </div>
     <nav class="flex-1 overflow-y-auto p-4">
@@ -17,7 +19,7 @@
             {{ dashboard_label|default('Dashboard') }}
         </a>
         {% if sidebar_links %}
-        <p class="mb-2 mt-8 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Modules</p>
+        <p class="mb-2 mt-8 px-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Modules</p>
         <div class="space-y-0.5">
             {% for link in sidebar_links %}
             {% if link.url_name %}
@@ -27,6 +29,7 @@
                {% if request.path == link_href or request.path.startswith(link_href.rstrip('/') + '/') %}bg-brand-600/25 font-medium text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
                 <span class="text-base leading-none">{{ link.icon }}</span>
                 <span>{{ link.title }}</span>
+                {% if link.new %}<span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400"></span>{% endif %}
             </a>
             {% else %}
             <span class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-slate-500">
@@ -40,7 +43,7 @@
     <div class="border-t border-white/10 p-4">
         <div class="rounded-xl bg-white/5 p-3">
             <p class="text-xs font-medium text-white">{{ user.get_full_name() or user.username }}</p>
-            <p class="text-[10px] text-slate-400">{{ user.profile.get_role_display() }}</p>
+            <p class="text-xs text-slate-400">{{ user.profile.get_role_display() }}</p>
         </div>
     </div>
 </aside>
@@ -58,11 +61,12 @@
         <nav class="flex-1 overflow-y-auto p-4">
             <a href="{{ dash_href }}" @click="sidebarOpen = false" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5">🏠 {{ dashboard_label|default('Dashboard') }}</a>
             {% if sidebar_links %}
-            <p class="mb-2 mt-6 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Modules</p>
+            <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Modules</p>
             {% for link in sidebar_links %}
             {% if link.url_name %}
             <a href="{{ url(link.url_name) }}" @click="sidebarOpen = false" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5">
                 <span>{{ link.icon }}</span> {{ link.title }}
+                {% if link.new %}<span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400"></span>{% endif %}
             </a>
             {% endif %}
             {% endfor %}
