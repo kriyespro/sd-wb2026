@@ -1,0 +1,14 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<section class="mx-auto max-w-xl px-4 py-24 sm:px-6 lg:px-8">
+    {% if success %}
+    {% include "partials/academy/_enroll_success.jinja" %}
+    {% else %}
+    {% include "partials/academy/_enroll_error.jinja" %}
+    {% endif %}
+    <div class="mt-6 text-center">
+        <a href="{{ url('academy:courses') }}" class="btn-outline">Back to courses</a>
+    </div>
+</section>
+{% endblock %}

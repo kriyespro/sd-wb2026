@@ -1,12 +1,16 @@
+import razorpay
+from django.conf import settings
 from django.http import Http404
-from django.shortcuts import render
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.views.decorators.http import require_http_methods, require_POST
 
 from website.data import ACADEMY_PROCESS
 
 from .courses_data import COURSES, get_course
-from .forms import AdmissionApplicationForm
-from .services import create_admission_application
+from .forms import AdmissionApplicationForm, CourseEnrollPayForm
+from .models import AdmissionApplication
+from .services import create_admission_application, create_course_payment_order, verify_course_payment
 
 
 def home(request):
@@ -35,6 +39,7 @@ def course_detail(request, slug):
         'meta_description': course['goal'][:160],
         'course': course,
         'other_courses': other_courses,
+        'form': CourseEnrollPayForm(),
     })
 
 
@@ -60,3 +65,53 @@ def apply_submit(request):
         'form': form,
         'show_errors': request.method == 'POST',
     })
+
+
+@require_POST
+def enroll_pay(request, slug):
+    course = get_course(slug)
+    if not course:
+        raise Http404('Course not found')
+
+    form = CourseEnrollPayForm(request.POST)
+    if not form.is_valid():
+        return render(request, 'partials/academy/_enroll_form.jinja', {
+            'course': course, 'form': form, 'show_errors': True,
+        })
+
+    try:
+        application, order = create_course_payment_order(course, form.cleaned_data)
+    except razorpay.errors.BadRequestError:
+        return render(request, 'partials/dashboard/_checkout_launch.jinja', {
+            'error': 'Could not start payment. Please try again.',
+        })
+
+    return render(request, 'partials/dashboard/_checkout_launch.jinja', {
+        'dom_id': f'admission-{application.pk}',
+        'description': course['title'],
+        'order_id': order['id'],
+        'amount_paise': order['amount'],
+        'key_id': settings.RAZORPAY_KEY_ID,
+        'verify_url': reverse('academy:enroll_verify', kwargs={'slug': slug, 'pk': application.pk}),
+        'prefill_name': application.name,
+        'prefill_email': application.email,
+    })
+
+
+@require_POST
+def enroll_verify(request, slug, pk):
+    application = get_object_or_404(AdmissionApplication, pk=pk)
+    try:
+        verify_course_payment(
+            application,
+            request.POST.get('razorpay_order_id', ''),
+            request.POST.get('razorpay_payment_id', ''),
+            request.POST.get('razorpay_signature', ''),
+        )
+        return render(request, 'pages/academy/enroll_result.jinja', {
+            'page_title': 'Enrollment confirmed', 'success': True, 'application': application,
+        })
+    except (ValueError, razorpay.errors.SignatureVerificationError):
+        return render(request, 'pages/academy/enroll_result.jinja', {
+            'page_title': 'Payment verification failed', 'success': False,
+        })

@@ -1,5 +1,8 @@
 """Public academy course catalog — structured content for course pages."""
 
+import re
+from decimal import Decimal
+
 from website.data import img
 
 
@@ -670,6 +673,12 @@ COURSES = [
 
 def get_course(slug):
     return next((c for c in COURSES if c['slug'] == slug), None)
+
+
+def price_amount(course):
+    """Numeric rupee value parsed from the display string (e.g. '₹16,999')."""
+    digits = re.sub(r'[^\d.]', '', course['price'])
+    return Decimal(digits or '0')
 
 
 def get_featured_courses():

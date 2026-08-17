@@ -413,6 +413,11 @@ class AdmissionApplication(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    razorpay_order_id = models.CharField(max_length=64, blank=True)
+    razorpay_payment_id = models.CharField(max_length=64, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         ordering = ['-created_at']
 

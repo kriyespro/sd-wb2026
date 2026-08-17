@@ -20,7 +20,7 @@ class Project(models.Model):
     name = models.CharField(max_length=200)
     service_type = models.CharField(max_length=120, blank=True)
     description = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PLANNING)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PLANNING, db_index=True)
     progress_percent = models.PositiveIntegerField(default=0)
     project_manager = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,

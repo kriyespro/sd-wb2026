@@ -6,6 +6,8 @@ from users.roles import ROLE_FREELANCER, ROLE_PM, ROLE_SALES, ROLE_SUPER_ADMIN
 from partners.models import PartnerLead, PartnerProfile
 from website.models import JobApplication, Lead
 
+from . import services
+
 
 class LeadPipelineTests(TestCase):
     def setUp(self):
@@ -27,6 +29,18 @@ class LeadPipelineTests(TestCase):
             service_interest='SEO',
         )
         self.client.login(username='admin', password='pass1234')
+
+    def test_pipeline_counts_use_a_single_grouped_query(self):
+        # Regression guard: get_lead_pipeline_counts() used to run one
+        # .count() query per status choice (6 queries on the /ops/ mission
+        # control page load). It must now use a single GROUP BY query.
+        for status, _ in Lead.STATUS_CHOICES:
+            Lead.objects.create(
+                name=f'Lead {status}', email=f'{status}@example.com', status=status,
+            )
+        with self.assertNumQueries(1):
+            counts = services.get_lead_pipeline_counts()
+        self.assertEqual(counts[Lead.STATUS_QUALIFIED], 1)
 
     def test_lead_status_update(self):
         url = reverse('operations:lead_status', kwargs={'pk': self.lead.pk})

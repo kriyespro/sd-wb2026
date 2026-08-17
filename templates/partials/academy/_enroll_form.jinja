@@ -1,0 +1,14 @@
+{% if show_errors and form.errors %}
+<div class="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+    Please fill in all fields correctly.
+</div>
+{% endif %}
+<form hx-post="{{ url('academy:enroll_pay', kwargs={'slug': course.slug}) }}"
+      hx-target="this" hx-swap="outerHTML"
+      class="space-y-3">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    {{ form.name }}
+    {{ form.email }}
+    {{ form.phone }}
+    <button type="submit" class="btn-gold w-full text-center">Continue to payment</button>
+</form>

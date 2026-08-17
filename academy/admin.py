@@ -129,10 +129,10 @@ class PlacementApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(AdmissionApplication)
 class AdmissionApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'phone', 'course_interest', 'status', 'created_at')
+    list_display = ('name', 'email', 'phone', 'course_interest', 'status', 'amount', 'paid_at', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('name', 'email', 'phone', 'education', 'course_interest', 'motivation')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'razorpay_order_id', 'razorpay_payment_id', 'amount', 'paid_at')
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
     fieldsets = (
@@ -141,5 +141,8 @@ class AdmissionApplicationAdmin(admin.ModelAdmin):
         }),
         ('Review', {
             'fields': ('status', 'created_at'),
+        }),
+        ('Payment', {
+            'fields': ('amount', 'paid_at', 'razorpay_order_id', 'razorpay_payment_id'),
         }),
     )

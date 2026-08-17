@@ -1,4 +1,6 @@
 from datetime import date, timedelta
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -6,8 +8,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from . import fourd_services
-from .models import ActivityLog, Attendance, StudentLead, StudentTask, Submission, TeachingSession
-from .services import get_student_attention_items
+from .courses_data import COURSES, price_amount
+from .models import ActivityLog, AdmissionApplication, Attendance, StudentLead, StudentTask, Submission, TeachingSession
+from .services import create_course_payment_order, get_student_attention_items, verify_course_payment
 
 
 class StudentAttendanceTests(TestCase):
@@ -99,6 +102,23 @@ class LeaderboardTests(TestCase):
             rows[usernames.index('highscorer')]['avg_score'],
             rows[usernames.index('lowscorer')]['avg_score'],
         )
+
+    def test_query_count_does_not_scale_with_student_count(self):
+        # Regression guard: get_leaderboard/get_batch_health used to call
+        # pillar_status()/rolling_average() once per student per day, which
+        # blew up to 600+ queries on the ops /ops/academy-4d/ page with 20
+        # active students. fourd_services now fetches evidence in bulk (one
+        # query per evidence model), so query count must stay flat as the
+        # student roster grows.
+        for i in range(15):
+            student = User.objects.create_user(f'scalestudent{i}', f'scalestudent{i}@test.com', 'pass1234')
+            student.profile.role = 'student'
+            student.profile.save()
+
+        with self.assertNumQueries(8):
+            fourd_services.get_leaderboard()
+        with self.assertNumQueries(5):
+            fourd_services.get_batch_health()
 
 
 class TeachingSessionOwnershipTests(TestCase):
@@ -361,3 +381,125 @@ class StudentAttentionItemsTests(TestCase):
         items = get_student_attention_items(self.user)
         tones = {item['href_name']: item['tone'] for item in items}
         self.assertEqual(tones['academy_dashboard:field_leads'], 'teal')
+
+
+class CourseDetailPageRenderTests(TestCase):
+    def test_course_detail_renders_with_enroll_form(self):
+        course = COURSES[0]
+        response = self.client.get(reverse('academy:course_detail', kwargs={'slug': course['slug']}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Enroll')
+
+
+class CoursePaymentServiceTests(TestCase):
+    def setUp(self):
+        self.course = COURSES[0]
+
+    def test_price_amount_parses_display_string(self):
+        self.assertEqual(price_amount({'price': '₹16,999'}), Decimal('16999'))
+
+    @patch('core.razorpay_utils.get_razorpay_client')
+    def test_create_course_payment_order_creates_application_and_order(self, mock_get_client):
+        mock_client = MagicMock()
+        expected_amount_paise = int(price_amount(self.course) * 100)
+        mock_client.order.create.return_value = {'id': 'order_COURSE1', 'amount': expected_amount_paise}
+        mock_get_client.return_value = mock_client
+
+        application, order = create_course_payment_order(self.course, {
+            'name': 'Riya Shah', 'email': 'riya@example.com', 'phone': '9876543210',
+        })
+
+        self.assertEqual(order['id'], 'order_COURSE1')
+        self.assertEqual(application.course_interest, self.course['title'])
+        self.assertEqual(application.razorpay_order_id, 'order_COURSE1')
+        self.assertEqual(application.amount, price_amount(self.course))
+        self.assertIsNone(application.paid_at)
+
+    @patch('core.razorpay_utils.get_razorpay_client')
+    def test_verify_course_payment_success_marks_paid_and_advances_status(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_get_client.return_value = mock_client
+        application = AdmissionApplication.objects.create(
+            name='Riya Shah', email='riya@example.com', phone='9876543210',
+            course_interest=self.course['title'], motivation='Direct payment',
+            razorpay_order_id='order_COURSE1', amount=price_amount(self.course),
+        )
+
+        verify_course_payment(application, 'order_COURSE1', 'pay_COURSE1', 'sig_COURSE1')
+
+        application.refresh_from_db()
+        self.assertEqual(application.razorpay_payment_id, 'pay_COURSE1')
+        self.assertIsNotNone(application.paid_at)
+        self.assertEqual(application.status, AdmissionApplication.STATUS_REVIEW)
+
+    def test_verify_course_payment_rejects_order_mismatch(self):
+        application = AdmissionApplication.objects.create(
+            name='Riya Shah', email='riya@example.com', phone='9876543210',
+            course_interest=self.course['title'], motivation='Direct payment',
+            razorpay_order_id='order_REAL', amount=price_amount(self.course),
+        )
+        with self.assertRaises(ValueError):
+            verify_course_payment(application, 'order_FAKE', 'pay_x', 'sig_x')
+        application.refresh_from_db()
+        self.assertIsNone(application.paid_at)
+
+
+class CourseEnrollViewTests(TestCase):
+    def setUp(self):
+        self.course = COURSES[0]
+
+    @patch('academy.views.create_course_payment_order')
+    def test_enroll_pay_view_renders_checkout_launch(self, mock_create_order):
+        application = AdmissionApplication.objects.create(
+            name='Riya Shah', email='riya@example.com', phone='9876543210',
+            course_interest=self.course['title'], motivation='Direct payment',
+        )
+        mock_create_order.return_value = (application, {'id': 'order_COURSE2', 'amount': 1699900})
+        url = reverse('academy:enroll_pay', kwargs={'slug': self.course['slug']})
+        response = self.client.post(url, {
+            'name': 'Riya Shah', 'email': 'riya@example.com', 'phone': '9876543210',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'order_COURSE2')
+
+    def test_enroll_pay_view_404s_for_unknown_course(self):
+        url = reverse('academy:enroll_pay', kwargs={'slug': 'does-not-exist'})
+        response = self.client.post(url, {
+            'name': 'Riya Shah', 'email': 'riya@example.com', 'phone': '9876543210',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('website:home'))
+
+    def test_enroll_pay_view_rejects_invalid_form(self):
+        url = reverse('academy:enroll_pay', kwargs={'slug': self.course['slug']})
+        response = self.client.post(url, {'name': '', 'email': 'not-an-email', 'phone': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'checkout.razorpay.com')
+
+    @patch('academy.views.verify_course_payment')
+    def test_enroll_verify_view_success(self, mock_verify):
+        application = AdmissionApplication.objects.create(
+            name='Riya Shah', email='riya@example.com', phone='9876543210',
+            course_interest=self.course['title'], motivation='Direct payment',
+            razorpay_order_id='order_COURSE3', amount=price_amount(self.course),
+        )
+        mock_verify.return_value = application
+        url = reverse('academy:enroll_verify', kwargs={'slug': self.course['slug'], 'pk': application.pk})
+        response = self.client.post(url, {
+            'razorpay_order_id': 'order_COURSE3', 'razorpay_payment_id': 'pay_x', 'razorpay_signature': 'sig_x',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Payment received')
+
+    def test_enroll_verify_view_bad_signature_shows_error_page(self):
+        application = AdmissionApplication.objects.create(
+            name='Riya Shah', email='riya@example.com', phone='9876543210',
+            course_interest=self.course['title'], motivation='Direct payment',
+            razorpay_order_id='order_COURSE4', amount=price_amount(self.course),
+        )
+        url = reverse('academy:enroll_verify', kwargs={'slug': self.course['slug'], 'pk': application.pk})
+        response = self.client.post(url, {
+            'razorpay_order_id': 'order_MISMATCH', 'razorpay_payment_id': 'pay_x', 'razorpay_signature': 'sig_x',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'could not be verified')

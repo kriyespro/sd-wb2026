@@ -43,7 +43,7 @@ class RazorpayServiceTests(TestCase):
             due_date='2026-12-31',
         )
 
-    @patch('billing.services.get_razorpay_client')
+    @patch('core.razorpay_utils.get_razorpay_client')
     def test_create_razorpay_order_stores_order_id(self, mock_get_client):
         mock_client = MagicMock()
         mock_client.order.create.return_value = {'id': 'order_TEST123', 'amount': 1500000}
@@ -67,7 +67,7 @@ class RazorpayServiceTests(TestCase):
         with self.assertRaises(ValueError):
             create_razorpay_order(self.invoice)
 
-    @patch('billing.services.get_razorpay_client')
+    @patch('core.razorpay_utils.get_razorpay_client')
     def test_verify_and_mark_paid_success(self, mock_get_client):
         mock_client = MagicMock()
         mock_get_client.return_value = mock_client
@@ -94,7 +94,7 @@ class RazorpayServiceTests(TestCase):
         self.invoice.refresh_from_db()
         self.assertEqual(self.invoice.status, Invoice.STATUS_SENT)
 
-    @patch('billing.services.get_razorpay_client')
+    @patch('core.razorpay_utils.get_razorpay_client')
     def test_verify_propagates_bad_signature(self, mock_get_client):
         mock_client = MagicMock()
         mock_client.utility.verify_payment_signature.side_effect = razorpay.errors.SignatureVerificationError('bad sig')

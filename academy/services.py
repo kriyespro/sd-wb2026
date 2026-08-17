@@ -3,7 +3,10 @@ from datetime import date, timedelta
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from core.razorpay_utils import create_order, verify_signature
+
 from . import fourd_services
+from .courses_data import price_amount
 from .models import (
     ActivityLog,
     AdmissionApplication,
@@ -89,6 +92,42 @@ def add_portfolio_item(user, form):
 
 def create_admission_application(form):
     return form.save()
+
+
+def create_course_payment_order(course, cleaned_data):
+    """Public course-fee checkout: creates the admission record and a
+    Razorpay order for the course's listed price in one step."""
+    amount = price_amount(course)
+    application = AdmissionApplication.objects.create(
+        name=cleaned_data['name'],
+        email=cleaned_data['email'],
+        phone=cleaned_data['phone'],
+        education='',
+        course_interest=course['title'],
+        motivation='Enrolled and paid directly from the course page.',
+    )
+    order = create_order(amount, f'ADM-{application.pk}', {'application_id': str(application.pk)})
+    application.razorpay_order_id = order['id']
+    application.amount = amount
+    application.save(update_fields=['razorpay_order_id', 'amount'])
+    return application, order
+
+
+def verify_course_payment(application, razorpay_order_id, razorpay_payment_id, razorpay_signature):
+    """Verify the payment signature server-side before trusting the client's
+    callback — mirrors billing.services.verify_and_mark_paid."""
+    if application.paid_at:
+        return application
+    if application.razorpay_order_id != razorpay_order_id:
+        raise ValueError('Order mismatch')
+
+    verify_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature)
+
+    application.razorpay_payment_id = razorpay_payment_id
+    application.paid_at = timezone.now()
+    application.status = AdmissionApplication.STATUS_REVIEW
+    application.save(update_fields=['razorpay_payment_id', 'paid_at', 'status'])
+    return application
 
 
 def get_mentor_for_student(user):

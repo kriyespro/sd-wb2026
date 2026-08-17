@@ -27,7 +27,7 @@ class Invoice(models.Model):
     invoice_number = models.CharField(max_length=40, unique=True)
     title = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_SENT)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_SENT, db_index=True)
     due_date = models.DateField()
     issued_at = models.DateField(auto_now_add=True)
     notes = models.TextField(blank=True)

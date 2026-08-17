@@ -199,7 +199,13 @@
                         <li class="flex gap-2"><span class="text-gold-500">✓</span>{{ item }}</li>
                         {% endfor %}
                     </ul>
-                    <a href="{{ url('academy:apply') }}" class="btn-gold mt-6 w-full text-center">Sign up &amp; enroll</a>
+                    <div class="mt-6" x-data="{ paying: false }">
+                        <button type="button" @click="paying = true" x-show="!paying" class="btn-gold w-full text-center">Enroll &amp; pay {{ course.price }}</button>
+                        <div x-show="paying" x-cloak>
+                            {% include "partials/academy/_enroll_form.jinja" %}
+                        </div>
+                    </div>
+                    <a href="{{ url('academy:apply') }}" class="btn-outline mt-2 w-full text-center">Apply free, pay later</a>
                 </div>
 
                 {% if course.highlight_quote %}

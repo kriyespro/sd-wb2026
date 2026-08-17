@@ -35,6 +35,63 @@ def pillar_status(user, on_date):
     }
 
 
+def _empty_pillars():
+    return {'learn': False, 'teach': False, 'field': False, 'earn': False}
+
+
+def _bulk_pillar_hits(user_ids, start_date, end_date):
+    """Same evidence rules as pillar_status(), but for many users and many
+    days at once: one query per evidence model instead of one query per
+    pillar per user per day. Returns {(user_id, date): {pillar: bool}}."""
+    user_ids = list(user_ids)
+    hits = {}
+    if not user_ids:
+        return hits
+
+    def mark(user_id, on_date, pillar):
+        hits.setdefault((user_id, on_date), _empty_pillars())[pillar] = True
+
+    for user_id, d in Submission.objects.filter(
+        user_id__in=user_ids,
+        submitted_at__date__gte=start_date, submitted_at__date__lte=end_date,
+    ).values_list('user_id', 'submitted_at__date'):
+        mark(user_id, d, 'learn')
+
+    for user_id, d in TeachingSession.objects.filter(
+        user_id__in=user_ids,
+        created_at__date__gte=start_date, created_at__date__lte=end_date,
+    ).values_list('user_id', 'created_at__date'):
+        mark(user_id, d, 'teach')
+
+    for user_id, created_d, updated_d in StudentLead.objects.filter(user_id__in=user_ids).filter(
+        Q(created_at__date__range=(start_date, end_date)) | Q(updated_at__date__range=(start_date, end_date)),
+    ).values_list('user_id', 'created_at__date', 'updated_at__date'):
+        if start_date <= created_d <= end_date:
+            mark(user_id, created_d, 'field')
+        if start_date <= updated_d <= end_date:
+            mark(user_id, updated_d, 'field')
+
+    for user_id, d in StudentTask.objects.filter(
+        user_id__in=user_ids, stage=StudentTask.STAGE_EARN, status=StudentTask.STATUS_DONE,
+        completed_at__date__gte=start_date, completed_at__date__lte=end_date,
+    ).values_list('user_id', 'completed_at__date'):
+        mark(user_id, d, 'earn')
+
+    return hits
+
+
+def _score_from_status(status):
+    return sum(PILLAR_WEIGHTS[pillar] for pillar, done in status.items() if done)
+
+
+def _avg_score_from_hits(user_id, hits, today, days):
+    scores = [
+        _score_from_status(hits.get((user_id, today - timedelta(days=n)), _empty_pillars()))
+        for n in range(days)
+    ]
+    return round(sum(scores) / len(scores)) if scores else 0
+
+
 def daily_score(user, on_date=None):
     on_date = on_date or timezone.localdate()
     status = pillar_status(user, on_date)
@@ -53,8 +110,8 @@ def score_level(score):
 
 def rolling_average(user, days=7):
     today = timezone.localdate()
-    scores = [daily_score(user, today - timedelta(days=n)) for n in range(days)]
-    return round(sum(scores) / len(scores)) if scores else 0
+    hits = _bulk_pillar_hits([user.id], today - timedelta(days=days - 1), today)
+    return _avg_score_from_hits(user.id, hits, today, days)
 
 
 def _active_students():
@@ -80,12 +137,18 @@ def get_leaderboard(days=7):
         .values_list('user_id', 'n'),
     )
 
+    students = list(_active_students())
+    today = timezone.localdate()
+    hits = _bulk_pillar_hits(
+        [p.user_id for p in students], today - timedelta(days=days - 1), today,
+    )
+
     rows = []
-    for profile in _active_students():
+    for profile in students:
         user = profile.user
         rows.append({
             'user': user,
-            'avg_score': rolling_average(user, days=days),
+            'avg_score': _avg_score_from_hits(user.id, hits, today, days),
             'leads_won': leads_won.get(user.id, 0),
             'revenue': revenue.get(user.id, 0),
             'projects_active': projects_active.get(user.id, 0),
@@ -105,14 +168,15 @@ def get_batch_health():
             'avg_score': 0,
         }
 
+    hits = _bulk_pillar_hits([u.id for u in students], today, today)
     pillar_hits = {p: 0 for p in PILLAR_WEIGHTS}
     score_sum = 0
     for user in students:
-        status = pillar_status(user, today)
+        status = hits.get((user.id, today), _empty_pillars())
         for pillar, done in status.items():
             if done:
                 pillar_hits[pillar] += 1
-        score_sum += sum(PILLAR_WEIGHTS[p] for p, done in status.items() if done)
+        score_sum += _score_from_status(status)
 
     return {
         'total_students': total,
@@ -129,20 +193,22 @@ def pending_teaching_evaluations():
 
 def get_score_history(user, days=30):
     today = timezone.localdate()
+    hits = _bulk_pillar_hits([user.id], today - timedelta(days=days - 1), today)
     history = []
     for n in range(days - 1, -1, -1):
         on_date = today - timedelta(days=n)
-        status = pillar_status(user, on_date)
-        score = sum(PILLAR_WEIGHTS[p] for p, done in status.items() if done)
-        history.append({'date': on_date, 'score': score, 'pillars': status})
+        status = hits.get((user.id, on_date), _empty_pillars())
+        history.append({'date': on_date, 'score': _score_from_status(status), 'pillars': status})
     return history
 
 
-def current_streak(user):
+def current_streak(user, max_days=365):
     today = timezone.localdate()
+    hits = _bulk_pillar_hits([user.id], today - timedelta(days=max_days - 1), today)
     streak = 0
-    for n in range(0, 365):
-        if daily_score(user, today - timedelta(days=n)) > 0:
+    for n in range(0, max_days):
+        status = hits.get((user.id, today - timedelta(days=n)), _empty_pillars())
+        if _score_from_status(status) > 0:
             streak += 1
         else:
             break

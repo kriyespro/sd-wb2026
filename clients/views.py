@@ -150,12 +150,14 @@ class InvoicePayView(ClientBaseMixin, View):
         except razorpay.errors.BadRequestError:
             return render(request, 'partials/dashboard/_checkout_launch.jinja', {'error': 'Could not start payment. Please try again.'})
         return render(request, 'partials/dashboard/_checkout_launch.jinja', {
-            'invoice': invoice,
+            'dom_id': f'invoice-{invoice.pk}',
+            'description': invoice.title,
             'order_id': order['id'],
             'amount_paise': order['amount'],
             'key_id': settings.RAZORPAY_KEY_ID,
             'verify_url': reverse('clients:invoice_verify', kwargs={'pk': invoice.pk}),
-            'user': request.user,
+            'prefill_name': request.user.get_full_name() or request.user.username,
+            'prefill_email': request.user.email,
         })
 
 

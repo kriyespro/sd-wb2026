@@ -155,10 +155,7 @@ def get_recent_dgc_leads(limit=8):
 
 
 def get_lead_pipeline_counts():
-    return {
-        status: Lead.objects.filter(status=status).count()
-        for status, _ in Lead.STATUS_CHOICES
-    }
+    return status_counts_for(Lead.objects.all(), Lead.STATUS_CHOICES)
 
 
 def get_recent_dgc_orders(limit=8):

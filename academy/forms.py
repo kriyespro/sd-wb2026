@@ -11,6 +11,17 @@ from .models import (
 )
 
 
+class CourseEnrollPayForm(forms.ModelForm):
+    class Meta:
+        model = AdmissionApplication
+        fields = ['name', 'email', 'phone']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': 'Full name'}),
+            'email': forms.EmailInput(attrs={'class': 'wb-input', 'placeholder': 'you@company.com'}),
+            'phone': forms.TextInput(attrs={'class': 'wb-input', 'placeholder': '+91 90235 61533'}),
+        }
+
+
 class AdmissionApplicationForm(forms.ModelForm):
     class Meta:
         model = AdmissionApplication
