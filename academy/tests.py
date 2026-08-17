@@ -390,6 +390,11 @@ class CourseDetailPageRenderTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Enroll')
 
+    def test_courses_list_renders_with_enroll_button_on_each_card(self):
+        response = self.client.get(reverse('academy:courses'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.count(b'Enroll &amp; Pay'), len(COURSES))
+
 
 class CoursePaymentServiceTests(TestCase):
     def setUp(self):
