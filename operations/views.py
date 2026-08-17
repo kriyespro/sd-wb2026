@@ -25,6 +25,7 @@ from users.roles import (
     ROLE_OFFICE,
     ROLE_PLACEMENT,
     ROLE_PM,
+    ROLE_QA,
     ROLE_SUPER_ADMIN,
 )
 from website.models import JobApplication, Lead, LeadFollowUp
@@ -103,6 +104,13 @@ class MentorAllocationRequiredMixin(NarrowerOpsRoleMixin):
     extra_allowed_roles = {ROLE_ACADEMY_ADMIN, ROLE_PLACEMENT, ROLE_DIRECTOR}
 
 
+class QaRequiredMixin(NarrowerOpsRoleMixin):
+    """Deliverable approve/reject restricted to QA + management roles, so a
+    delivery role (web_developer, content_writer, freelancer, ...) can't
+    self-approve their own work straight to client-visible status."""
+    extra_allowed_roles = {ROLE_QA, ROLE_PM, ROLE_OFFICE, ROLE_DIRECTOR}
+
+
 class OpsBaseMixin(DashboardContextMixin, OpsPortalMixin):
     portal_name = 'Internal Ops'
 
@@ -157,7 +165,7 @@ class QualityCheckView(OpsBaseMixin, TemplateView):
         return ctx
 
 
-class DeliverableApproveView(OpsPortalMixin, View):
+class DeliverableApproveView(QaRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         deliverable = get_object_or_404(Deliverable, pk=pk)
         approve_deliverable(deliverable, request.user)
@@ -167,7 +175,7 @@ class DeliverableApproveView(OpsPortalMixin, View):
         })
 
 
-class DeliverableRejectView(OpsPortalMixin, View):
+class DeliverableRejectView(QaRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         deliverable = get_object_or_404(Deliverable, pk=pk)
         reject_deliverable(deliverable, request.user)

@@ -68,9 +68,18 @@ def convert_lead_to_client(lead, project_name='', account_manager=None):
     if existing:
         user = existing
         profile, _ = Profile.objects.get_or_create(user=user)
-        if profile.role not in {ROLE_CLIENT_OWNER}:
+        if profile.role != ROLE_CLIENT_OWNER:
+            # A confirmed non-client role means this email belongs to a real
+            # staff/partner/student account — never clobber it into
+            # client_owner just because a public lead form reused the address.
+            if profile.role_confirmed:
+                raise ValueError(
+                    f'A user account already exists for {lead.email} with role '
+                    f'"{profile.role}"; cannot auto-convert it to a client.'
+                )
             profile.role = ROLE_CLIENT_OWNER
-            profile.save(update_fields=['role'])
+            profile.role_confirmed = True
+            profile.save(update_fields=['role', 'role_confirmed'])
         account = getattr(user, 'client_account', None)
         if not account:
             account = ClientAccount.objects.create(

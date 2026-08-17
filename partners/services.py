@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Sum
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -272,6 +272,11 @@ def update_order_status(order, status):
         raise ValueError('Invalid order status')
     order.status = status
     order.save(update_fields=['status'])
+    if status == PartnerOrder.STATUS_CANCELLED:
+        # Void any commission still pending payout so a cancelled order
+        # can't be paid out; already requested/paid commissions are left
+        # alone since those have moved past this partner's control.
+        order.commissions.filter(status=Commission.STATUS_PENDING).delete()
     return order
 
 
@@ -341,27 +346,36 @@ def create_payout_request(partner, today=None):
     if not can_request_payout(today):
         raise ValueError('Payout requests are only accepted on the 21st of each month')
 
-    pending = list(
-        Commission.objects.filter(partner=partner, status=Commission.STATUS_PENDING),
-    )
-    if not pending:
-        raise ValueError('No pending commission available for payout')
-
     month_start = PayoutRequest.month_start(today)
-    if PayoutRequest.objects.filter(partner=partner, period_month=month_start).exists():
-        raise ValueError('Payout already requested for this month')
 
-    amount = sum((c.amount for c in pending), Decimal('0.00'))
-    with transaction.atomic():
-        payout = PayoutRequest.objects.create(
-            partner=partner,
-            amount=amount,
-            period_month=month_start,
-            status=PayoutRequest.STATUS_PENDING,
-        )
-        Commission.objects.filter(
-            pk__in=[c.pk for c in pending],
-        ).update(status=Commission.STATUS_REQUESTED)
+    try:
+        with transaction.atomic():
+            # Lock this partner's row for the duration of the check+create so
+            # two concurrent requests can't both pass the exists() check and
+            # race the unique_together constraint into an unhandled 500.
+            PartnerProfile.objects.select_for_update().get(pk=partner.pk)
+
+            if PayoutRequest.objects.filter(partner=partner, period_month=month_start).exists():
+                raise ValueError('Payout already requested for this month')
+
+            pending = list(
+                Commission.objects.filter(partner=partner, status=Commission.STATUS_PENDING),
+            )
+            if not pending:
+                raise ValueError('No pending commission available for payout')
+
+            amount = sum((c.amount for c in pending), Decimal('0.00'))
+            payout = PayoutRequest.objects.create(
+                partner=partner,
+                amount=amount,
+                period_month=month_start,
+                status=PayoutRequest.STATUS_PENDING,
+            )
+            Commission.objects.filter(
+                pk__in=[c.pk for c in pending],
+            ).update(status=Commission.STATUS_REQUESTED)
+    except IntegrityError:
+        raise ValueError('Payout already requested for this month')
     return payout
 
 

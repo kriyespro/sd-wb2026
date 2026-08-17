@@ -76,6 +76,9 @@ class PartnerProfileView(PartnerBaseMixin, TemplateView):
         if app and app.status == app.STATUS_CANCELLED:
             messages.error(request, 'This application was cancelled. Contact support.')
             return redirect('partners:profile')
+        if app and app.status == app.STATUS_PAUSED:
+            messages.error(request, 'Your DGC account is paused. Contact support to resume before updating KYC.')
+            return redirect('partners:profile')
         form = PartnerKycForm(request.POST, instance=app, user=request.user)
         if form.is_valid():
             submit_partner_kyc(request.user, form.cleaned_data)

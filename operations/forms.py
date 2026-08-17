@@ -1,7 +1,9 @@
 from django import forms
+from django.contrib.auth.models import User
 
 from academy.models import MentorAllocation
 from projects.models import Project
+from users.roles import OPS_ROLES, ROLE_MENTOR, ROLE_TRAINER, STUDENT_ROLES
 from website.models import JobApplication, Lead
 
 from .models import ProjectAssignment
@@ -22,6 +24,14 @@ class ProjectAssignmentForm(forms.ModelForm):
             'role': forms.Select(attrs={'class': 'wb-input'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Staffing picks must come from staff/trainee accounts only — never
+        # client, partner, or student-portal-only roles unrelated to delivery.
+        self.fields['user'].queryset = User.objects.filter(
+            profile__role__in=OPS_ROLES | STUDENT_ROLES, is_active=True,
+        ).select_related('profile')
+
 
 class MentorAllocationForm(forms.ModelForm):
     class Meta:
@@ -32,6 +42,15 @@ class MentorAllocationForm(forms.ModelForm):
             'mentor': forms.Select(attrs={'class': 'wb-input'}),
             'notes': forms.Textarea(attrs={'class': 'wb-input', 'rows': 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['student'].queryset = User.objects.filter(
+            profile__role__in=STUDENT_ROLES, is_active=True,
+        ).select_related('profile')
+        self.fields['mentor'].queryset = User.objects.filter(
+            profile__role__in={ROLE_MENTOR, ROLE_TRAINER}, is_active=True,
+        ).select_related('profile')
 
 
 class LeadStatusForm(forms.Form):

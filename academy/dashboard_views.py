@@ -87,7 +87,8 @@ class AssignmentsView(StudentBaseMixin, TemplateView):
 
 class AssignmentSubmitView(StudentPortalMixin, View):
     def post(self, request, pk):
-        assignment = get_object_or_404(Assignment, pk=pk)
+        course_ids = Enrollment.objects.filter(user=request.user).values_list('course_id', flat=True)
+        assignment = get_object_or_404(Assignment, pk=pk, course_id__in=course_ids)
         form = SubmissionForm(request.POST)
         if form.is_valid():
             submit_assignment(request.user, assignment, form.cleaned_data['content'])
