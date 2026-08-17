@@ -410,38 +410,40 @@ class CoursePaymentServiceTests(TestCase):
         mock_client.order.create.return_value = {'id': 'order_COURSE1', 'amount': expected_amount_paise}
         mock_get_client.return_value = mock_client
 
-        application, order = create_course_payment_order(self.course, {
-            'name': 'Riya Shah', 'email': 'riya@example.com', 'phone': '9876543210',
-        })
+        application, order = create_course_payment_order(self.course)
 
         self.assertEqual(order['id'], 'order_COURSE1')
         self.assertEqual(application.course_interest, self.course['title'])
         self.assertEqual(application.razorpay_order_id, 'order_COURSE1')
         self.assertEqual(application.amount, price_amount(self.course))
         self.assertIsNone(application.paid_at)
+        self.assertEqual(application.name, '')
 
     @patch('core.razorpay_utils.get_razorpay_client')
-    def test_verify_course_payment_success_marks_paid_and_advances_status(self, mock_get_client):
+    def test_verify_course_payment_success_backfills_contact_from_razorpay(self, mock_get_client):
         mock_client = MagicMock()
+        mock_client.payment.fetch.return_value = {'email': 'riya@example.com', 'contact': '+919876543210'}
         mock_get_client.return_value = mock_client
         application = AdmissionApplication.objects.create(
-            name='Riya Shah', email='riya@example.com', phone='9876543210',
-            course_interest=self.course['title'], motivation='Direct payment',
-            razorpay_order_id='order_COURSE1', amount=price_amount(self.course),
+            name='', email='', phone='', course_interest=self.course['title'],
+            motivation='Direct payment', razorpay_order_id='order_COURSE1', amount=price_amount(self.course),
         )
 
         verify_course_payment(application, 'order_COURSE1', 'pay_COURSE1', 'sig_COURSE1')
 
         application.refresh_from_db()
+        mock_client.payment.fetch.assert_called_once_with('pay_COURSE1')
         self.assertEqual(application.razorpay_payment_id, 'pay_COURSE1')
+        self.assertEqual(application.email, 'riya@example.com')
+        self.assertEqual(application.phone, '+919876543210')
+        self.assertEqual(application.name, 'riya')
         self.assertIsNotNone(application.paid_at)
         self.assertEqual(application.status, AdmissionApplication.STATUS_REVIEW)
 
     def test_verify_course_payment_rejects_order_mismatch(self):
         application = AdmissionApplication.objects.create(
-            name='Riya Shah', email='riya@example.com', phone='9876543210',
-            course_interest=self.course['title'], motivation='Direct payment',
-            razorpay_order_id='order_REAL', amount=price_amount(self.course),
+            name='', email='', phone='', course_interest=self.course['title'],
+            motivation='Direct payment', razorpay_order_id='order_REAL', amount=price_amount(self.course),
         )
         with self.assertRaises(ValueError):
             verify_course_payment(application, 'order_FAKE', 'pay_x', 'sig_x')
@@ -456,30 +458,20 @@ class CourseEnrollViewTests(TestCase):
     @patch('academy.views.create_course_payment_order')
     def test_enroll_pay_view_renders_checkout_launch(self, mock_create_order):
         application = AdmissionApplication.objects.create(
-            name='Riya Shah', email='riya@example.com', phone='9876543210',
-            course_interest=self.course['title'], motivation='Direct payment',
+            name='', email='', phone='', course_interest=self.course['title'], motivation='Direct payment',
         )
         mock_create_order.return_value = (application, {'id': 'order_COURSE2', 'amount': 1699900})
         url = reverse('academy:enroll_pay', kwargs={'slug': self.course['slug']})
-        response = self.client.post(url, {
-            'name': 'Riya Shah', 'email': 'riya@example.com', 'phone': '9876543210',
-        })
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'order_COURSE2')
+        mock_create_order.assert_called_once_with(self.course)
 
     def test_enroll_pay_view_404s_for_unknown_course(self):
         url = reverse('academy:enroll_pay', kwargs={'slug': 'does-not-exist'})
-        response = self.client.post(url, {
-            'name': 'Riya Shah', 'email': 'riya@example.com', 'phone': '9876543210',
-        })
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('website:home'))
-
-    def test_enroll_pay_view_rejects_invalid_form(self):
-        url = reverse('academy:enroll_pay', kwargs={'slug': self.course['slug']})
-        response = self.client.post(url, {'name': '', 'email': 'not-an-email', 'phone': ''})
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'checkout.razorpay.com')
 
     @patch('academy.views.verify_course_payment')
     def test_enroll_verify_view_success(self, mock_verify):

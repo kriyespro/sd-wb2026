@@ -1,9 +1,0 @@
-<form hx-post="{{ url('academy:enroll_pay', kwargs={'slug': course.slug}) }}"
-      hx-target="this" hx-swap="outerHTML"
-      class="space-y-2">
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <input class="wb-input" name="name" placeholder="Full name" required>
-    <input class="wb-input" name="email" type="email" placeholder="Email" required>
-    <input class="wb-input" name="phone" placeholder="Phone" required>
-    <button type="submit" class="btn-gold w-full text-center text-sm">Continue to payment</button>
-</form>

@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from core.razorpay_utils import create_order, verify_signature
+from core.razorpay_utils import create_order, fetch_payment, verify_signature
 
 from . import fourd_services
 from .courses_data import price_amount
@@ -94,17 +94,15 @@ def create_admission_application(form):
     return form.save()
 
 
-def create_course_payment_order(course, cleaned_data):
+def create_course_payment_order(course):
     """Public course-fee checkout: creates the admission record and a
-    Razorpay order for the course's listed price in one step."""
+    Razorpay order for the course's listed price — no form step, name/email/
+    phone get backfilled from Razorpay's own payment record once paid."""
     amount = price_amount(course)
     application = AdmissionApplication.objects.create(
-        name=cleaned_data['name'],
-        email=cleaned_data['email'],
-        phone=cleaned_data['phone'],
-        education='',
+        name='', email='', phone='', education='',
         course_interest=course['title'],
-        motivation='Enrolled and paid directly from the course page.',
+        motivation='Bought directly from the course page.',
     )
     order = create_order(amount, f'ADM-{application.pk}', {'application_id': str(application.pk)})
     application.razorpay_order_id = order['id']
@@ -115,18 +113,27 @@ def create_course_payment_order(course, cleaned_data):
 
 def verify_course_payment(application, razorpay_order_id, razorpay_payment_id, razorpay_signature):
     """Verify the payment signature server-side before trusting the client's
-    callback — mirrors billing.services.verify_and_mark_paid."""
+    callback — mirrors billing.services.verify_and_mark_paid. Backfills
+    contact details from Razorpay's payment record since we never asked for
+    them ourselves (Buy Now skips straight to the Checkout widget)."""
     if application.paid_at:
         return application
     if application.razorpay_order_id != razorpay_order_id:
         raise ValueError('Order mismatch')
 
     verify_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature)
+    payment = fetch_payment(razorpay_payment_id)
 
     application.razorpay_payment_id = razorpay_payment_id
+    application.email = payment.get('email') or application.email
+    application.phone = payment.get('contact') or application.phone
+    if not application.name:
+        application.name = application.email.split('@')[0] if application.email else 'Course buyer'
     application.paid_at = timezone.now()
     application.status = AdmissionApplication.STATUS_REVIEW
-    application.save(update_fields=['razorpay_payment_id', 'paid_at', 'status'])
+    application.save(update_fields=[
+        'razorpay_payment_id', 'email', 'phone', 'name', 'paid_at', 'status',
+    ])
     return application
 
 

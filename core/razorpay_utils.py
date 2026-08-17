@@ -30,3 +30,10 @@ def verify_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature)
         'razorpay_payment_id': razorpay_payment_id,
         'razorpay_signature': razorpay_signature,
     })
+
+
+def fetch_payment(razorpay_payment_id):
+    """Razorpay's own record of the payment — includes the email/contact the
+    buyer entered into the Checkout widget when we don't collect it ourselves."""
+    client = get_razorpay_client()
+    return client.payment.fetch(razorpay_payment_id)

@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from website.data import ACADEMY_PROCESS
 
 from .courses_data import COURSES, get_course
-from .forms import AdmissionApplicationForm, CourseEnrollPayForm
+from .forms import AdmissionApplicationForm
 from .models import AdmissionApplication
 from .services import create_admission_application, create_course_payment_order, verify_course_payment
 
@@ -39,7 +39,6 @@ def course_detail(request, slug):
         'meta_description': course['goal'][:160],
         'course': course,
         'other_courses': other_courses,
-        'form': CourseEnrollPayForm(),
     })
 
 
@@ -73,14 +72,8 @@ def enroll_pay(request, slug):
     if not course:
         raise Http404('Course not found')
 
-    form = CourseEnrollPayForm(request.POST)
-    if not form.is_valid():
-        return render(request, 'partials/academy/_enroll_form.jinja', {
-            'course': course, 'form': form, 'show_errors': True,
-        })
-
     try:
-        application, order = create_course_payment_order(course, form.cleaned_data)
+        application, order = create_course_payment_order(course)
     except razorpay.errors.BadRequestError:
         return render(request, 'partials/dashboard/_checkout_launch.jinja', {
             'error': 'Could not start payment. Please try again.',
@@ -93,8 +86,8 @@ def enroll_pay(request, slug):
         'amount_paise': order['amount'],
         'key_id': settings.RAZORPAY_KEY_ID,
         'verify_url': reverse('academy:enroll_verify', kwargs={'slug': slug, 'pk': application.pk}),
-        'prefill_name': application.name,
-        'prefill_email': application.email,
+        'prefill_name': '',
+        'prefill_email': '',
     })
 
 
