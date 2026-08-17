@@ -200,7 +200,7 @@
                         {% endfor %}
                     </ul>
                     <div class="mt-6" x-data="{ paying: false }">
-                        <button type="button" @click="paying = true" x-show="!paying" class="btn-gold w-full text-center">Enroll &amp; pay {{ course.price }}</button>
+                        <button type="button" @click="paying = true" x-show="!paying" class="btn-gold w-full text-center">Buy Now — {{ course.price }}</button>
                         <div x-show="paying" x-cloak>
                             {% include "partials/academy/_enroll_form.jinja" %}
                         </div>

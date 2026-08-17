@@ -26,7 +26,7 @@
                 <span class="font-display text-xl font-bold text-brand-700">{{ course.price }}</span>
                 <div class="flex gap-2">
                     <a href="{{ url('academy:course_detail', kwargs={'slug': course.slug}) }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">View course</a>
-                    <button type="button" @click="paying = true" class="btn-primary !px-4 !py-2 text-xs">Enroll &amp; Pay</button>
+                    <button type="button" @click="paying = true" class="btn-primary !px-4 !py-2 text-xs">Buy Now</button>
                 </div>
             </div>
             <div x-show="paying" x-cloak>

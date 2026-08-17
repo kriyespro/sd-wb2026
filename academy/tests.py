@@ -384,16 +384,16 @@ class StudentAttentionItemsTests(TestCase):
 
 
 class CourseDetailPageRenderTests(TestCase):
-    def test_course_detail_renders_with_enroll_form(self):
+    def test_course_detail_renders_with_buy_now_button(self):
         course = COURSES[0]
         response = self.client.get(reverse('academy:course_detail', kwargs={'slug': course['slug']}))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Enroll')
+        self.assertContains(response, 'Buy Now')
 
-    def test_courses_list_renders_with_enroll_button_on_each_card(self):
+    def test_courses_list_renders_with_buy_now_button_on_each_card(self):
         response = self.client.get(reverse('academy:courses'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.count(b'Enroll &amp; Pay'), len(COURSES))
+        self.assertEqual(response.content.count(b'Buy Now'), len(COURSES))
 
 
 class CoursePaymentServiceTests(TestCase):
