@@ -161,6 +161,29 @@ class LeadPipelineTests(TestCase):
         self.assertContains(response, 'Hired Applicant')
         self.assertNotContains(response, 'New Applicant')
 
+    def test_job_applications_hides_rejected_by_default(self):
+        JobApplication.objects.create(
+            name='Active Applicant', email='active@example.com', phone='9999999996',
+            role='Meta Ads Specialist', cover_letter='x', status='new',
+        )
+        JobApplication.objects.create(
+            name='Rejected Applicant', email='rejected@example.com', phone='9999999997',
+            role='SEO Specialist', cover_letter='x', status='rejected',
+        )
+        response = self.client.get(reverse('operations:job_applications'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Active Applicant')
+        self.assertNotContains(response, 'Rejected Applicant')
+
+    def test_job_applications_rejected_visible_via_status_filter(self):
+        JobApplication.objects.create(
+            name='Rejected Applicant', email='rejected2@example.com', phone='9999999998',
+            role='SEO Specialist', cover_letter='x', status='rejected',
+        )
+        response = self.client.get(reverse('operations:job_applications'), {'status': 'rejected'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Rejected Applicant')
+
     def test_job_applications_search_filter(self):
         JobApplication.objects.create(
             name='Findable Person', email='findme@example.com', phone='9999999993',

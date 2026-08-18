@@ -7,9 +7,10 @@
       class="mb-5 space-y-3">
     <div class="flex flex-wrap gap-2">
         <button type="submit" name="status" value=""
-                class="ops-chip {{ 'border-ink-900 bg-ink-900 text-white' if not selected_status else '' }}">
+                class="ops-chip {{ 'border-ink-900 bg-ink-900 text-white' if not selected_status else '' }}"
+                title="Excludes rejected — use the Rejected chip to see them">
             <span class="opacity-70">All</span>
-            <span class="font-bold">{{ total_count }}</span>
+            <span class="font-bold">{{ visible_total_count }}</span>
         </button>
         {% for value, label in status_choices %}
         <button type="submit" name="status" value="{{ value }}"
@@ -65,7 +66,7 @@
            class="text-xs font-bold text-brand-600 hover:text-brand-700">Clear filters ×</a>
         {% endif %}
 
-        <span class="text-xs text-slate-500">{{ filtered_count }} of {{ total_count }}</span>
+        <span class="text-xs text-slate-500">{{ filtered_count }} of {{ total_count }}{% if not selected_status %} (rejected hidden){% endif %}</span>
     </div>
 </form>
 

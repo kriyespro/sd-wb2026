@@ -531,6 +531,10 @@ class JobApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
 
         if status:
             applications = applications.filter(status=status)
+        else:
+            # Rejected candidates stay out of the default view — still
+            # reachable via the Rejected chip, not deleted.
+            applications = applications.exclude(status=JobApplication.STATUS_REJECTED)
         if application_type:
             applications = applications.filter(application_type=application_type)
         if role:
@@ -548,6 +552,9 @@ class JobApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
         )
         ctx['status_counts'] = status_counts_for(all_applications, JobApplication.STATUS_CHOICES)
         ctx['total_count'] = all_applications.count()
+        ctx['visible_total_count'] = all_applications.exclude(
+            status=JobApplication.STATUS_REJECTED,
+        ).count()
         ctx['filtered_count'] = applications.count()
         ctx['selected_status'] = status
         ctx['selected_type'] = application_type
