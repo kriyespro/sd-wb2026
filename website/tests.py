@@ -1,7 +1,7 @@
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from website.models import Lead, JobApplication
+from website.models import JobApplication, JobOpening, Lead
 
 
 class PublicSiteTests(TestCase):
@@ -19,6 +19,44 @@ class PublicSiteTests(TestCase):
         self.assertContains(response, 'Submit Job Application')
         self.assertContains(response, 'job-apply-form-container')
         self.assertNotContains(response, 'Apply to Academy →')
+
+    def test_careers_page_lists_active_openings_only(self):
+        JobOpening.objects.create(
+            title='Visible Role', slug='visible-role', department='Marketing',
+            summary='x', is_active=True,
+        )
+        JobOpening.objects.create(
+            title='Hidden Role', slug='hidden-role', department='Marketing',
+            summary='x', is_active=False,
+        )
+        response = self.client.get(reverse('website:careers'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Visible Role')
+        self.assertNotContains(response, 'Hidden Role')
+
+    def test_post_job_creates_pending_opening_not_shown_on_careers(self):
+        response = self.client.post(reverse('website:post_job'), {
+            'company_name': 'Acme Co',
+            'contact_name': 'Jane Doe',
+            'contact_email': 'jane@acme.example.com',
+            'contact_phone': '9999999999',
+            'title': 'External Role',
+            'department': 'Marketing',
+            'job_type': 'Full-time',
+            'location': 'Remote',
+            'summary': 'Do marketing for Acme.',
+            'tags': 'Remote, Marketing',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Submitted for review')
+
+        opening = JobOpening.objects.get(title='External Role')
+        self.assertEqual(opening.status, JobOpening.STATUS_PENDING)
+        self.assertFalse(opening.is_active)
+        self.assertEqual(opening.company_name, 'Acme Co')
+
+        careers_response = self.client.get(reverse('website:careers'))
+        self.assertNotContains(careers_response, 'External Role')
 
     def test_job_apply_creates_application(self):
         response = self.client.post(reverse('website:job_apply'), {

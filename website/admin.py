@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import JobApplication, Lead, LeadFollowUp
+from .models import JobApplication, JobOpening, Lead, LeadFollowUp
 
 
 @admin.register(Lead)
@@ -56,3 +56,12 @@ class JobApplicationAdmin(admin.ModelAdmin):
             'fields': ('status', 'created_at'),
         }),
     )
+
+
+@admin.register(JobOpening)
+class JobOpeningAdmin(admin.ModelAdmin):
+    list_display = ('title', 'department', 'job_type', 'location', 'is_active', 'created_at')
+    list_filter = ('is_active', 'job_type', 'department')
+    search_fields = ('title', 'department', 'summary')
+    prepopulated_fields = {'slug': ('title',)}
+    ordering = ('department', 'title')

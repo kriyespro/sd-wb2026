@@ -54,6 +54,29 @@ urlpatterns = [
         views.JobApplicationStatusUpdateView.as_view(),
         name='job_application_status',
     ),
+    path('job-openings/', views.JobOpeningsView.as_view(), name='job_openings'),
+    path('job-openings/add/', views.JobOpeningCreateView.as_view(), name='job_opening_add'),
+    path('job-openings/<int:pk>/edit/', views.JobOpeningEditView.as_view(), name='job_opening_edit'),
+    path(
+        'job-openings/<int:pk>/toggle/',
+        views.JobOpeningToggleView.as_view(),
+        name='job_opening_toggle',
+    ),
+    path(
+        'job-openings/<int:pk>/approve/',
+        views.JobOpeningApproveView.as_view(),
+        name='job_opening_approve',
+    ),
+    path(
+        'job-openings/<int:pk>/reject/',
+        views.JobOpeningRejectView.as_view(),
+        name='job_opening_reject',
+    ),
+    path(
+        'job-openings/<int:pk>/delete/',
+        views.JobOpeningDeleteView.as_view(),
+        name='job_opening_delete',
+    ),
     path('dgc-applications/', views.DgcApplicationsView.as_view(), name='dgc_applications'),
     path(
         'dgc-applications/<int:pk>/approve/',

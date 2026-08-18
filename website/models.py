@@ -134,3 +134,54 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f'{self.name} — {self.role}'
+
+
+class JobOpening(models.Model):
+    """Public /careers/ job listings — Winning Blueprints roles added directly
+    by ops, plus external company postings that sit pending until approved."""
+
+    TYPE_FULLTIME = 'Full-time'
+    TYPE_INTERNSHIP = 'Internship'
+    TYPE_CONTRACT = 'Contract'
+    TYPE_CHOICES = [
+        (TYPE_FULLTIME, 'Full-time'),
+        (TYPE_INTERNSHIP, 'Internship'),
+        (TYPE_CONTRACT, 'Contract'),
+    ]
+
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending review'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_REJECTED, 'Rejected'),
+    ]
+
+    title = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=140, unique=True)
+    department = models.CharField(max_length=80)
+    job_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_FULLTIME)
+    location = models.CharField(max_length=120, default='Surat / Hybrid')
+    summary = models.TextField()
+    tags = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=STATUS_APPROVED, db_index=True,
+    )
+    # Set for postings submitted by an outside company — blank for WB's own roles.
+    company_name = models.CharField(max_length=120, blank=True)
+    contact_name = models.CharField(max_length=120, blank=True)
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['department', 'title']
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def is_external(self):
+        return bool(self.company_name)

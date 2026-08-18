@@ -1,0 +1,42 @@
+<tr id="job-opening-{{ opening.id }}" class="align-top transition hover:bg-slate-50/80 {% if not opening.is_active %}opacity-60{% endif %}">
+    <td class="px-5 py-4">
+        <p class="font-semibold text-ink-900">{{ opening.title }}</p>
+        {% if opening.company_name %}
+        <p class="mt-0.5 text-xs text-slate-500">Posted by {{ opening.company_name }}</p>
+        {% endif %}
+        <div class="mt-1 flex flex-wrap gap-1">
+            {% for tag in opening.tags %}
+            <span class="rounded-full border border-slate-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">{{ tag }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="px-4 py-4 text-slate-700">{{ opening.department }}</td>
+    <td class="px-4 py-4">
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-slate-600">{{ opening.job_type }}</span>
+    </td>
+    <td class="px-4 py-4 text-slate-600">{{ opening.location }}</td>
+    <td class="px-4 py-4">
+        {% if opening.is_active %}
+        <span class="ops-chip border-emerald-200 bg-emerald-50 text-emerald-800">Live</span>
+        {% else %}
+        <span class="ops-chip border-slate-200 bg-slate-50 text-slate-600">Hidden</span>
+        {% endif %}
+    </td>
+    <td class="px-5 py-4">
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{{ url('operations:job_opening_edit', kwargs={'pk': opening.id}) }}" class="text-xs font-bold text-slate-600 hover:text-brand-600">Edit</a>
+            <form hx-post="{{ url('operations:job_opening_toggle', kwargs={'pk': opening.id}) }}"
+                  hx-target="#job-opening-{{ opening.id }}" hx-swap="outerHTML">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="text-xs font-bold text-brand-600 hover:text-brand-700">
+                    {{ 'Hide' if opening.is_active else 'Make live' }}
+                </button>
+            </form>
+            <form hx-post="{{ url('operations:job_opening_delete', kwargs={'pk': opening.id}) }}"
+                  hx-target="#job-opening-{{ opening.id }}" hx-swap="outerHTML">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-700">Delete</button>
+            </form>
+        </div>
+    </td>
+</tr>

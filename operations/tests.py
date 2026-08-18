@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from users.roles import ROLE_FREELANCER, ROLE_PM, ROLE_SALES, ROLE_SUPER_ADMIN
 from partners.models import PartnerLead, PartnerProfile
-from website.models import JobApplication, Lead
+from website.models import JobApplication, JobOpening, Lead
 
 from . import services
 
@@ -160,6 +160,107 @@ class LeadPipelineTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Hired Applicant')
         self.assertNotContains(response, 'New Applicant')
+
+    def test_job_openings_create(self):
+        response = self.client.post(reverse('operations:job_opening_add'), {
+            'title': 'New Test Role',
+            'department': 'Marketing',
+            'job_type': 'Full-time',
+            'location': 'Surat',
+            'summary': 'Do marketing things.',
+            'tags': 'SEO, Content',
+            'is_active': 'on',
+        })
+        self.assertRedirects(response, reverse('operations:job_openings'))
+        opening = JobOpening.objects.get(title='New Test Role')
+        self.assertEqual(opening.slug, 'new-test-role')
+        self.assertEqual(opening.tags, ['SEO', 'Content'])
+        self.assertTrue(opening.is_active)
+
+        careers_response = self.client.get(reverse('website:careers'))
+        self.assertContains(careers_response, 'New Test Role')
+
+    def test_job_openings_toggle_hides_from_careers(self):
+        opening = JobOpening.objects.create(
+            title='Toggle Role', slug='toggle-role', department='Tech', summary='x',
+        )
+        response = self.client.post(
+            reverse('operations:job_opening_toggle', kwargs={'pk': opening.pk}),
+        )
+        self.assertEqual(response.status_code, 200)
+        opening.refresh_from_db()
+        self.assertFalse(opening.is_active)
+
+        careers_response = self.client.get(reverse('website:careers'))
+        self.assertNotContains(careers_response, 'Toggle Role')
+
+    def test_job_openings_forbidden_for_non_superadmin(self):
+        self.client.login(username='sales1', password='pass1234')
+        response = self.client.get(reverse('operations:job_openings'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_job_openings_edit_updates_role(self):
+        opening = JobOpening.objects.create(
+            title='Old Title', slug='old-title', department='Tech', summary='old summary',
+        )
+        response = self.client.post(
+            reverse('operations:job_opening_edit', kwargs={'pk': opening.pk}),
+            {
+                'title': 'New Title', 'department': 'Tech', 'job_type': 'Full-time',
+                'location': 'Surat', 'summary': 'new summary', 'tags': '', 'is_active': 'on',
+            },
+        )
+        self.assertRedirects(response, reverse('operations:job_openings'))
+        opening.refresh_from_db()
+        self.assertEqual(opening.title, 'New Title')
+        self.assertEqual(opening.summary, 'new summary')
+        self.assertEqual(opening.slug, 'old-title')
+
+    def test_job_opening_pending_hidden_from_careers_and_ops_main_table(self):
+        pending = JobOpening.objects.create(
+            title='Pending Role', slug='pending-role', department='Marketing', summary='x',
+            status=JobOpening.STATUS_PENDING, is_active=False, company_name='Acme Co',
+        )
+        careers_response = self.client.get(reverse('website:careers'))
+        self.assertNotContains(careers_response, 'Pending Role')
+
+        ops_response = self.client.get(reverse('operations:job_openings'))
+        self.assertContains(ops_response, 'Pending Role')
+        self.assertContains(ops_response, 'Acme Co')
+        self.assertContains(ops_response, 'Pending review — 1')
+
+    def test_job_opening_approve_publishes_to_careers(self):
+        pending = JobOpening.objects.create(
+            title='Approve Me', slug='approve-me', department='Marketing', summary='x',
+            status=JobOpening.STATUS_PENDING, is_active=False, company_name='Acme Co',
+        )
+        response = self.client.post(
+            reverse('operations:job_opening_approve', kwargs={'pk': pending.pk}),
+        )
+        self.assertEqual(response.status_code, 200)
+        pending.refresh_from_db()
+        self.assertEqual(pending.status, JobOpening.STATUS_APPROVED)
+        self.assertTrue(pending.is_active)
+
+        careers_response = self.client.get(reverse('website:careers'))
+        self.assertContains(careers_response, 'Approve Me')
+
+    def test_job_opening_reject_keeps_off_careers(self):
+        pending = JobOpening.objects.create(
+            title='Reject Me', slug='reject-me', department='Marketing', summary='x',
+            status=JobOpening.STATUS_PENDING, is_active=False, company_name='Acme Co',
+        )
+        response = self.client.post(
+            reverse('operations:job_opening_reject', kwargs={'pk': pending.pk}),
+        )
+        self.assertEqual(response.status_code, 200)
+        pending.refresh_from_db()
+        self.assertEqual(pending.status, JobOpening.STATUS_REJECTED)
+
+        careers_response = self.client.get(reverse('website:careers'))
+        self.assertNotContains(careers_response, 'Reject Me')
+        ops_response = self.client.get(reverse('operations:job_openings'))
+        self.assertNotContains(ops_response, 'Reject Me')
 
     def test_job_applications_hides_rejected_by_default(self):
         JobApplication.objects.create(

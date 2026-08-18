@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
@@ -36,7 +37,8 @@ from users.roles import (
     ROLE_TRAINER,
     STUDENT_ROLES,
 )
-from website.models import JobApplication, Lead, LeadFollowUp
+from website.forms import JobOpeningForm
+from website.models import JobApplication, JobOpening, Lead, LeadFollowUp
 from website.services import ensure_lead_followups, ensure_lead_followups_bulk, toggle_lead_followup
 
 from .forms import (
@@ -583,6 +585,96 @@ class JobApplicationStatusUpdateView(SuperAdminRequiredMixin, View):
             'app': application,
             'status_choices': JobApplication.STATUS_CHOICES,
         })
+
+
+def _job_openings_context(form=None):
+    return {
+        'page_title': 'Job Openings',
+        'form': form or JobOpeningForm(),
+        'pending_openings': JobOpening.objects.filter(
+            status=JobOpening.STATUS_PENDING,
+        ).order_by('-created_at'),
+        'openings': JobOpening.objects.filter(
+            status=JobOpening.STATUS_APPROVED,
+        ).order_by('-is_active', 'department', 'title'),
+    }
+
+
+class JobOpeningsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/job_openings.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(_job_openings_context())
+        return ctx
+
+
+class JobOpeningCreateView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/job_openings.jinja'
+
+    def post(self, request):
+        form = JobOpeningForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('operations:job_openings')
+        ctx = self.get_context_data()
+        ctx.update(_job_openings_context(form=form))
+        ctx['show_errors'] = True
+        return self.render_to_response(ctx)
+
+
+class JobOpeningEditView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/job_opening_edit.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        opening = get_object_or_404(JobOpening, pk=kwargs['pk'])
+        ctx['page_title'] = f'Edit — {opening.title}'
+        ctx['opening'] = opening
+        ctx['form'] = ctx.get('form') or JobOpeningForm(instance=opening)
+        return ctx
+
+    def post(self, request, pk):
+        opening = get_object_or_404(JobOpening, pk=pk)
+        form = JobOpeningForm(request.POST, instance=opening)
+        if form.is_valid():
+            form.save()
+            return redirect('operations:job_openings')
+        ctx = self.get_context_data(pk=pk, form=form)
+        ctx['show_errors'] = True
+        return self.render_to_response(ctx)
+
+
+class JobOpeningToggleView(SuperAdminRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        opening = get_object_or_404(JobOpening, pk=pk)
+        opening.is_active = not opening.is_active
+        opening.save(update_fields=['is_active'])
+        return render(request, 'partials/ops/_job_opening_row.jinja', {'opening': opening})
+
+
+class JobOpeningApproveView(SuperAdminRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        opening = get_object_or_404(JobOpening, pk=pk, status=JobOpening.STATUS_PENDING)
+        opening.status = JobOpening.STATUS_APPROVED
+        opening.is_active = True
+        opening.save(update_fields=['status', 'is_active'])
+        return HttpResponse('')
+
+
+class JobOpeningRejectView(SuperAdminRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        opening = get_object_or_404(JobOpening, pk=pk, status=JobOpening.STATUS_PENDING)
+        opening.status = JobOpening.STATUS_REJECTED
+        opening.is_active = False
+        opening.save(update_fields=['status', 'is_active'])
+        return HttpResponse('')
+
+
+class JobOpeningDeleteView(SuperAdminRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        JobOpening.objects.filter(pk=pk).delete()
+        return HttpResponse('')
 
 
 class DgcApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):

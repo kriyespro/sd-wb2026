@@ -13,7 +13,6 @@ from .data import (
     HERO_POINTS,
     INDUSTRIES,
     MODEL_STEPS,
-    OPEN_ROLES,
     PRICING_FAQS,
     PRICING_TIERS,
     RECENT_PROJECTS,
@@ -32,19 +31,22 @@ from .data import (
     TESTIMONIALS,
     WHY_CHOOSE_US,
 )
-from .forms import JobApplicationForm, LeadForm
+from .forms import JobApplicationForm, JobPostSubmissionForm, LeadForm
+from .models import JobOpening
 from .services import create_job_application, create_lead, get_existing_job_application
 
 
+def _open_roles():
+    return JobOpening.objects.filter(is_active=True, status=JobOpening.STATUS_APPROVED)
+
+
 def _role_titles():
-    return [r['title'] for r in OPEN_ROLES]
+    return list(_open_roles().values_list('title', flat=True))
 
 
 def _role_title_from_slug(slug):
-    for role in OPEN_ROLES:
-        if role['slug'] == slug:
-            return role['title']
-    return ''
+    role = _open_roles().filter(slug=slug).first()
+    return role.title if role else ''
 
 
 def _page(request, template, title, description='', **extra):
@@ -232,7 +234,7 @@ def careers(request):
         'Careers',
         'Open roles at Winning Blueprints — full-time and internship. Apply directly for jobs on real D2C and startup work.',
         form=form,
-        open_roles=OPEN_ROLES,
+        open_roles=_open_roles(),
         careers_perks=CAREERS_PERKS,
         academy_process=ACADEMY_PROCESS,
         stats=STATS,
@@ -246,6 +248,25 @@ def join(request):
         'pages/join.jinja',
         'Join',
         'Create your Winning Blueprints account — business client, student, DGC partner, or apply to the team.',
+    )
+
+
+@require_http_methods(['GET', 'POST'])
+def post_job(request):
+    submitted = False
+    form = JobPostSubmissionForm(request.POST if request.method == 'POST' else None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        submitted = True
+        form = JobPostSubmissionForm()
+    return _page(
+        request,
+        'pages/post_job.jinja',
+        'Post a Job',
+        'Advertise your open role to the Winning Blueprints talent network — reviewed by our team before it goes live.',
+        form=form,
+        submitted=submitted,
+        show_errors=request.method == 'POST' and not submitted,
     )
 
 
@@ -269,7 +290,7 @@ def job_apply_submit(request):
             'Careers',
             'Open roles at Winning Blueprints — full-time and internship.',
             form=form,
-            open_roles=OPEN_ROLES,
+            open_roles=_open_roles(),
             careers_perks=CAREERS_PERKS,
             academy_process=ACADEMY_PROCESS,
             stats=STATS,
@@ -280,7 +301,7 @@ def job_apply_submit(request):
     return render(request, 'partials/_job_apply_form.jinja', {
         'form': form,
         'show_errors': request.method == 'POST',
-        'open_roles': OPEN_ROLES,
+        'open_roles': _open_roles(),
     })
 
 

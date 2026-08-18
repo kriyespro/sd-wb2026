@@ -1,0 +1,28 @@
+<tr id="pending-opening-{{ opening.id }}" class="align-top">
+    <td class="px-5 py-4">
+        <p class="font-semibold text-ink-900">{{ opening.title }}</p>
+        <p class="mt-0.5 text-xs text-slate-500">{{ opening.department }} · {{ opening.job_type }} · {{ opening.location }}</p>
+        <p class="mt-2 max-w-md text-xs leading-relaxed text-slate-600">{{ opening.summary }}</p>
+    </td>
+    <td class="px-4 py-4">
+        <p class="font-semibold text-ink-900">{{ opening.company_name }}</p>
+        <p class="mt-0.5 text-xs text-slate-600">{{ opening.contact_name }}</p>
+        <a href="mailto:{{ opening.contact_email }}" class="block truncate text-xs text-brand-600 hover:underline">{{ opening.contact_email }}</a>
+        <p class="mt-0.5 text-xs text-slate-500">{{ opening.contact_phone }}</p>
+    </td>
+    <td class="px-4 py-4 whitespace-nowrap text-xs text-slate-500">{{ opening.created_at.strftime('%d %b %Y') }}</td>
+    <td class="px-5 py-4">
+        <div class="flex flex-wrap items-center gap-2">
+            <form hx-post="{{ url('operations:job_opening_approve', kwargs={'pk': opening.id}) }}"
+                  hx-target="#pending-opening-{{ opening.id }}" hx-swap="outerHTML">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="ops-chip border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100">Approve & publish</button>
+            </form>
+            <form hx-post="{{ url('operations:job_opening_reject', kwargs={'pk': opening.id}) }}"
+                  hx-target="#pending-opening-{{ opening.id }}" hx-swap="outerHTML">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="ops-chip border-red-200 bg-red-50 text-red-700 hover:bg-red-100">Reject</button>
+            </form>
+        </div>
+    </td>
+</tr>
