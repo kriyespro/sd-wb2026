@@ -36,6 +36,46 @@ class PublicSiteTests(TestCase):
         self.assertTrue(JobApplication.objects.filter(email='job@example.com').exists())
         self.assertContains(response, 'Application received')
 
+    def test_job_apply_blocks_duplicate_email(self):
+        JobApplication.objects.create(
+            name='Job Seeker', email='dupe@example.com', phone='9999999999',
+            role='Meta Ads Specialist', cover_letter='First attempt.',
+        )
+        response = self.client.post(reverse('website:job_apply'), {
+            'name': 'Job Seeker',
+            'email': 'dupe@example.com',
+            'phone': '8888888888',
+            'role': 'SEO Specialist',
+            'application_type': 'fulltime',
+            'experience': '2 years',
+            'portfolio_url': '',
+            'linkedin_url': '',
+            'cover_letter': 'Second attempt.',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(JobApplication.objects.filter(email='dupe@example.com').count(), 1)
+        self.assertContains(response, "already applied")
+
+    def test_job_apply_blocks_duplicate_phone(self):
+        JobApplication.objects.create(
+            name='Job Seeker', email='first@example.com', phone='7777777777',
+            role='Meta Ads Specialist', cover_letter='First attempt.',
+        )
+        response = self.client.post(reverse('website:job_apply'), {
+            'name': 'Job Seeker',
+            'email': 'second@example.com',
+            'phone': '7777777777',
+            'role': 'SEO Specialist',
+            'application_type': 'fulltime',
+            'experience': '2 years',
+            'portfolio_url': '',
+            'linkedin_url': '',
+            'cover_letter': 'Second attempt.',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(JobApplication.objects.filter(phone='7777777777').count(), 1)
+        self.assertContains(response, "already applied")
+
     def test_lead_submit_creates_lead(self):
         response = self.client.post(reverse('website:lead_submit'), {
             'name': 'Test Lead',

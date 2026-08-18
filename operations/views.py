@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
@@ -513,16 +514,54 @@ class OpsInvoicesView(OpsBaseMixin, TemplateView):
 class JobApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
     template_name = 'pages/ops/job_applications.jinja'
 
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request'):
+            return ['partials/ops/_job_applications_panel.jinja']
+        return [self.template_name]
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        applications = JobApplication.objects.all()
+        all_applications = JobApplication.objects.all()
+        applications = all_applications
+
+        status = self.request.GET.get('status', '').strip()
+        application_type = self.request.GET.get('type', '').strip()
+        role = self.request.GET.get('role', '').strip()
+        q = self.request.GET.get('q', '').strip()
+
+        if status:
+            applications = applications.filter(status=status)
+        if application_type:
+            applications = applications.filter(application_type=application_type)
+        if role:
+            applications = applications.filter(role=role)
+        if q:
+            applications = applications.filter(
+                Q(name__icontains=q) | Q(email__icontains=q) | Q(phone__icontains=q),
+            )
+
         ctx['page_title'] = 'Job Applications'
         ctx['status_choices'] = JobApplication.STATUS_CHOICES
-        ctx['status_counts'] = status_counts_for(applications, JobApplication.STATUS_CHOICES)
-        ctx['total_count'] = applications.count()
+        ctx['type_choices'] = JobApplication.TYPE_CHOICES
+        ctx['role_choices'] = list(
+            all_applications.order_by('role').values_list('role', flat=True).distinct(),
+        )
+        ctx['status_counts'] = status_counts_for(all_applications, JobApplication.STATUS_CHOICES)
+        ctx['total_count'] = all_applications.count()
+        ctx['filtered_count'] = applications.count()
+        ctx['selected_status'] = status
+        ctx['selected_type'] = application_type
+        ctx['selected_role'] = role
+        ctx['search_query'] = q
+        ctx['has_filters'] = bool(status or application_type or role or q)
+
         page = paginate(self.request, applications)
         ctx['applications'] = page.object_list
         ctx['paginator_page'] = page
+
+        params = self.request.GET.copy()
+        params.pop('page', None)
+        ctx['filter_querystring'] = ('&' + params.urlencode()) if params else ''
         return ctx
 
 

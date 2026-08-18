@@ -3,6 +3,7 @@ import threading
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Q
 from django.utils import timezone
 
 from .models import JobApplication, Lead, LeadFollowUp
@@ -68,6 +69,21 @@ def create_lead(form, source_page=''):
     ensure_lead_followups(lead)
     notify_lead_created(lead)
     return lead
+
+
+def get_existing_job_application(email, phone):
+    """One candidate, one application — look up by email or phone so a
+    resubmit doesn't create a duplicate row for hiring to sift through."""
+    email = (email or '').strip()
+    phone = (phone or '').strip()
+    query = Q()
+    if email:
+        query |= Q(email__iexact=email)
+    if phone:
+        query |= Q(phone=phone)
+    if not query:
+        return None
+    return JobApplication.objects.filter(query).order_by('-created_at').first()
 
 
 def create_job_application(form):

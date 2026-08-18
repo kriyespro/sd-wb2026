@@ -147,6 +147,46 @@ class LeadPipelineTests(TestCase):
         response = self.client.get(reverse('operations:job_applications'))
         self.assertEqual(response.status_code, 302)
 
+    def test_job_applications_status_filter(self):
+        JobApplication.objects.create(
+            name='New Applicant', email='new@example.com', phone='9999999991',
+            role='Meta Ads Specialist', cover_letter='x', status='new',
+        )
+        JobApplication.objects.create(
+            name='Hired Applicant', email='hired@example.com', phone='9999999992',
+            role='SEO Specialist', cover_letter='x', status='hired',
+        )
+        response = self.client.get(reverse('operations:job_applications'), {'status': 'hired'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Hired Applicant')
+        self.assertNotContains(response, 'New Applicant')
+
+    def test_job_applications_search_filter(self):
+        JobApplication.objects.create(
+            name='Findable Person', email='findme@example.com', phone='9999999993',
+            role='Meta Ads Specialist', cover_letter='x',
+        )
+        JobApplication.objects.create(
+            name='Other Person', email='other@example.com', phone='9999999994',
+            role='SEO Specialist', cover_letter='x',
+        )
+        response = self.client.get(reverse('operations:job_applications'), {'q': 'findme'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Findable Person')
+        self.assertNotContains(response, 'Other Person')
+
+    def test_job_applications_htmx_returns_partial_only(self):
+        JobApplication.objects.create(
+            name='Applicant One', email='applicant1@example.com', phone='9999999995',
+            role='Meta Ads Specialist', cover_letter='x',
+        )
+        response = self.client.get(
+            reverse('operations:job_applications'), HTTP_HX_REQUEST='true',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Applicant One')
+        self.assertNotContains(response, '<aside')
+
     def test_dgc_leads_superuser_table(self):
         from users.roles import ROLE_PARTNER
 

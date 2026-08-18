@@ -33,7 +33,7 @@ from .data import (
     WHY_CHOOSE_US,
 )
 from .forms import JobApplicationForm, LeadForm
-from .services import create_job_application, create_lead
+from .services import create_job_application, create_lead, get_existing_job_application
 
 
 def _role_titles():
@@ -253,6 +253,11 @@ def join(request):
 def job_apply_submit(request):
     form = JobApplicationForm(request.POST or None, role_choices=_role_titles())
     if request.method == 'POST' and form.is_valid():
+        existing = get_existing_job_application(
+            form.cleaned_data.get('email'), form.cleaned_data.get('phone'),
+        )
+        if existing:
+            return render(request, 'partials/_job_apply_duplicate.jinja', {'application': existing})
         create_job_application(form)
         return render(request, 'partials/_job_apply_success.jinja')
 
