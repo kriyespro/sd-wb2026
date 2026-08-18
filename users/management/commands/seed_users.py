@@ -15,17 +15,20 @@ from users.roles import (
     ROLE_WEB_DEV,
 )
 
+# No 'admin' entry here on purpose — this command is safe to re-run on
+# production, and a demo row named 'admin' would collide with (and silently
+# reset the password of) a real live super admin login of the same username.
+# Create real admin accounts separately, never through this seed command.
 TEST_USERS = [
-    ('admin', 'winningblueprints@gmail.com', 'admin1234', ROLE_SUPER_ADMIN, 'Super', 'Admin'),
-    ('client1', 'winningblueprints@gmail.com', 'client1234', ROLE_CLIENT_OWNER, 'Test', 'Client'),
-    ('student1', 'winningblueprints@gmail.com', 'student1234', ROLE_STUDENT, 'Test', 'Student'),
-    ('intern1', 'winningblueprints@gmail.com', 'intern1234', ROLE_INTERN, 'Test', 'Intern'),
-    ('pm1', 'winningblueprints@gmail.com', 'pm1234', ROLE_PM, 'Test', 'PM'),
-    ('mentor1', 'winningblueprints@gmail.com', 'mentor1234', ROLE_MENTOR, 'Test', 'Mentor'),
-    ('sales1', 'winningblueprints@gmail.com', 'sales1234', ROLE_SALES, 'Test', 'Sales'),
-    ('office1', 'winningblueprints@gmail.com', 'office1234', ROLE_OFFICE, 'Office', 'Manager'),
-    ('dev1', 'winningblueprints@gmail.com', 'dev1234', ROLE_WEB_DEV, 'Web', 'Developer'),
-    ('freelance1', 'winningblueprints@gmail.com', 'free1234', ROLE_FREELANCER, 'Free', 'Lancer'),
+    ('client1', 'winningblueprints@gmail.com', 'Client#Demo2026!', ROLE_CLIENT_OWNER, 'Test', 'Client'),
+    ('student1', 'winningblueprints@gmail.com', 'Student#Demo2026!', ROLE_STUDENT, 'Test', 'Student'),
+    ('intern1', 'winningblueprints@gmail.com', 'Intern#Demo2026!', ROLE_INTERN, 'Test', 'Intern'),
+    ('pm1', 'winningblueprints@gmail.com', 'ProjectMgr#Demo2026!', ROLE_PM, 'Test', 'PM'),
+    ('mentor1', 'winningblueprints@gmail.com', 'Mentor#Demo2026!', ROLE_MENTOR, 'Test', 'Mentor'),
+    ('sales1', 'winningblueprints@gmail.com', 'Sales#Demo2026!', ROLE_SALES, 'Test', 'Sales'),
+    ('office1', 'winningblueprints@gmail.com', 'Office#Demo2026!', ROLE_OFFICE, 'Office', 'Manager'),
+    ('dev1', 'winningblueprints@gmail.com', 'WebDev#Demo2026!', ROLE_WEB_DEV, 'Web', 'Developer'),
+    ('freelance1', 'winningblueprints@gmail.com', 'Freelance#Demo2026!', ROLE_FREELANCER, 'Free', 'Lancer'),
 ]
 
 

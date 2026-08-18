@@ -95,12 +95,12 @@ class Command(BaseCommand):
             defaults={'email': 'winningblueprints@gmail.com'},
         )
         if created:
-            user.set_password('dgc1234')
+            user.set_password('Partner#Demo2026!')
             user.first_name = 'DGC'
             user.last_name = 'Partner'
             user.save()
         else:
-            user.set_password('dgc1234')
+            user.set_password('Partner#Demo2026!')
             user.save(update_fields=['password'])
 
         user.profile.role = ROLE_PARTNER
@@ -111,4 +111,4 @@ class Command(BaseCommand):
             user=user,
             defaults={'code': 'DGC1001', 'is_active': True},
         )
-        self.stdout.write(self.style.SUCCESS('DGC user ready: dgc1 / dgc1234 → /dashboard/dgc/'))
+        self.stdout.write(self.style.SUCCESS('DGC user ready: dgc1 / Partner#Demo2026! → /dashboard/dgc/'))
