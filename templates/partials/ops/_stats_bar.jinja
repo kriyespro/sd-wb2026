@@ -1,13 +1,13 @@
 {# Mission Control KPI strip — gap grid (no divide overflow) #}
 {% macro cell(href, label, value, meta, accent='text-ink-900', hot=false) %}
 <a href="{{ href }}"
-   class="group flex min-w-0 flex-col gap-0.5 rounded-xl border border-slate-200/90 bg-white px-3 py-2.5 transition hover:border-brand-300 hover:shadow-sm">
+   class="group flex min-w-0 flex-col gap-1 rounded-xl border border-slate-200/90 bg-white px-3.5 py-3 transition hover:border-brand-300 hover:shadow-sm">
     <div class="flex min-w-0 items-center justify-between gap-2">
-        <p class="truncate text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{{ label }}</p>
-        {% if hot %}<span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" title="Needs attention"></span>{% endif %}
+        <p class="truncate text-xs font-bold uppercase tracking-[0.08em] text-slate-600">{{ label }}</p>
+        {% if hot %}<span class="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" title="Needs attention"></span>{% endif %}
     </div>
-    <p class="font-display text-xl font-bold leading-none tabular-nums tracking-tight {{ accent }} group-hover:text-brand-700">{{ value }}</p>
-    <p class="truncate text-xs leading-snug text-slate-500">{{ meta }}</p>
+    <p class="font-display text-2xl font-bold leading-none tabular-nums tracking-tight {{ accent }} group-hover:text-brand-700">{{ value }}</p>
+    <p class="truncate text-xs leading-snug text-slate-500 group-hover:text-slate-600">{{ meta }}</p>
 </a>
 {% endmacro %}
 
