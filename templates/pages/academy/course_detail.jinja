@@ -64,9 +64,12 @@
                 <p class="mt-1 text-sm text-gold-200/80">↑ {{ course.salary_range }} salary</p>
                 {% endif %}
                 <div class="mt-5 space-y-2">
-                    <a href="{{ url('academy:apply') }}" class="btn-gold w-full text-center">Get started free</a>
-                    <a href="{{ url('users:login') }}" class="btn-outline !border-white/30 !text-white hover:!bg-white/10 w-full text-center">Log in</a>
+                    <button type="button"
+                            hx-post="{{ url('academy:enroll_pay', kwargs={'slug': course.slug}) }}"
+                            hx-target="#hero-checkout-launch" hx-swap="innerHTML" hx-disabled-elt="this"
+                            class="btn-gold w-full text-center">Buy Now — {{ course.price }}</button>
                 </div>
+                <div id="hero-checkout-launch" class="mt-3"></div>
                 <dl class="mt-6 space-y-2 text-sm">
                     <div class="flex justify-between"><dt class="text-slate-400">Type</dt><dd>{{ course.level }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-400">Duration</dt><dd>{{ course.duration }}</dd></div>
@@ -202,11 +205,11 @@
                     <div class="mt-6 space-y-2">
                         <button type="button"
                                 hx-post="{{ url('academy:enroll_pay', kwargs={'slug': course.slug}) }}"
-                                hx-target="#course-checkout-launch" hx-swap="innerHTML"
+                                hx-target="#course-checkout-launch" hx-swap="innerHTML" hx-disabled-elt="this"
                                 class="btn-gold w-full text-center">Buy Now — {{ course.price }}</button>
                         <button type="button"
                                 hx-post="{{ url('academy:enroll_pay', kwargs={'slug': course.slug}) }}"
-                                hx-target="#course-checkout-launch" hx-swap="innerHTML"
+                                hx-target="#course-checkout-launch" hx-swap="innerHTML" hx-disabled-elt="this"
                                 class="btn-outline w-full text-center">Add to Cart</button>
                     </div>
                     <div id="course-checkout-launch" class="mt-3"></div>
@@ -246,11 +249,15 @@
 <section class="bg-brand-900 py-16 text-white">
     <div class="mx-auto max-w-2xl px-4 text-center">
         <h2 class="font-display text-2xl font-bold">Ready to get started?</h2>
-        <p class="mt-3 text-slate-300">Apply to Winning Blueprints Academy and enroll in minutes.</p>
+        <p class="mt-3 text-slate-300">Enroll in {{ course.title }} and get instant access.</p>
         <div class="mt-8 flex flex-wrap justify-center gap-4">
-            <a href="{{ url('academy:apply') }}" class="btn-gold">Sign up free →</a>
-            <a href="{{ url('users:login') }}" class="btn-outline !border-white/30 !text-white hover:!bg-white/10">Log in</a>
+            <button type="button"
+                    hx-post="{{ url('academy:enroll_pay', kwargs={'slug': course.slug}) }}"
+                    hx-target="#bottom-checkout-launch" hx-swap="innerHTML" hx-disabled-elt="this"
+                    class="btn-gold">Buy Now — {{ course.price }}</button>
+            <a href="#curriculum" class="btn-outline !border-white/30 !text-white hover:!bg-white/10">View curriculum</a>
         </div>
+        <div id="bottom-checkout-launch" class="mt-4 text-left"></div>
     </div>
 </section>
 {% endblock %}
