@@ -94,15 +94,16 @@ def create_admission_application(form):
     return form.save()
 
 
-def create_course_payment_order(course):
-    """Public course-fee checkout: creates the admission record and a
-    Razorpay order for the course's listed price — no form step, name/email/
-    phone get backfilled from Razorpay's own payment record once paid."""
+def create_course_payment_order(course, name='', email='', phone=''):
+    """Checkout-page purchase: creates the admission record (with whatever
+    contact details the buyer typed on the checkout page — all optional)
+    and a Razorpay order for the course's listed price. Any field left
+    blank gets backfilled from Razorpay's own payment record once paid."""
     amount = price_amount(course)
     application = AdmissionApplication.objects.create(
-        name='', email='', phone='', education='',
+        name=name, email=email, phone=phone, education='',
         course_interest=course['title'],
-        motivation='Bought directly from the course page.',
+        motivation='Bought from the course checkout page.',
     )
     order = create_order(amount, f'ADM-{application.pk}', {'application_id': str(application.pk)})
     application.razorpay_order_id = order['id']
@@ -113,9 +114,9 @@ def create_course_payment_order(course):
 
 def verify_course_payment(application, razorpay_order_id, razorpay_payment_id, razorpay_signature):
     """Verify the payment signature server-side before trusting the client's
-    callback — mirrors billing.services.verify_and_mark_paid. Backfills
-    contact details from Razorpay's payment record since we never asked for
-    them ourselves (Buy Now skips straight to the Checkout widget)."""
+    callback — mirrors billing.services.verify_and_mark_paid. Backfills any
+    contact detail the buyer left blank on the checkout page from Razorpay's
+    own payment record, without overwriting what they typed."""
     if application.paid_at:
         return application
     if application.razorpay_order_id != razorpay_order_id:
@@ -125,8 +126,8 @@ def verify_course_payment(application, razorpay_order_id, razorpay_payment_id, r
     payment = fetch_payment(razorpay_payment_id)
 
     application.razorpay_payment_id = razorpay_payment_id
-    application.email = payment.get('email') or application.email
-    application.phone = payment.get('contact') or application.phone
+    application.email = application.email or payment.get('email') or ''
+    application.phone = application.phone or payment.get('contact') or ''
     if not application.name:
         application.name = application.email.split('@')[0] if application.email else 'Course buyer'
     application.paid_at = timezone.now()

@@ -42,6 +42,27 @@ def course_detail(request, slug):
     })
 
 
+def checkout(request, slug):
+    course = get_course(slug)
+    if not course:
+        raise Http404('Course not found')
+
+    prefill_name, prefill_email, prefill_phone = '', '', ''
+    if request.user.is_authenticated:
+        prefill_name = request.user.get_full_name() or request.user.username
+        prefill_email = request.user.email
+        prefill_phone = getattr(getattr(request.user, 'profile', None), 'phone', '')
+
+    return render(request, 'pages/academy/checkout.jinja', {
+        'page_title': f"Checkout — {course['title']}",
+        'meta_description': f"Complete your purchase of {course['title']}.",
+        'course': course,
+        'prefill_name': prefill_name,
+        'prefill_email': prefill_email,
+        'prefill_phone': prefill_phone,
+    })
+
+
 def apply(request):
     form = AdmissionApplicationForm()
     return render(request, 'pages/academy/apply.jinja', {
@@ -72,8 +93,12 @@ def enroll_pay(request, slug):
     if not course:
         raise Http404('Course not found')
 
+    name = request.POST.get('name', '').strip()
+    email = request.POST.get('email', '').strip()
+    phone = request.POST.get('phone', '').strip()
+
     try:
-        application, order = create_course_payment_order(course)
+        application, order = create_course_payment_order(course, name=name, email=email, phone=phone)
     except razorpay.errors.BadRequestError:
         return render(request, 'partials/dashboard/_checkout_launch.jinja', {
             'error': 'Could not start payment. Please try again.',
@@ -86,8 +111,8 @@ def enroll_pay(request, slug):
         'amount_paise': order['amount'],
         'key_id': settings.RAZORPAY_KEY_ID,
         'verify_url': reverse('academy:enroll_verify', kwargs={'slug': slug, 'pk': application.pk}),
-        'prefill_name': '',
-        'prefill_email': '',
+        'prefill_name': name,
+        'prefill_email': email,
     })
 
 

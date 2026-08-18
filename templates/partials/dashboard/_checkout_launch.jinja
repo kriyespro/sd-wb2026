@@ -7,7 +7,6 @@
     <input type="hidden" name="razorpay_payment_id" id="rzp-payment-id-{{ dom_id }}">
     <input type="hidden" name="razorpay_signature" id="rzp-signature-{{ dom_id }}">
 </form>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 (function () {
     var options = {
@@ -28,8 +27,20 @@
             document.getElementById('rzp-verify-form-{{ dom_id }}').submit();
         },
     };
-    var rzp = new Razorpay(options);
-    rzp.open();
+    function launch() {
+        var rzp = new Razorpay(options);
+        rzp.open();
+    }
+    if (typeof Razorpay === 'undefined') {
+        var poll = setInterval(function () {
+            if (typeof Razorpay !== 'undefined') {
+                clearInterval(poll);
+                launch();
+            }
+        }, 100);
+    } else {
+        launch();
+    }
 })();
 </script>
 {% endif %}

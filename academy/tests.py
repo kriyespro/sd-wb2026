@@ -396,6 +396,35 @@ class CourseDetailPageRenderTests(TestCase):
         self.assertEqual(response.content.count(b'Buy Now'), len(COURSES))
 
 
+class CourseCheckoutViewTests(TestCase):
+    def setUp(self):
+        self.course = COURSES[0]
+
+    def test_checkout_view_renders_course_and_price(self):
+        response = self.client.get(reverse('academy:checkout', kwargs={'slug': self.course['slug']}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.course['title'])
+        self.assertContains(response, self.course['price'])
+        self.assertContains(response, 'Pay')
+
+    def test_checkout_view_404s_for_unknown_course(self):
+        url = reverse('academy:checkout', kwargs={'slug': 'does-not-exist'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('website:home'))
+
+    def test_checkout_view_prefills_from_authenticated_user(self):
+        user = User.objects.create_user(username='riya', email='riya@example.com', password='pass1234')
+        user.profile.phone = '+919876543210'
+        user.profile.save(update_fields=['phone'])
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('academy:checkout', kwargs={'slug': self.course['slug']}))
+
+        self.assertContains(response, 'riya@example.com')
+        self.assertContains(response, '+919876543210')
+
+
 class CoursePaymentServiceTests(TestCase):
     def setUp(self):
         self.course = COURSES[0]
@@ -465,7 +494,7 @@ class CourseEnrollViewTests(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'order_COURSE2')
-        mock_create_order.assert_called_once_with(self.course)
+        mock_create_order.assert_called_once_with(self.course, name='', email='', phone='')
 
     def test_enroll_pay_view_404s_for_unknown_course(self):
         url = reverse('academy:enroll_pay', kwargs={'slug': 'does-not-exist'})
