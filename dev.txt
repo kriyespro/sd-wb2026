@@ -35,6 +35,9 @@
 - /ops/performance/           Performance reviews
 - /ops/leads/                 Lead pipeline (HTMX)
 - /ops/invoices/              Invoice overview
+- /ops/job-applications/      Careers applications, filters, dedupe guard
+- /ops/job-openings/          Manage /careers/ roles + approve external company postings
+- /careers/post-a-job/        Public form for outside companies to submit a role (pending review)
 
 ## Seed Data
 python manage.py seed_users
