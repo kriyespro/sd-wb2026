@@ -13,6 +13,7 @@ from core.pagination import paginate
 from projects.models import Meeting, Project, ReportMetric
 from users.mixins import ClientPortalMixin, DashboardContextMixin
 from users.services import get_dashboard_url_for_user
+from website.forms import JobPostSubmissionForm
 
 from .forms import SupportTicketForm, TicketReplyForm
 from .models import SupportTicket
@@ -207,6 +208,35 @@ class SupportTicketCreateView(ClientPortalMixin, View):
                 account, form.cleaned_data['subject'], form.cleaned_data['body'], request.user,
             )
         return redirect('clients:support')
+
+
+class PostJobView(ClientBaseMixin, TemplateView):
+    template_name = 'pages/dashboard/client/post_job.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'Post a Job'
+        ctx.setdefault('form', self._initial_form())
+        ctx.setdefault('submitted', False)
+        return ctx
+
+    def _initial_form(self):
+        account = get_client_account(self.request.user)
+        return JobPostSubmissionForm(initial={
+            'company_name': account.company_name if account else '',
+            'contact_name': self.request.user.get_full_name() or self.request.user.username,
+            'contact_email': self.request.user.email,
+        })
+
+    def post(self, request):
+        form = JobPostSubmissionForm(request.POST)
+        submitted = False
+        if form.is_valid():
+            form.save()
+            submitted = True
+            form = self._initial_form()
+        ctx = self.get_context_data(form=form, submitted=submitted, show_errors=not submitted)
+        return self.render_to_response(ctx)
 
 
 class SupportTicketDetailView(ClientBaseMixin, TemplateView):

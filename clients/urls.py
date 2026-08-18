@@ -21,4 +21,5 @@ urlpatterns = [
     path('analytics/', views.AnalyticsView.as_view(), name='analytics'),
     path('goals/', views.GoalsView.as_view(), name='goals'),
     path('roi/', views.ROIView.as_view(), name='roi'),
+    path('post-a-job/', views.PostJobView.as_view(), name='post_job'),
 ]

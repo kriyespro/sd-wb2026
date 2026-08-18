@@ -17,6 +17,7 @@ CLIENT_NAV = [
     {'title': 'Analytics', 'icon': '📈', 'url_name': 'clients:analytics'},
     {'title': 'Goals', 'icon': '🎯', 'url_name': 'clients:goals'},
     {'title': 'ROI', 'icon': '💰', 'url_name': 'clients:roi'},
+    {'title': 'Post a Job', 'icon': '📢', 'url_name': 'clients:post_job'},
 ]
 
 

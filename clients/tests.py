@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from billing.models import Invoice
 from projects.models import Deliverable, Meeting, Milestone, Project, Report, ReportMetric
+from website.models import JobOpening
 
 from .models import ClientAccount, SupportMessage, SupportTicket
 from .services import get_client_attention_items
@@ -20,6 +21,30 @@ class ClientPortalListPaginationTests(TestCase):
         self.account = ClientAccount.objects.create(user=self.user, company_name='Acme Co')
         self.project = Project.objects.create(client_account=self.account, name='Acme Project')
         self.client.login(username='client1', password='pass1234')
+
+    def test_post_job_page_prefills_company_name(self):
+        response = self.client.get(reverse('clients:post_job'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Acme Co')
+
+    def test_post_job_creates_pending_opening(self):
+        response = self.client.post(reverse('clients:post_job'), {
+            'company_name': 'Acme Co',
+            'contact_name': 'Test Client',
+            'contact_email': 'client1@test.com',
+            'contact_phone': '9876543210',
+            'title': 'Store Manager',
+            'department': 'Retail',
+            'job_type': 'Full-time',
+            'location': 'Surat',
+            'summary': 'Manage the retail floor and team.',
+            'tags': 'Retail, Ops',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Submitted for review')
+        opening = JobOpening.objects.get(title='Store Manager')
+        self.assertEqual(opening.status, JobOpening.STATUS_PENDING)
+        self.assertFalse(opening.is_active)
 
     def test_files_view_paginates(self):
         for i in range(25):
