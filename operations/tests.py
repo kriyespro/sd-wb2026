@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from academy.models import CourseListing
 from users.roles import ROLE_FREELANCER, ROLE_PM, ROLE_SALES, ROLE_SUPER_ADMIN
 from partners.models import PartnerLead, PartnerProfile
 from website.models import JobApplication, JobOpening, Lead
@@ -197,6 +198,95 @@ class LeadPipelineTests(TestCase):
     def test_job_openings_forbidden_for_non_superadmin(self):
         self.client.login(username='sales1', password='pass1234')
         response = self.client.get(reverse('operations:job_openings'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_course_listing_create(self):
+        response = self.client.post(reverse('operations:course_listing_add'), {
+            'title': 'New Test Course',
+            'goal': 'Learn something useful.',
+            'level': 'Beginner',
+            'duration': '4 weeks',
+            'format': 'Self-paced',
+            'modules_count': '4',
+            'topics_count': '20',
+            'price': '₹4,999',
+            'salary_range': '',
+            'enrolled': '0',
+            'rating': '5.0',
+            'reviews_count': '0',
+            'image': '',
+            'gains': 'Gain one\nGain two',
+            'includes': 'Includes one',
+            'learn_modules': 'Module A\nModule B',
+            'ideal_paths': 'Path A',
+            'overview': 'Overview paragraph one.',
+            'curriculum': 'Module A | free | topic1; topic2\nModule B | | topic3',
+            'reviews': 'Great course | Jane Doe | Developer | Pune',
+            'career_label': '', 'career_min': '', 'career_max': '',
+            'highlight_quote': '', 'highlight_author': '', 'starts_with': '',
+            'sort_order': '0', 'is_active': 'on',
+        })
+        self.assertRedirects(response, reverse('operations:course_listings'))
+        course = CourseListing.objects.get(title='New Test Course')
+        self.assertEqual(course.slug, 'new-test-course')
+        self.assertEqual(course.gains, ['Gain one', 'Gain two'])
+        self.assertEqual(
+            course.curriculum,
+            [
+                {'title': 'Module A', 'topics': ['topic1', 'topic2'], 'free_preview': True},
+                {'title': 'Module B', 'topics': ['topic3'], 'free_preview': False},
+            ],
+        )
+        self.assertEqual(
+            course.reviews,
+            [{'quote': 'Great course', 'name': 'Jane Doe', 'role': 'Developer', 'city': 'Pune'}],
+        )
+        self.assertTrue(course.is_active)
+
+        courses_response = self.client.get(reverse('academy:courses'))
+        self.assertContains(courses_response, 'New Test Course')
+
+    def test_course_listing_toggle_hides_from_public_page(self):
+        course = CourseListing.objects.create(
+            title='Toggle Course', slug='toggle-course', goal='x', price='₹1,999',
+        )
+        response = self.client.post(
+            reverse('operations:course_listing_toggle', kwargs={'pk': course.pk}),
+        )
+        self.assertEqual(response.status_code, 200)
+        course.refresh_from_db()
+        self.assertFalse(course.is_active)
+
+        courses_response = self.client.get(reverse('academy:courses'))
+        self.assertNotContains(courses_response, 'Toggle Course')
+
+    def test_course_listing_edit_updates_course(self):
+        course = CourseListing.objects.create(
+            title='Old Course Title', slug='old-course-title', goal='old goal', price='₹1,999',
+        )
+        response = self.client.post(
+            reverse('operations:course_listing_edit', kwargs={'pk': course.pk}),
+            {
+                'title': 'New Course Title', 'goal': 'new goal', 'level': 'Beginner',
+                'duration': '4 weeks', 'format': 'Self-paced', 'modules_count': '4',
+                'topics_count': '20', 'price': '₹2,999', 'salary_range': '',
+                'enrolled': '0', 'rating': '5.0', 'reviews_count': '0', 'image': '',
+                'gains': '', 'includes': '', 'learn_modules': '', 'ideal_paths': '',
+                'overview': '', 'curriculum': '', 'reviews': '',
+                'career_label': '', 'career_min': '', 'career_max': '',
+                'highlight_quote': '', 'highlight_author': '', 'starts_with': '',
+                'sort_order': '0', 'is_active': 'on',
+            },
+        )
+        self.assertRedirects(response, reverse('operations:course_listings'))
+        course.refresh_from_db()
+        self.assertEqual(course.title, 'New Course Title')
+        self.assertEqual(course.price, '₹2,999')
+        self.assertEqual(course.slug, 'old-course-title')
+
+    def test_course_listing_forbidden_for_non_superadmin(self):
+        self.client.login(username='sales1', password='pass1234')
+        response = self.client.get(reverse('operations:course_listings'))
         self.assertEqual(response.status_code, 302)
 
     def test_job_openings_edit_updates_role(self):

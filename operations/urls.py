@@ -77,6 +77,19 @@ urlpatterns = [
         views.JobOpeningDeleteView.as_view(),
         name='job_opening_delete',
     ),
+    path('courses/', views.CourseListingsView.as_view(), name='course_listings'),
+    path('courses/add/', views.CourseListingCreateView.as_view(), name='course_listing_add'),
+    path('courses/<int:pk>/edit/', views.CourseListingEditView.as_view(), name='course_listing_edit'),
+    path(
+        'courses/<int:pk>/toggle/',
+        views.CourseListingToggleView.as_view(),
+        name='course_listing_toggle',
+    ),
+    path(
+        'courses/<int:pk>/delete/',
+        views.CourseListingDeleteView.as_view(),
+        name='course_listing_delete',
+    ),
     path('dgc-applications/', views.DgcApplicationsView.as_view(), name='dgc_applications'),
     path(
         'dgc-applications/<int:pk>/approve/',

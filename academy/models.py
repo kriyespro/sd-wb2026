@@ -423,3 +423,69 @@ class AdmissionApplication(models.Model):
 
     def __str__(self):
         return f'{self.name} — {self.email}'
+
+
+class CourseListing(models.Model):
+    """Public /academy/courses/ marketing catalog — what's for sale and its
+    course-page content. Distinct from `Course` (the internal LMS content
+    structure used for enrolled-student modules/lessons/attendance)."""
+
+    LEVEL_BEGINNER = 'Beginner'
+    LEVEL_INTERMEDIATE = 'Intermediate'
+    LEVEL_ALL = 'All levels'
+    LEVEL_CHOICES = [
+        (LEVEL_BEGINNER, 'Beginner'),
+        (LEVEL_INTERMEDIATE, 'Intermediate'),
+        (LEVEL_ALL, 'All levels'),
+    ]
+
+    slug = models.SlugField(max_length=140, unique=True)
+    title = models.CharField(max_length=160)
+    goal = models.TextField()
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default=LEVEL_BEGINNER)
+    duration = models.CharField(max_length=40, default='4 weeks')
+    format = models.CharField(max_length=40, default='Self-paced')
+    modules_count = models.PositiveIntegerField(default=0)
+    topics_count = models.PositiveIntegerField(default=0)
+    price = models.CharField(max_length=20, help_text='Display string, e.g. ₹16,999')
+    salary_range = models.CharField(max_length=40, blank=True)
+    featured = models.BooleanField(default=False)
+    enrolled = models.PositiveIntegerField(default=0)
+    rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    reviews_count = models.PositiveIntegerField(default=0)
+    image = models.URLField(max_length=500, blank=True)
+
+    # Simple line-list fields — one item per line in the ops editor.
+    gains = models.JSONField(default=list, blank=True)
+    includes = models.JSONField(default=list, blank=True)
+    learn_modules = models.JSONField(default=list, blank=True)
+    ideal_paths = models.JSONField(default=list, blank=True)
+    overview = models.JSONField(default=list, blank=True)
+
+    # [{'title': str, 'topics': [str, ...], 'free_preview': bool}, ...]
+    curriculum = models.JSONField(default=list, blank=True)
+    # [{'quote': str, 'name': str, 'role': str, 'city': str}, ...]
+    reviews = models.JSONField(default=list, blank=True)
+
+    career_label = models.CharField(max_length=80, blank=True)
+    career_min = models.CharField(max_length=20, blank=True)
+    career_max = models.CharField(max_length=20, blank=True)
+    highlight_quote = models.TextField(blank=True)
+    highlight_author = models.CharField(max_length=120, blank=True)
+    starts_with = models.CharField(max_length=120, blank=True)
+
+    is_active = models.BooleanField(default=True, db_index=True)
+    sort_order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['sort_order', 'title']
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def career(self):
+        if not self.career_label:
+            return None
+        return {'label': self.career_label, 'min': self.career_min, 'max': self.career_max}

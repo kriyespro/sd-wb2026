@@ -7,6 +7,7 @@ from .models import (
     Attendance,
     Certificate,
     Course,
+    CourseListing,
     CourseModule,
     DailyFourD,
     Enrollment,
@@ -44,6 +45,15 @@ class CourseModuleAdmin(admin.ModelAdmin):
     list_display = ('title', 'course', 'order')
     list_filter = ('course',)
     inlines = [LessonInline]
+
+
+@admin.register(CourseListing)
+class CourseListingAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'level', 'price', 'featured', 'is_active', 'sort_order')
+    list_filter = ('is_active', 'featured', 'level')
+    search_fields = ('title', 'goal')
+    prepopulated_fields = {'slug': ('title',)}
+    ordering = ('sort_order', 'title')
 
 
 @admin.register(Enrollment)

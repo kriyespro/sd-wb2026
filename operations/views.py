@@ -6,8 +6,8 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from academy import fourd_services
-from academy.forms import TeachingEvaluationForm
-from academy.models import AdmissionApplication, MentorAllocation, TeachingSession
+from academy.forms import CourseListingForm, TeachingEvaluationForm
+from academy.models import AdmissionApplication, CourseListing, MentorAllocation, TeachingSession
 from academy.services import evaluate_teaching_session, get_student_stats
 from core.pagination import paginate
 from projects.models import Deliverable, Project
@@ -674,6 +674,73 @@ class JobOpeningRejectView(SuperAdminRequiredMixin, OpsPortalMixin, View):
 class JobOpeningDeleteView(SuperAdminRequiredMixin, OpsPortalMixin, View):
     def post(self, request, pk):
         JobOpening.objects.filter(pk=pk).delete()
+        return HttpResponse('')
+
+
+def _course_listings_context(form=None):
+    return {
+        'page_title': 'Courses',
+        'form': form or CourseListingForm(),
+        'course_listings': CourseListing.objects.all().order_by('-is_active', 'sort_order', 'title'),
+    }
+
+
+class CourseListingsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/course_listings.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(_course_listings_context())
+        return ctx
+
+
+class CourseListingCreateView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/course_listings.jinja'
+
+    def post(self, request):
+        form = CourseListingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('operations:course_listings')
+        ctx = self.get_context_data()
+        ctx.update(_course_listings_context(form=form))
+        ctx['show_errors'] = True
+        return self.render_to_response(ctx)
+
+
+class CourseListingEditView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
+    template_name = 'pages/ops/course_listing_edit.jinja'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        course = get_object_or_404(CourseListing, pk=kwargs['pk'])
+        ctx['page_title'] = f'Edit — {course.title}'
+        ctx['course_listing'] = course
+        ctx['form'] = ctx.get('form') or CourseListingForm(instance=course)
+        return ctx
+
+    def post(self, request, pk):
+        course = get_object_or_404(CourseListing, pk=pk)
+        form = CourseListingForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            return redirect('operations:course_listings')
+        ctx = self.get_context_data(pk=pk, form=form)
+        ctx['show_errors'] = True
+        return self.render_to_response(ctx)
+
+
+class CourseListingToggleView(SuperAdminRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        course = get_object_or_404(CourseListing, pk=pk)
+        course.is_active = not course.is_active
+        course.save(update_fields=['is_active'])
+        return render(request, 'partials/ops/_course_listing_row.jinja', {'course_listing': course})
+
+
+class CourseListingDeleteView(SuperAdminRequiredMixin, OpsPortalMixin, View):
+    def post(self, request, pk):
+        CourseListing.objects.filter(pk=pk).delete()
         return HttpResponse('')
 
 

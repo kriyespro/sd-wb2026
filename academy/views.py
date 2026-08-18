@@ -7,10 +7,16 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 from website.data import ACADEMY_PROCESS
 
-from .courses_data import COURSES, get_course
 from .forms import AdmissionApplicationForm
 from .models import AdmissionApplication
-from .services import create_admission_application, create_course_payment_order, verify_course_payment
+from .services import (
+    create_admission_application,
+    create_course_payment_order,
+    get_active_courses,
+    get_course_listing,
+    get_featured_courses,
+    verify_course_payment,
+)
 
 
 def home(request):
@@ -24,26 +30,26 @@ def courses(request):
             'Explore practical, outcome-focused programs — clear pricing, duration, '
             'and career paths on every course page.'
         ),
-        'courses': COURSES,
-        'featured_courses': [c for c in COURSES if c.get('featured')],
+        'courses': get_active_courses(),
+        'featured_courses': get_featured_courses(),
     })
 
 
 def course_detail(request, slug):
-    course = get_course(slug)
+    course = get_course_listing(slug)
     if not course:
         raise Http404('Course not found')
-    other_courses = [c for c in COURSES if c['slug'] != slug][:3]
+    other_courses = get_active_courses().exclude(slug=slug)[:3]
     return render(request, 'pages/academy/course_detail.jinja', {
-        'page_title': course['title'],
-        'meta_description': course['goal'][:160],
+        'page_title': course.title,
+        'meta_description': course.goal[:160],
         'course': course,
         'other_courses': other_courses,
     })
 
 
 def checkout(request, slug):
-    course = get_course(slug)
+    course = get_course_listing(slug)
     if not course:
         raise Http404('Course not found')
 
@@ -54,8 +60,8 @@ def checkout(request, slug):
         prefill_phone = getattr(getattr(request.user, 'profile', None), 'phone', '')
 
     return render(request, 'pages/academy/checkout.jinja', {
-        'page_title': f"Checkout — {course['title']}",
-        'meta_description': f"Complete your purchase of {course['title']}.",
+        'page_title': f"Checkout — {course.title}",
+        'meta_description': f"Complete your purchase of {course.title}.",
         'course': course,
         'prefill_name': prefill_name,
         'prefill_email': prefill_email,
@@ -70,7 +76,7 @@ def apply(request):
         'meta_description': 'Apply to Winning Blueprints Academy.',
         'form': form,
         'academy_process': ACADEMY_PROCESS,
-        'courses': COURSES,
+        'courses': get_active_courses(),
     })
 
 
@@ -89,7 +95,7 @@ def apply_submit(request):
 
 @require_POST
 def enroll_pay(request, slug):
-    course = get_course(slug)
+    course = get_course_listing(slug)
     if not course:
         raise Http404('Course not found')
 
@@ -106,7 +112,7 @@ def enroll_pay(request, slug):
 
     return render(request, 'partials/dashboard/_checkout_launch.jinja', {
         'dom_id': f'admission-{application.pk}',
-        'description': course['title'],
+        'description': course.title,
         'order_id': order['id'],
         'amount_paise': order['amount'],
         'key_id': settings.RAZORPAY_KEY_ID,

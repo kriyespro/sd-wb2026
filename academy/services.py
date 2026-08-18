@@ -1,4 +1,6 @@
+import re
 from datetime import date, timedelta
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -6,7 +8,6 @@ from django.utils import timezone
 from core.razorpay_utils import create_order, fetch_payment, verify_signature
 
 from . import fourd_services
-from .courses_data import price_amount
 from .models import (
     ActivityLog,
     AdmissionApplication,
@@ -14,6 +15,7 @@ from .models import (
     Attendance,
     Certificate,
     Course,
+    CourseListing,
     DailyFourD,
     Enrollment,
     MentorAllocation,
@@ -94,6 +96,24 @@ def create_admission_application(form):
     return form.save()
 
 
+def get_active_courses():
+    return CourseListing.objects.filter(is_active=True)
+
+
+def get_course_listing(slug):
+    return CourseListing.objects.filter(slug=slug, is_active=True).first()
+
+
+def get_featured_courses():
+    return CourseListing.objects.filter(is_active=True, featured=True)
+
+
+def price_amount(course):
+    """Numeric rupee value parsed from the display string (e.g. '₹16,999')."""
+    digits = re.sub(r'[^\d.]', '', course.price)
+    return Decimal(digits or '0')
+
+
 def create_course_payment_order(course, name='', email='', phone=''):
     """Checkout-page purchase: creates the admission record (with whatever
     contact details the buyer typed on the checkout page — all optional)
@@ -102,7 +122,7 @@ def create_course_payment_order(course, name='', email='', phone=''):
     amount = price_amount(course)
     application = AdmissionApplication.objects.create(
         name=name, email=email, phone=phone, education='',
-        course_interest=course['title'],
+        course_interest=course.title,
         motivation='Bought from the course checkout page.',
     )
     order = create_order(amount, f'ADM-{application.pk}', {'application_id': str(application.pk)})

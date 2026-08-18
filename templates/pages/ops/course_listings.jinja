@@ -1,0 +1,60 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<section class="relative mb-6 overflow-hidden rounded-[1.75rem] bg-ink-900 px-6 py-7 text-white sm:px-8">
+    <div class="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-violet-500/25 blur-3xl"></div>
+    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Academy</span>
+            <h2 class="mt-2 font-display text-2xl font-bold">Courses</h2>
+            <p class="mt-1 max-w-xl text-sm text-slate-300">
+                What's live on <a href="{{ url('academy:courses') }}" target="_blank" rel="noopener" class="underline hover:text-white">/academy/courses/</a>.
+                Turn one off to pull it from sale without deleting it.
+            </p>
+        </div>
+        <a href="{{ url('operations:dashboard') }}"
+           class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/10">
+            ← Mission Control
+        </a>
+    </div>
+</section>
+
+<div class="dash-panel mb-6 p-6">
+    <h3 class="font-display text-lg font-bold text-ink-900">Add a course</h3>
+    <form method="post" action="{{ url('operations:course_listing_add') }}" class="mt-4 grid gap-4">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {% include "partials/ops/_course_listing_form_fields.jinja" %}
+        <div>
+            <button type="submit" class="btn-primary !px-6 !py-2.5 text-sm">Add course</button>
+        </div>
+    </form>
+</div>
+
+{% if course_listings %}
+<div class="dash-panel overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[860px] text-left text-sm">
+            <thead class="border-b border-slate-100 bg-slate-50/80 text-xs uppercase tracking-[0.14em] text-slate-500">
+                <tr>
+                    <th class="px-5 py-3.5 font-semibold">Course</th>
+                    <th class="px-4 py-3.5 font-semibold">Level</th>
+                    <th class="px-4 py-3.5 font-semibold">Price</th>
+                    <th class="px-4 py-3.5 font-semibold">Status</th>
+                    <th class="px-5 py-3.5 font-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for course_listing in course_listings %}
+                {% include "partials/ops/_course_listing_row.jinja" %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center">
+    <p class="font-display text-lg font-semibold text-ink-900">No courses yet</p>
+    <p class="mt-2 text-sm text-slate-500">Add one above to make it live on /academy/courses/.</p>
+</div>
+{% endif %}
+{% endblock %}

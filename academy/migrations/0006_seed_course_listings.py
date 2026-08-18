@@ -1,9 +1,4 @@
-"""Public academy course catalog — structured content for course pages."""
-
-import re
-from decimal import Decimal
-
-from website.data import img
+from django.db import migrations
 
 
 def _mod(title, topics, free_preview=False):
@@ -30,7 +25,7 @@ COURSES = [
         'enrolled': 83,
         'rating': 5.0,
         'reviews_count': 3,
-        'image': img('photo-1677442136019-21780ecad995', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Build production-ready AI automation workflows for business and client use',
             'Create portfolio-ready AI agents and automation projects for freelancing or jobs',
@@ -125,7 +120,7 @@ COURSES = [
                 'Career roadmap planning',
             ]),
         ],
-        'career': {'min': '₹4L', 'max': '₹12L', 'label': 'Entry to senior roles'},
+        'career_label': 'Entry to senior roles', 'career_min': '₹4L', 'career_max': '₹12L',
         'reviews': [
             {'quote': 'The practical workflows helped me start offering automation services to small businesses. I recovered the course fee through freelance work within two months.', 'name': 'Rahul Mehta', 'role': 'Automation Freelancer', 'city': 'Pune'},
             {'quote': 'I moved from repetitive manual work to building automation systems for my team. The modules were practical and easy to implement in real business scenarios.', 'name': 'Priya Sharma', 'role': 'Operations Executive', 'city': 'Bengaluru'},
@@ -154,7 +149,7 @@ COURSES = [
         'enrolled': 83,
         'rating': 5.0,
         'reviews_count': 3,
-        'image': img('photo-1556761175-5973dc0f32e7', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Run Meta Ads, Google Ads, SEO campaigns, and Canva design projects for businesses',
             'Build real websites and AI-powered mobile apps with practical project experience',
@@ -235,7 +230,7 @@ COURSES = [
                 'Job interview preparation', 'Startup mindset', 'Final capstone project',
             ]),
         ],
-        'career': {'min': '₹3L', 'max': '₹12L', 'label': 'Entry to senior roles'},
+        'career_label': 'Entry to senior roles', 'career_min': '₹3L', 'career_max': '₹12L',
         'reviews': [
             {'quote': 'This course gave me practical Meta Ads, SEO, and Google Ads skills with real projects. I became job-ready within months.', 'name': 'Rahul Mehta', 'role': 'Digital Marketing Executive', 'city': 'Ahmedabad'},
             {'quote': 'Website design and Canva training helped me start freelancing quickly. The AI tools made learning much faster.', 'name': 'Pooja Sharma', 'role': 'Freelancer', 'city': 'Surat'},
@@ -263,7 +258,7 @@ COURSES = [
         'enrolled': 83,
         'rating': 5.0,
         'reviews_count': 3,
-        'image': img('photo-1553877522-43269d4ea984', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Build AI-powered business workflows to automate operations, sales, and customer communication',
             'Create practical AI business systems and portfolio-ready implementations for consulting or freelancing',
@@ -336,7 +331,7 @@ COURSES = [
                 'Freelance and consulting launch strategy', 'Final business AI showcase',
             ]),
         ],
-        'career': {'min': '₹3L', 'max': '₹12L', 'label': 'Entry to senior roles'},
+        'career_label': 'Entry to senior roles', 'career_min': '₹3L', 'career_max': '₹12L',
         'reviews': [
             {'quote': 'I implemented AI workflows for quotations, customer responses, and internal reporting. The time savings alone made this course highly valuable for my business.', 'name': 'Vikas Shah', 'role': 'Manufacturing Business Owner', 'city': 'Ahmedabad'},
             {'quote': 'The course made AI practical instead of overwhelming. I now use automation workflows daily and positioned myself for better operational roles.', 'name': 'Neha Bansal', 'role': 'Business Operations Executive', 'city': 'Delhi'},
@@ -364,7 +359,7 @@ COURSES = [
         'enrolled': 83,
         'rating': 5.0,
         'reviews_count': 3,
-        'image': img('photo-1460925895917-afdab827c52f', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Build real digital marketing campaigns using AI tools across SEO, content, and paid ads',
             'Create portfolio-ready marketing projects for freelancing, jobs, or business growth',
@@ -454,7 +449,7 @@ COURSES = [
                 'Campaign presentation', 'Career action plan',
             ]),
         ],
-        'career': {'min': '₹3L', 'max': '₹12L', 'label': 'Entry to senior roles'},
+        'career_label': 'Entry to senior roles', 'career_min': '₹3L', 'career_max': '₹12L',
         'reviews': [
             {'quote': 'The AI SEO and content modules helped me confidently handle real client projects. I landed my first marketing role within weeks of completing the course.', 'name': 'Rohit Agarwal', 'role': 'SEO Executive', 'city': 'Jaipur'},
             {'quote': 'The paid ads and automation workflows were practical and easy to implement. I started offering social media and ad management services to local businesses.', 'name': 'Sneha Kulkarni', 'role': 'Freelance Digital Marketer', 'city': 'Pune'},
@@ -474,12 +469,12 @@ COURSES = [
         'modules_count': 4,
         'topics_count': 28,
         'price': '₹2,999',
-        'salary_range': None,
+        'salary_range': '',
         'featured': False,
         'enrolled': 47,
         'rating': 5.0,
         'reviews_count': 0,
-        'image': img('photo-1677442136019-21780ecad995', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Job-ready skills with structured, self-paced lessons',
             'Earn a verified Winning Blueprints certificate recognized by employers',
@@ -499,20 +494,12 @@ COURSES = [
             'Outcome: become a Prompt Specialist and sell prompts or freelance services.',
         ],
         'curriculum': [
-            _mod('AI Basics', [
-                'LLM fundamentals', 'Tokens, temperature, context',
-            ], True),
-            _mod('Core Prompting', [
-                'Role prompting', 'Instruction design', 'Output formatting',
-            ], True),
-            _mod('Advanced Techniques', [
-                'Chain of Thought', 'Few-shot prompting', 'Prompt chaining',
-            ]),
-            _mod('Business Use Cases', [
-                'Content generation', 'Sales copy', 'Automation prompts',
-            ]),
+            _mod('AI Basics', ['LLM fundamentals', 'Tokens, temperature, context'], True),
+            _mod('Core Prompting', ['Role prompting', 'Instruction design', 'Output formatting'], True),
+            _mod('Advanced Techniques', ['Chain of Thought', 'Few-shot prompting', 'Prompt chaining']),
+            _mod('Business Use Cases', ['Content generation', 'Sales copy', 'Automation prompts']),
         ],
-        'career': None,
+        'career_label': '', 'career_min': '', 'career_max': '',
         'reviews': [],
         'highlight_quote': 'Learn how to design high-performing prompts that generate accurate, structured outputs.',
         'highlight_author': 'Winning Blueprints Academy',
@@ -528,12 +515,12 @@ COURSES = [
         'modules_count': 4,
         'topics_count': 24,
         'price': '₹3,999',
-        'salary_range': None,
+        'salary_range': '',
         'featured': False,
         'enrolled': 47,
         'rating': 5.0,
         'reviews_count': 0,
-        'image': img('photo-1518186285589-2f7649de56e0', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1518186285589-2f7649de56e0?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Job-ready skills with structured, self-paced lessons',
             'Earn a verified Winning Blueprints certificate recognized by employers',
@@ -558,7 +545,7 @@ COURSES = [
             _mod('Data Automation', ['Scraping basics', 'Lead generation bots']),
             _mod('Communication Automation', ['Email automation', 'WhatsApp workflows']),
         ],
-        'career': None,
+        'career_label': '', 'career_min': '', 'career_max': '',
         'reviews': [],
         'highlight_quote': 'Build systems that replace manual work with AI workflows.',
         'highlight_author': 'Winning Blueprints Academy',
@@ -574,12 +561,12 @@ COURSES = [
         'modules_count': 4,
         'topics_count': 20,
         'price': '₹3,999',
-        'salary_range': None,
+        'salary_range': '',
         'featured': False,
         'enrolled': 47,
         'rating': 5.0,
         'reviews_count': 0,
-        'image': img('photo-1522071820081-009f0129c71c', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Job-ready skills with structured, self-paced lessons',
             'Earn a verified Winning Blueprints certificate recognized by employers',
@@ -610,7 +597,7 @@ COURSES = [
                 'Client acquisition', 'Upselling automation services', 'Scaling with AI',
             ]),
         ],
-        'career': None,
+        'career_label': '', 'career_min': '', 'career_max': '',
         'reviews': [],
         'highlight_quote': 'Use AI to deliver faster and win high-value clients.',
         'highlight_author': 'Winning Blueprints Academy',
@@ -626,12 +613,12 @@ COURSES = [
         'modules_count': 4,
         'topics_count': 20,
         'price': '₹9,999',
-        'salary_range': None,
+        'salary_range': '',
         'featured': False,
         'enrolled': 47,
         'rating': 5.0,
         'reviews_count': 0,
-        'image': img('photo-1556742049-0cfed4f6a45d', 800, 500),
+        'image': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&h=500&q=70',
         'gains': [
             'Job-ready skills with structured, self-paced lessons',
             'Earn a verified Winning Blueprints certificate recognized by employers',
@@ -652,17 +639,11 @@ COURSES = [
             _mod('E-Commerce Foundations', [
                 'D2C business models', 'Store optimization basics', 'Customer journey mapping',
             ], True),
-            _mod('Growth Strategy', [
-                'Acquisition channels', 'Retention systems', 'Campaign planning',
-            ]),
-            _mod('Sales Communication', [
-                'Discovery calls', 'Objection handling', 'Conversion scripts',
-            ]),
-            _mod('Revenue Systems', [
-                'Reporting dashboards', 'Client delivery workflows', 'Scaling operations',
-            ]),
+            _mod('Growth Strategy', ['Acquisition channels', 'Retention systems', 'Campaign planning']),
+            _mod('Sales Communication', ['Discovery calls', 'Objection handling', 'Conversion scripts']),
+            _mod('Revenue Systems', ['Reporting dashboards', 'Client delivery workflows', 'Scaling operations']),
         ],
-        'career': None,
+        'career_label': '', 'career_min': '', 'career_max': '',
         'reviews': [],
         'highlight_quote': 'Close more clients with confident communication and conversion systems.',
         'highlight_author': 'Winning Blueprints Academy',
@@ -671,15 +652,25 @@ COURSES = [
 ]
 
 
-def get_course(slug):
-    return next((c for c in COURSES if c['slug'] == slug), None)
+def seed_courses(apps, schema_editor):
+    CourseListing = apps.get_model('academy', 'CourseListing')
+    for i, course in enumerate(COURSES):
+        course = dict(course)
+        course['sort_order'] = i
+        CourseListing.objects.get_or_create(slug=course['slug'], defaults=course)
 
 
-def price_amount(course):
-    """Numeric rupee value parsed from the display string (e.g. '₹16,999')."""
-    digits = re.sub(r'[^\d.]', '', course['price'])
-    return Decimal(digits or '0')
+def unseed_courses(apps, schema_editor):
+    CourseListing = apps.get_model('academy', 'CourseListing')
+    CourseListing.objects.filter(slug__in=[c['slug'] for c in COURSES]).delete()
 
 
-def get_featured_courses():
-    return [c for c in COURSES if c.get('featured')]
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('academy', '0005_courselisting'),
+    ]
+
+    operations = [
+        migrations.RunPython(seed_courses, unseed_courses),
+    ]
