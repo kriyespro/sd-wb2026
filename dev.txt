@@ -127,6 +127,46 @@
     - Did NOT touch static/img/logo.png (explicitly asked not to compress it), despite it being
       the single largest flagged item (~118KB estimated savings) in the report.
 
+[x] Public-site CMS in /ops/cms/
+    - Every public page (home, services, about, team, case studies, pricing, startup, careers,
+      industries, contact, the Digital Launchpad landing page) was 100% hardcoded in website/data.py
+      (~30 Python constants, ~1000 lines) — zero DB, zero non-dev editability. Moved it into 11 DB
+      models (website/models.py) grouped by shape, not by page, so it's 11 models instead of 30:
+      TitleDescBlock (generic title/desc/icon/image/badge card, tagged by `section` — covers
+      WHY_CHOOSE_US, STARTUP_PROMISES, STARTUP_FOR, F2C_PIPELINE, MODEL_STEPS, INDUSTRIES,
+      TEAM_DEPARTMENTS, TEAM_ROLES, CAREERS_PERKS, ACADEMY_PROCESS, AUDIENCE_TAGS, HERO_POINTS),
+      StatBlock, ProjectBlock, Testimonial, FAQ, TeamMember (unifies old TEAM_FOUNDERS + TEAM_CORE
+      via is_founder), Service (also absorbs FLAGSHIP_OFFERS via is_flagship), CaseStudy,
+      PricingTier, StartupPhase, SiteSettings (singleton — site images + contact info).
+    - website/migrations/0010_cms_models.py (schema) + 0011_seed_cms_content.py (RunPython
+      get_or_create, copies today's data.py content verbatim — row counts verified to match
+      exactly: 55/4/5/3/23/10/8/4/3/5/1).
+    - CLIENT_LOGOS and INSTAGRAM_IMAGES left out — dead code, not referenced by any view or
+      template. LP_AI_DM_COMPARISON left hardcoded — single campaign-page comparison table,
+      matches the existing precedent of not DB-driving one-page campaign copy.
+    - Editor: one generic registry-driven CRUD (operations/cms_registry.py + cms_views.py +
+      cms_forms.py) instead of 11 hand-written view/template sets — mirrors the existing
+      CourseListingsView/CourseListingEditView pattern but resolves model/form dynamically via a
+      `<slug:model_key>` URL segment. List/JSON fields (tags, gallery, features, outcomes...) edit
+      as one-per-line textareas, same convention as CourseListingForm — helpers now shared via
+      core/form_utils.py (academy/forms.py updated to import from there instead of duplicating).
+      New nav entry: Website Content, superuser-only, at /ops/cms/.
+    - website/content.py — query helpers backing the public pages. Most models reuse the exact
+      field names data.py already had (services, case studies, pricing tiers, startup phases,
+      stats, projects, testimonials, team members all pass straight through). Only FAQ (q/a vs
+      question/answer) and the two TEAM_ROLES/TEAM_DEPARTMENTS sections (role/count vs title/badge)
+      needed a dict-mapping shim — kept in content.py so templates needed ZERO changes.
+    - website/views.py, academy/views.py, website/context_processors.py rewired from data.py
+      imports to content.py queries, keeping identical context variable names/shapes throughout.
+      SiteSettings cached 5 min via Redis (website/content.py:site_settings) to avoid a query on
+      every page load for rarely-changing contact/hero image data.
+    - Verified: manage.py check clean; all 17 public URLs curled — 200, zero unrendered {{ }}
+      artifacts; spot-checked the two shimmed sections (team department/role counts, FAQ text)
+      rendered correctly; full CRUD (list/add/edit/toggle/delete) exercised against all 11 model
+      types via a temp superuser session, then deleted. Pre-existing test suite has 20 unrelated
+      failures (Python 3.14 / installed Django's test client `copy.copy()` on RenderContext,
+      confirmed via git stash to fail identically on unmodified main — not caused by this change).
+
 ## Ops Portal Modules (/ops/)
 - /ops/                       Overview + stats
 - /ops/quality-check/         Approve/reject deliverables

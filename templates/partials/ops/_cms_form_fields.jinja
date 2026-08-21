@@ -1,0 +1,30 @@
+{% if show_errors and form.errors %}
+<div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    Please fix the highlighted fields and try again.
+</div>
+{% endif %}
+
+<div class="grid gap-4 sm:grid-cols-2">
+    {% for field in form.visible_fields() %}
+    {% if field.field.widget.input_type == 'checkbox' %}
+    <label class="flex items-center gap-2 text-sm font-semibold text-slate-800 sm:col-span-2">
+        {{ field }} {{ field.label }}
+    </label>
+    {% elif 'Textarea' in field.field.widget.__class__.__name__ %}
+    {# Textarea widgets take full width #}
+    <div class="sm:col-span-2">
+        <label class="mb-1.5 block text-sm font-semibold text-slate-800">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="mt-1.5 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+        {% if show_errors %}{% for e in field.errors %}<p class="mt-1 text-xs text-red-600">{{ e }}</p>{% endfor %}{% endif %}
+    </div>
+    {% else %}
+    <div>
+        <label class="mb-1.5 block text-sm font-semibold text-slate-800">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="mt-1.5 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+        {% if show_errors %}{% for e in field.errors %}<p class="mt-1 text-xs text-red-600">{{ e }}</p>{% endfor %}{% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>

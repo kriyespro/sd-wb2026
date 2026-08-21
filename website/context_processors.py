@@ -1,14 +1,14 @@
 from django.conf import settings
 
-from website.data import CONTACT_INFO, SITE_IMAGES
+from website import content
 
 
 def site_context(request):
     return {
         'site_name': settings.SITE_NAME,
         'site_tagline': settings.SITE_TAGLINE,
-        'contact_info': CONTACT_INFO,
-        'site_images': SITE_IMAGES,
+        'contact_info': content.contact_info(),
+        'site_images': content.site_images(),
         'nav_items': [
             {'label': 'Home', 'url_name': 'website:home'},
             {'label': 'Services', 'url_name': 'website:services'},

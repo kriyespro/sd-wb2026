@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import cms_views, views
 
 app_name = 'operations'
 
@@ -90,6 +90,12 @@ urlpatterns = [
         views.CourseListingDeleteView.as_view(),
         name='course_listing_delete',
     ),
+    path('cms/', cms_views.CMSListView.as_view(), {'model_key': 'blocks'}, name='cms_home'),
+    path('cms/<slug:model_key>/', cms_views.CMSListView.as_view(), name='cms_list'),
+    path('cms/<slug:model_key>/add/', cms_views.CMSCreateView.as_view(), name='cms_add'),
+    path('cms/<slug:model_key>/<int:pk>/edit/', cms_views.CMSEditView.as_view(), name='cms_edit'),
+    path('cms/<slug:model_key>/<int:pk>/toggle/', cms_views.CMSToggleView.as_view(), name='cms_toggle'),
+    path('cms/<slug:model_key>/<int:pk>/delete/', cms_views.CMSDeleteView.as_view(), name='cms_delete'),
     path('dgc-applications/', views.DgcApplicationsView.as_view(), name='dgc_applications'),
     path(
         'dgc-applications/<int:pk>/approve/',

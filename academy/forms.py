@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.text import slugify
 
+from core.form_utils import lines_to_list as _lines_to_list, list_to_lines as _list_to_lines
+
 from .models import (
     ActivityLog,
     AdmissionApplication,
@@ -132,14 +134,6 @@ def unique_course_slug(title, exclude_pk=None):
         slug = f'{base}-{n}'
         n += 1
     return slug
-
-
-def _lines_to_list(text):
-    return [line.strip() for line in (text or '').splitlines() if line.strip()]
-
-
-def _list_to_lines(items):
-    return '\n'.join(items or [])
 
 
 def _parse_curriculum(text):

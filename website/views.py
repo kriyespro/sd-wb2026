@@ -5,38 +5,8 @@ from django.views.decorators.http import require_http_methods
 
 from academy.models import CourseListing
 
-from .data import (
-    ACADEMY_PROCESS,
-    AUDIENCE_TAGS,
-    CAREERS_PERKS,
-    CASE_STUDIES,
-    CONTACT_INFO,
-    F2C_PIPELINE,
-    FLAGSHIP_OFFERS,
-    GENERAL_FAQS,
-    HERO_POINTS,
-    INDUSTRIES,
-    LP_AI_DM_COMPARISON,
-    LP_AI_DM_FAQS,
-    MODEL_STEPS,
-    PRICING_FAQS,
-    PRICING_TIERS,
-    RECENT_PROJECTS,
-    SERVICE_PROCESS,
-    SERVICES,
-    STARTUP_FAQS,
-    STARTUP_FOR,
-    STARTUP_PHASES,
-    STARTUP_PROMISES,
-    STATS,
-    TEAM,
-    TEAM_CORE,
-    TEAM_DEPARTMENTS,
-    TEAM_FOUNDERS,
-    TEAM_ROLES,
-    TESTIMONIALS,
-    WHY_CHOOSE_US,
-)
+from . import content
+from .data import LP_AI_DM_COMPARISON
 from .forms import JobApplicationForm, JobPostSubmissionForm, LeadForm
 from .models import JobOpening
 from .services import create_job_application, create_lead, get_existing_job_application
@@ -70,24 +40,24 @@ def home(request):
         'Home',
         'We help textile manufacturers sell sarees, t-shirts, jeans, and kurtis directly to customers — online, prepaid, with 2x–4x higher margins.',
         form=LeadForm(),
-        services=SERVICES,
-        why_choose_us=WHY_CHOOSE_US,
-        recent_projects=RECENT_PROJECTS,
-        team=TEAM,
-        team_roles=TEAM_ROLES,
-        model_steps=MODEL_STEPS,
-        stats=STATS,
-        audience_tags=AUDIENCE_TAGS,
-        testimonials=TESTIMONIALS,
-        service_process=SERVICE_PROCESS,
-        f2c_pipeline=F2C_PIPELINE,
-        flagship_offers=FLAGSHIP_OFFERS,
-        pricing_tiers=PRICING_TIERS,
-        pricing_faqs=PRICING_FAQS[:4],
-        general_faqs=GENERAL_FAQS,
-        industries=INDUSTRIES[:6],
-        hero_points=HERO_POINTS,
-        featured_case_study=CASE_STUDIES[0],
+        services=content.services(),
+        why_choose_us=content.why_choose_us(),
+        recent_projects=content.recent_projects(),
+        team=content.team_preview(),
+        team_roles=content.team_roles(),
+        model_steps=content.model_steps(),
+        stats=content.stats(),
+        audience_tags=content.audience_tags(),
+        testimonials=content.testimonials(),
+        service_process=content.f2c_pipeline(),
+        f2c_pipeline=content.f2c_pipeline(),
+        flagship_offers=content.flagship_offers(),
+        pricing_tiers=content.pricing_tiers(),
+        pricing_faqs=content.faqs('pricing')[:4],
+        general_faqs=content.faqs('general'),
+        industries=content.industries()[:6],
+        hero_points=content.hero_points(),
+        featured_case_study=content.case_studies().first(),
     )
 
 
@@ -98,29 +68,28 @@ def services(request):
         'Services',
         'eCommerce setup, Meta & Google ads, WhatsApp automation, backoffice SOPs — built for textile manufacturers going D2C.',
         form=LeadForm(),
-        services=SERVICES,
-        why_choose_us=WHY_CHOOSE_US,
-        service_process=SERVICE_PROCESS,
-        flagship_offers=FLAGSHIP_OFFERS,
-        stats=STATS,
-        audience_tags=AUDIENCE_TAGS,
-        recent_projects=RECENT_PROJECTS[:3],
+        services=content.services(),
+        why_choose_us=content.why_choose_us(),
+        service_process=content.f2c_pipeline(),
+        flagship_offers=content.flagship_offers(),
+        stats=content.stats(),
+        audience_tags=content.audience_tags(),
+        recent_projects=content.recent_projects()[:3],
     )
 
 
 def service_detail(request, slug):
-    service = next((s for s in SERVICES if s['slug'] == slug), None)
+    service = content.service_by_slug(slug)
     if not service:
-        from django.http import Http404
         raise Http404('Service not found')
     return _page(
         request,
         'pages/service_detail.jinja',
-        service['title'],
-        service['short'],
-        form=LeadForm(initial={'service_interest': service['title']}),
+        service.title,
+        service.short,
+        form=LeadForm(initial={'service_interest': service.title}),
         service=service,
-        all_services=SERVICES,
+        all_services=content.services(),
     )
 
 
@@ -130,9 +99,9 @@ def our_work(request):
         'pages/our_work.jinja',
         'Our Work',
         'Factory-to-customer projects: stores, Meta ads, Google Shopping, and backoffice systems for manufacturers.',
-        projects=RECENT_PROJECTS,
-        case_studies=CASE_STUDIES,
-        services=SERVICES,
+        projects=content.recent_projects(),
+        case_studies=content.case_studies(),
+        services=content.services(),
     )
 
 
@@ -142,21 +111,20 @@ def case_studies(request):
         'pages/case_studies.jinja',
         'Case Studies',
         'Real manufacturers. Real prepaid orders. See how factories go direct-to-customer with Winning Blueprints.',
-        case_studies=CASE_STUDIES,
+        case_studies=content.case_studies(),
     )
 
 
 def case_study_detail(request, slug):
-    study = next((c for c in CASE_STUDIES if c['slug'] == slug), None)
+    study = content.case_study_by_slug(slug)
     if not study:
-        from django.http import Http404
         raise Http404('Case study not found')
-    related = [c for c in CASE_STUDIES if c['slug'] != slug][:2]
+    related = content.case_studies().exclude(slug=slug)[:2]
     return _page(
         request,
         'pages/case_study_detail.jinja',
-        study['title'],
-        study['summary'],
+        study.title,
+        study.summary,
         study=study,
         related=related,
     )
@@ -168,7 +136,7 @@ def industries(request):
         'pages/industries.jinja',
         'Industries',
         'D2C growth systems for textile manufacturers, garment factories, saree brands, and emerging fashion labels.',
-        industries=INDUSTRIES,
+        industries=content.industries(),
     )
 
 
@@ -178,9 +146,9 @@ def pricing(request):
         'pages/pricing.jinja',
         'Pricing',
         'Flexible D2C plans from ₹15K/month — store, ads, and backoffice tailored to your factory.',
-        pricing_tiers=PRICING_TIERS,
-        pricing_faqs=PRICING_FAQS,
-        general_faqs=GENERAL_FAQS,
+        pricing_tiers=content.pricing_tiers(),
+        pricing_faqs=content.faqs('pricing'),
+        general_faqs=content.faqs('general'),
     )
 
 
@@ -190,12 +158,12 @@ def about(request):
         'pages/about.jinja',
         'About',
         'Winning Blueprints helps textile manufacturers sell direct to customers — powered by a delivery team and internal academy.',
-        why_choose_us=WHY_CHOOSE_US,
-        stats=STATS,
-        team=TEAM,
-        team_roles=TEAM_ROLES,
-        model_steps=MODEL_STEPS,
-        f2c_pipeline=F2C_PIPELINE,
+        why_choose_us=content.why_choose_us(),
+        stats=content.stats(),
+        team=content.team_preview(),
+        team_roles=content.team_roles(),
+        model_steps=content.model_steps(),
+        f2c_pipeline=content.f2c_pipeline(),
     )
 
 
@@ -205,10 +173,10 @@ def team(request):
         'pages/team.jinja',
         'Our Team',
         'Meet the Winning Blueprints team — 100+ specialists helping manufacturers sell direct.',
-        founders=TEAM_FOUNDERS,
-        core_team=TEAM_CORE,
-        departments=TEAM_DEPARTMENTS,
-        stats=STATS,
+        founders=content.founders(),
+        core_team=content.core_team(),
+        departments=content.team_departments(),
+        stats=content.stats(),
     )
 
 
@@ -219,11 +187,11 @@ def startup(request):
         'Startup Plan',
         'Full Startup Plan: build the product, create & train the team, plan marketing & ops, then launch — idea to income.',
         form=LeadForm(initial={'service_interest': 'Full Startup Plan'}),
-        phases=STARTUP_PHASES,
-        promises=STARTUP_PROMISES,
-        startup_for=STARTUP_FOR,
-        startup_faqs=STARTUP_FAQS,
-        stats=STATS,
+        phases=content.startup_phases(),
+        promises=content.startup_promises(),
+        startup_for=content.startup_for(),
+        startup_faqs=content.faqs('startup'),
+        stats=content.stats(),
     )
 
 
@@ -241,10 +209,10 @@ def careers(request):
         'Open roles at Winning Blueprints — full-time and internship. Apply directly for jobs on real D2C and startup work.',
         form=form,
         open_roles=_open_roles(),
-        careers_perks=CAREERS_PERKS,
-        academy_process=ACADEMY_PROCESS,
-        stats=STATS,
-        team_roles=TEAM_ROLES,
+        careers_perks=content.careers_perks(),
+        academy_process=content.academy_process(),
+        stats=content.stats(),
+        team_roles=content.team_roles(),
     )
 
 
@@ -297,10 +265,10 @@ def job_apply_submit(request):
             'Open roles at Winning Blueprints — full-time and internship.',
             form=form,
             open_roles=_open_roles(),
-            careers_perks=CAREERS_PERKS,
-            academy_process=ACADEMY_PROCESS,
-            stats=STATS,
-            team_roles=TEAM_ROLES,
+            careers_perks=content.careers_perks(),
+            academy_process=content.academy_process(),
+            stats=content.stats(),
+            team_roles=content.team_roles(),
             show_errors=True,
         )
 
@@ -319,7 +287,7 @@ def contact(request):
         'Contact',
         'Book a free strategy call or send us a message. We respond within 24 hours.',
         form=form,
-        contact_info=CONTACT_INFO,
+        contact_info=content.contact_info(),
     )
 
 
@@ -353,7 +321,7 @@ def lp_ai_digital_marketing(request):
     course = CourseListing.objects.filter(slug=LP_AI_DM_SLUG, is_active=True).first()
     if not course:
         raise Http404('Course not found')
-    mentor = next((m for m in TEAM_CORE if m['role'] == 'Marketing Expert'), None)
+    mentor = content.mentor_for_role('Marketing Expert')
     return render(request, 'pages/lp/ai_digital_marketing.jinja', {
         'page_title': 'Winning Blueprints Digital Launchpad — 4 Weeks, ₹999',
         'meta_description': (
@@ -361,10 +329,10 @@ def lp_ai_digital_marketing(request):
             '12 live online classes, practical assignments, beginner-friendly.'
         ),
         'course': course,
-        'faqs': LP_AI_DM_FAQS,
+        'faqs': content.faqs('lp_ai_dm'),
         'comparison': LP_AI_DM_COMPARISON,
         'mentor': mentor,
-        'contact_info': CONTACT_INFO,
+        'contact_info': content.contact_info(),
         'meta_pixel_id': settings.META_PIXEL_ID,
         'lead_source': LP_AI_DM_SOURCE,
         'form': LeadForm(),

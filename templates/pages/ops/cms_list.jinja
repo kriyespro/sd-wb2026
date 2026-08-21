@@ -1,0 +1,78 @@
+{% extends "layouts/dashboard.jinja" %}
+
+{% block dashboard_content %}
+<section class="relative mb-6 overflow-hidden rounded-[1.75rem] bg-ink-900 px-6 py-7 text-white sm:px-8">
+    <div class="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-violet-500/25 blur-3xl"></div>
+    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Website Content</span>
+            <h2 class="mt-2 font-display text-2xl font-bold">{{ entry.label }}</h2>
+            <p class="mt-1 max-w-xl text-sm text-slate-300">{{ entry.help }}</p>
+        </div>
+        <a href="{{ url('operations:dashboard') }}"
+           class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/10">
+            ← Mission Control
+        </a>
+    </div>
+</section>
+
+<div class="mb-6 flex flex-wrap gap-2">
+    {% for key, e in registry.items() %}
+    <a href="{{ url('operations:cms_list', kwargs={'model_key': key}) }}"
+       class="rounded-full border px-3 py-1.5 text-xs font-bold transition {{ 'border-brand-600 bg-brand-50 text-brand-700' if key == model_key else 'border-slate-200 bg-white text-slate-600 hover:border-brand-300' }}">
+        {{ e.label }}
+    </a>
+    {% endfor %}
+</div>
+
+{% if entry.singleton %}
+<div class="dash-panel p-6">
+    <form method="post" action="{{ url('operations:cms_list', kwargs={'model_key': model_key}) }}" class="grid gap-6">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {% include "partials/ops/_cms_form_fields.jinja" %}
+        <div>
+            <button type="submit" class="btn-primary !px-6 !py-2.5 text-sm">Save changes</button>
+        </div>
+    </form>
+</div>
+{% else %}
+
+<div class="dash-panel mb-6 p-6">
+    <h3 class="font-display text-lg font-bold text-ink-900">Add new</h3>
+    <form method="post" action="{{ url('operations:cms_add', kwargs={'model_key': model_key}) }}" class="mt-4 grid gap-6">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {% include "partials/ops/_cms_form_fields.jinja" %}
+        <div>
+            <button type="submit" class="btn-primary !px-6 !py-2.5 text-sm">Add</button>
+        </div>
+    </form>
+</div>
+
+{% if items %}
+<div class="dash-panel overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[640px] text-left text-sm">
+            <thead class="border-b border-slate-100 bg-slate-50/80 text-xs uppercase tracking-[0.14em] text-slate-500">
+                <tr>
+                    {% for label, _ in entry.columns %}
+                    <th class="px-4 py-3.5 font-semibold">{{ label|replace('_', ' ')|title }}</th>
+                    {% endfor %}
+                    <th class="px-5 py-3.5 font-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for item in items %}
+                {% include "partials/ops/_cms_row.jinja" %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="dash-panel p-12 text-center">
+    <p class="font-display text-lg font-semibold text-ink-900">Nothing here yet</p>
+    <p class="mt-2 text-sm text-slate-500">Add one above.</p>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

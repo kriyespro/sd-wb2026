@@ -1,0 +1,38 @@
+<tr id="cms-row-{{ item.id }}" class="align-top transition hover:bg-slate-50/80 {% if not item.is_active %}opacity-60{% endif %}">
+    {% for _, accessor in entry.columns %}
+    <td class="px-4 py-4 text-slate-700">
+        {% set value = item[accessor]() if accessor.startswith('get_') else item[accessor] %}
+        {% if accessor == 'is_active' %}
+        {% if item.is_active %}
+        <span class="ops-chip border-emerald-200 bg-emerald-50 text-emerald-800">Live</span>
+        {% else %}
+        <span class="ops-chip border-slate-200 bg-slate-50 text-slate-600">Hidden</span>
+        {% endif %}
+        {% elif value is sameas true %}
+        <span class="ops-chip border-emerald-200 bg-emerald-50 text-emerald-800">Yes</span>
+        {% elif value is sameas false %}
+        <span class="text-slate-400">—</span>
+        {% else %}
+        {{ value }}
+        {% endif %}
+    </td>
+    {% endfor %}
+    <td class="px-5 py-4">
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{{ url('operations:cms_edit', kwargs={'model_key': model_key, 'pk': item.id}) }}" class="text-xs font-bold text-slate-600 hover:text-brand-600">Edit</a>
+            <form hx-post="{{ url('operations:cms_toggle', kwargs={'model_key': model_key, 'pk': item.id}) }}"
+                  hx-target="#cms-row-{{ item.id }}" hx-swap="outerHTML">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="text-xs font-bold text-brand-600 hover:text-brand-700">
+                    {{ 'Hide' if item.is_active else 'Make live' }}
+                </button>
+            </form>
+            <form hx-post="{{ url('operations:cms_delete', kwargs={'model_key': model_key, 'pk': item.id}) }}"
+                  hx-target="#cms-row-{{ item.id }}" hx-swap="outerHTML"
+                  hx-confirm="Delete this item? This can't be undone.">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-700">Delete</button>
+            </form>
+        </div>
+    </td>
+</tr>
