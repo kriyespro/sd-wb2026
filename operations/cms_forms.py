@@ -136,20 +136,36 @@ class TeamMemberForm(ListFieldFormMixin, forms.ModelForm):
 
     class Meta:
         model = TeamMember
-        fields = ['name', 'role', 'tags', 'initials', 'bio', 'image', 'is_founder', 'order', 'is_active']
+        fields = ['name', 'role', 'tags', 'initials', 'bio', 'image', 'image_upload', 'is_founder', 'order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs=_TEXT),
             'role': forms.TextInput(attrs=_TEXT),
             'initials': forms.TextInput(attrs=_TEXT),
             'bio': forms.Textarea(attrs={**_TEXTAREA, 'rows': 3, 'placeholder': ''}),
             'image': forms.URLInput(attrs={**_TEXT, 'placeholder': 'https://... (optional)'}),
+            'image_upload': forms.ClearableFileInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'accept': 'image/*'}),
             'is_founder': forms.CheckboxInput(attrs=_CHECK),
             'order': forms.NumberInput(attrs=_TEXT),
             'is_active': forms.CheckboxInput(attrs=_CHECK),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image_upload'].required = False
+
     def clean_tags(self):
         return self._clean_list_field('tags')
+
+    def save(self, commit=True):
+        member = super().save(commit=False)
+        if commit:
+            member.save()
+            if member.image_upload:
+                new_image = member.image_upload.url
+                if member.image != new_image:
+                    member.image = new_image
+                    member.save(update_fields=['image'])
+        return member
 
 
 class ServiceForm(ListFieldFormMixin, forms.ModelForm):

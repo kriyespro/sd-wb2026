@@ -323,6 +323,7 @@ class TeamMember(models.Model):
     initials = models.CharField(max_length=6, blank=True)
     bio = models.TextField(blank=True)
     image = models.URLField(max_length=500, blank=True)
+    image_upload = models.FileField(upload_to='team/', blank=True, help_text='Uploading a photo here overrides the Image URL above.')
     is_founder = models.BooleanField(default=False, db_index=True)
     order = models.PositiveSmallIntegerField(default=0)
     is_active = models.BooleanField(default=True)

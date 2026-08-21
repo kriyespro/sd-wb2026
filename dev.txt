@@ -167,6 +167,25 @@
       failures (Python 3.14 / installed Django's test client `copy.copy()` on RenderContext,
       confirmed via git stash to fail identically on unmodified main — not caused by this change).
 
+[x] Team CMS — image upload
+    - TeamMember.image_upload (FileField, upload_to='team/') added alongside the existing image
+      URL field — website/migrations/0012_team_member_image_upload.py, purely additive.
+    - Plain FileField not ImageField — Pillow isn't a project dependency and this doesn't need
+      server-side image validation, just storage; avoids adding a new dependency for one field.
+    - TeamMemberForm.save(): if a file is uploaded, `image` is overwritten with the upload's
+      /media/ URL, so the public team.jinja/home.jinja templates (which only read `member.image`)
+      need zero changes — upload just becomes another way to set that same field. Leaving the
+      Image URL field blank/untouched still works exactly as before.
+    - operations/cms_views.py now passes request.FILES through on all 3 CMS POST paths (add/edit/
+      singleton-save); the 3 generic CMS <form> tags got enctype="multipart/form-data" — both
+      changes apply to all 11 CMS content types (harmless no-op for the ones with no file field),
+      not just Team.
+    - Verified end-to-end against a temp superuser session: uploaded a real file, confirmed it
+      landed in media/team/, confirmed `image` auto-synced to the /media/ URL, then restored the
+      test row's original data and deleted the test file/user.
+    - docker-compose.yml already mounts media_data as a persistent named volume (confirmed before
+      building this) — uploads survive `docker compose up --build` redeploys.
+
 ## Ops Portal Modules (/ops/)
 - /ops/                       Overview + stats
 - /ops/quality-check/         Approve/reject deliverables

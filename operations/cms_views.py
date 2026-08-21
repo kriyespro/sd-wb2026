@@ -56,7 +56,7 @@ class CMSListView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
         if not entry['singleton']:
             return redirect('operations:cms_list', model_key=model_key)
         instance = entry['model'].load()
-        form = entry['form'](request.POST, instance=instance)
+        form = entry['form'](request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
             return redirect('operations:cms_list', model_key=model_key)
@@ -72,7 +72,7 @@ class CMSCreateView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
         entry = _entry(model_key)
         if entry['singleton']:
             raise Http404('This content type has a single row — use Edit instead.')
-        form = entry['form'](request.POST)
+        form = entry['form'](request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('operations:cms_list', model_key=model_key)
@@ -103,7 +103,7 @@ class CMSEditView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
     def post(self, request, model_key, pk):
         entry = _entry(model_key)
         instance = get_object_or_404(entry['model'], pk=pk)
-        form = entry['form'](request.POST, instance=instance)
+        form = entry['form'](request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
             return redirect('operations:cms_list', model_key=model_key)
