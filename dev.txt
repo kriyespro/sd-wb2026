@@ -76,6 +76,23 @@
     - Verified with a temp superuser session (created + deleted after test) against
       /ops/courses/11/edit/ — 200, correct classes rendered, no template artifacts
 
+[x] Performance audit + fixes
+    - Root cause of "new course missing on prod": it was seeded via a one-off manage.py shell
+      command against the local DB only. Added academy/migrations/0007_seed_quick_start_course.py
+      (same RunPython/get_or_create pattern as 0006) so it deploys via the normal migrate step —
+      run `docker compose exec web python manage.py migrate` on the server after pulling.
+    - Infra layer was already solid: Redis cache+sessions, gzip, whitenoise CompressedManifest
+      static storage, nginx static cache 30d/media 7d, Postgres CONN_MAX_AGE pooling, HTTP/2 at
+      the host proxy. Checked DB query counts on hot pages (home, academy courses, course detail,
+      landing page) — all 0-2 queries, no N+1 issue found.
+    - Real gap found: almost no <img> tags used the existing partials/_img.jinja lazy-load
+      component (only team/careers/about did). Added loading="lazy" decoding="async" to
+      below-the-fold images across home, our_work, case_studies, case_study_detail, course cards,
+      course_detail mentor photo, and the landing page mentor photo. Left true above-the-fold
+      hero/LCP images (home hero visual, landing page course image, logo) eager, added
+      fetchpriority="high" decoding="async" to the two hero images.
+    - nginx.conf: added gzip_vary on; and more gzip_types (woff/ttf/ico/wasm were missing).
+
 ## Ops Portal Modules (/ops/)
 - /ops/                       Overview + stats
 - /ops/quality-check/         Approve/reject deliverables

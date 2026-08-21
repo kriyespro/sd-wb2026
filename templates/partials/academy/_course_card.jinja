@@ -3,7 +3,7 @@
     <span class="absolute right-4 top-4 z-10 rounded-full bg-gold-500 px-3 py-1 text-xs font-bold text-ink-900">Featured</span>
     {% endif %}
     <a href="{{ url('academy:course_detail', kwargs={'slug': course.slug}) }}" class="block">
-        <img src="{{ course.image }}" alt="{{ course.title }}" class="h-44 w-full object-cover">
+        <img src="{{ course.image }}" alt="{{ course.title }}" class="h-44 w-full object-cover" loading="lazy" decoding="async">
     </a>
     <div class="flex flex-1 flex-col p-6">
         <a href="{{ url('academy:course_detail', kwargs={'slug': course.slug}) }}" class="font-display text-lg font-semibold text-ink-900 hover:text-brand-700">
