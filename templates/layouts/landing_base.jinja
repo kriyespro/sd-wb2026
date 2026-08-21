@@ -16,9 +16,9 @@
     document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '{{ meta_pixel_id }}');
     fbq('track', 'PageView');
-    fbq('track', 'ViewContent', {content_name: 'Quick Start Digital Marketing'});
+    fbq('track', 'ViewContent', {content_name: 'Winning Blueprints Digital Launchpad'});
     window.wbTrackLead = function () { fbq('track', 'Lead'); };
-    window.wbTrackCheckout = function () { fbq('track', 'InitiateCheckout', {content_name: 'Quick Start Digital Marketing'}); };
+    window.wbTrackCheckout = function () { fbq('track', 'InitiateCheckout', {content_name: 'Winning Blueprints Digital Launchpad'}); };
     </script>
     <noscript><img height="1" width="1" style="display:none"
         src="https://www.facebook.com/tr?id={{ meta_pixel_id }}&ev=PageView&noscript=1"></noscript>
@@ -39,7 +39,7 @@
             <a href="{{ url('website:home') }}" class="flex shrink-0 items-center gap-3">
                 <img src="{{ static('img/logo.png') }}" alt="{{ site_name }}" class="h-7 w-auto sm:h-8">
             </a>
-            <a href="https://wa.me/{{ whatsapp_number|default('919023561533') }}?text={{ whatsapp_text|default('Hi! I want to know more about the Quick Start Digital Marketing course.')|urlencode }}"
+            <a href="https://wa.me/{{ whatsapp_number|default('919023561533') }}?text={{ whatsapp_text|default('Hi! I want to know more about the Winning Blueprints Digital Launchpad course.')|urlencode }}"
                target="_blank" rel="noopener"
                class="flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-600">
                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.87 9.87 0 004.74 1.2h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2z"/></svg>

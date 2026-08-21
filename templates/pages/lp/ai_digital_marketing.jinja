@@ -5,7 +5,7 @@
 <!-- URGENCY BAR -->
 <div class="flex items-center justify-center gap-2 bg-ink-900 py-2 text-center text-xs font-semibold text-gold-300 sm:text-sm">
     <svg class="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2c-1.5 3-4 4.5-4 8a4 4 0 008 0c0-1-.3-1.8-.7-2.5.4 1 .2 2-.5 2.5-.3-2-1.5-3-1.5-5.5-.5 1-1.3 1.7-1.3 3 0 .8.3 1.3.3 2a2 2 0 01-2-2c0-2.5 1.7-4 1.7-5.5z"/></svg>
-    <span>New cohort forming now — mentor seats are limited per batch. Early enrollment locks today's price.</span>
+    <span>Live cohort forming now — seats limited for live interaction. Early enrollment locks today's price.</span>
 </div>
 
 <!-- HERO -->
@@ -27,9 +27,10 @@
             </span>
             {% endif %}
             <h1 class="mt-5 font-display text-3xl font-bold leading-tight sm:text-5xl">
-                Master Digital Marketing<br>
+                Master 4 High-Value Digital Skills<br>
                 <span class="font-serif text-gradient-gold">In Just 4 Weeks</span>
             </h1>
+            <p class="mt-3 text-sm font-semibold uppercase tracking-wide text-gold-300">Vibe Coding + Meta Ads + Google Ads + Client Handling</p>
             <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg">
                 {{ course.goal }}
             </p>
@@ -43,14 +44,15 @@
             <div class="mt-8 flex flex-wrap items-center gap-4">
                 <a href="#enroll" class="btn-gold">Get Free Curriculum →</a>
                 <div>
-                    <span class="font-display text-2xl font-bold text-gold-300">{{ course.price }}</span>
-                    <span class="ml-1 text-xs text-slate-300">one-time &middot; lifetime access</span>
+                    <span class="text-sm text-slate-400 line-through">₹2,999</span>
+                    <span class="ml-1 font-display text-2xl font-bold text-gold-300">{{ course.price }}</span>
+                    <span class="ml-1 text-xs text-slate-300">early-bird price &middot; 12 live classes</span>
                 </div>
             </div>
             <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2.5 text-xs text-slate-300 sm:text-sm">
                 <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Secure Razorpay checkout</span>
                 <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified certificate</span>
-                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m-3.536-3.536a4 4 0 010-5.656M4 12a8 8 0 0016 0 8 8 0 00-16 0z"/></svg>Lifetime access</span>
+                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>12 live classes</span>
             </div>
         </div>
         <div class="relative lg:col-span-2">
@@ -114,10 +116,10 @@
         <h2 class="font-display text-2xl font-bold text-ink-900 sm:text-3xl">Sound familiar?</h2>
         <div class="mt-8 grid gap-4 text-left sm:grid-cols-2">
             {% for pain in [
-                'Running ads or posting content with no real leads or sales to show for it',
-                'Watching AI reshape marketing and worrying your skills are falling behind',
-                'Stuck applying for jobs with no portfolio or hands-on campaign experience',
-                'Paying for courses that teach theory but never a real, sellable skill',
+                'Knowing only one skill and hoping it stays enough as the digital industry changes',
+                'You can run ads, but you don\'t know how to build the landing page they point to',
+                'Stuck applying for jobs or clients with no portfolio or hands-on project experience',
+                'Paying for courses that teach theory but never a real, sellable, connected skill set',
             ] %}
             <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5">
                 <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -125,7 +127,7 @@
             </div>
             {% endfor %}
         </div>
-        <p class="mt-8 text-base font-semibold text-ink-900">This course fixes that — with AI tools, real campaigns, and a mentor in your corner.</p>
+        <p class="mt-8 text-base font-semibold text-ink-900">This bootcamp fixes that — build, advertise, communicate, and execute, all in one connected program.</p>
     </div>
 </section>
 
@@ -299,9 +301,10 @@
         <div>
             <span class="eyebrow !text-gold-300 before:!bg-gold-400">Enroll today</span>
             <h2 class="mt-3 font-display text-2xl font-bold sm:text-3xl">{{ course.title }}</h2>
-            <div class="mt-4 flex items-baseline gap-2">
+            <div class="mt-4 flex items-baseline gap-3">
+                <span class="text-lg text-slate-400 line-through">₹2,999</span>
                 <span class="font-display text-4xl font-bold text-gold-300">{{ course.price }}</span>
-                <span class="text-sm text-slate-400">one-time payment</span>
+                <span class="text-sm text-slate-400">early-bird, one-time</span>
             </div>
             <ul class="mt-6 space-y-2.5 text-sm text-slate-200 sm:text-base">
                 {% for item in course.includes %}
@@ -381,8 +384,8 @@
 <!-- FINAL CTA -->
 <section class="reveal bg-ink-900 py-16 text-white">
     <div class="mx-auto max-w-2xl px-4 text-center sm:px-6">
-        <h2 class="font-display text-2xl font-bold sm:text-3xl">Seats fill up every batch. Start today.</h2>
-        <p class="mt-3 text-base leading-relaxed text-slate-200">Enroll in {{ course.title }} and get instant, lifetime access.</p>
+        <h2 class="font-display text-2xl font-bold sm:text-3xl">Build. Advertise. Communicate. Execute.</h2>
+        <p class="mt-3 text-base leading-relaxed text-slate-200">Start Learning. Start Building. Start Practicing. Seats are limited for live interaction and practical support.</p>
         <div class="mt-8 flex flex-wrap justify-center gap-4">
             <a href="{{ url('academy:checkout', kwargs={'slug': course.slug}) }}"
                onclick="window.wbTrackCheckout && window.wbTrackCheckout()"

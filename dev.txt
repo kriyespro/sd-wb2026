@@ -93,6 +93,24 @@
       fetchpriority="high" decoding="async" to the two hero images.
     - nginx.conf: added gzip_vary on; and more gzip_types (woff/ttf/ico/wasm were missing).
 
+[x] Rebrand: Quick Start Digital Marketing -> Winning Blueprints Digital Launchpad
+    - Same slug/URL/checkout ('quick-start-digital-marketing'), full content rewrite via
+      academy/migrations/0009_rebrand_digital_launchpad.py (force update, same pattern as 0008)
+    - New positioning: 4-skill live bootcamp — Vibe Coding (AI dev) + Meta Ads + Google Ads +
+      Client Handling, 12 live classes over 4 weeks, ₹999 (was ₹2,999, shown struck-through on
+      the landing page hero + enroll section — hardcoded campaign copy, not a DB field)
+    - format changed 'Self-paced' -> 'Live online' to match the actual content (12 live days) —
+      this also auto-hides the "Lifetime Access" badge on course_detail.jinja (made conditional
+      on format) since that claim doesn't fit a live cohort and wasn't in the source content
+    - Cleared career_label/career_min/career_max/salary_range — source content gives no salary
+      figures, didn't fabricate any (auto-hides the career-outcomes section on both pages)
+    - New curriculum: 4 modules / 54 topics, rewritten gains/includes/ideal_paths/overview
+    - New FAQs (website/data.py LP_AI_DM_FAQS) — 8 Qs from the source content incl. the "we
+      don't guarantee jobs/clients" disclaimer
+    - highlight_quote/highlight_author switched from the single Marketing Expert mentor to
+      'Winning Blueprints Academy' — content now spans coding + 2 ad platforms + sales, not just
+      one person's specialty
+
 ## Ops Portal Modules (/ops/)
 - /ops/                       Overview + stats
 - /ops/quality-check/         Approve/reject deliverables

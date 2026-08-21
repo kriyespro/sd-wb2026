@@ -962,37 +962,38 @@ LP_AI_DM_COMPARISON = [
 # FAQ for the /ai-digital-marketing-course/ Meta Ads landing page
 LP_AI_DM_FAQS = [
     {
-        'q': 'Do I need any prior marketing or tech background?',
+        'q': 'Is this suitable for beginners?',
+        'a': 'Yes. The program is designed as a beginner-friendly, practical introduction — most students join with zero prior experience.',
+    },
+    {
+        'q': 'Do I need coding experience?',
+        'a': 'No advanced coding experience is required for the Vibe Coding (AI-assisted development) module.',
+    },
+    {
+        'q': 'Is this completely online?',
+        'a': 'Yes. All 12 live training sessions are conducted online.',
+    },
+    {
+        'q': 'How many classes are there?',
+        'a': 'There are 12 live training days spread across 4 weeks — one week per skill: Vibe Coding, Meta Ads, Google Ads, and Client Handling.',
+    },
+    {
+        'q': 'Will I get practical assignments?',
+        'a': 'Yes. The program is built around learn → practice → build → apply, with a practical task after every module — not just video lectures.',
+    },
+    {
+        'q': 'Will you guarantee a job or clients?',
+        'a': "No. We don't make unrealistic guarantees. Your results depend on your own practice, execution, and ability to apply what you learn.",
+    },
+    {
+        'q': 'Can I start freelancing after the course?',
         'a': (
-            'No. The course starts from digital marketing fundamentals and builds up to AI tools, '
-            'ads, and automation. Most students join with zero prior experience.'
+            'You can use the skills developed during the bootcamp as a foundation for freelancing. '
+            'Getting clients still requires continued practice, portfolio development, outreach, and execution.'
         ),
     },
     {
-        'q': 'Is this live or self-paced?',
-        'a': (
-            'Self-paced video lessons you can watch anytime, plus live mentor Q&A sessions for '
-            'doubts and project feedback. Fits around a job, college, or business.'
-        ),
-    },
-    {
-        'q': 'Will I get a certificate?',
-        'a': 'Yes — a verified Winning Blueprints certificate on completion, plus portfolio-ready campaign projects for job or freelance applications.',
-    },
-    {
-        'q': 'Can I get a job or freelance clients after this?',
-        'a': (
-            'The course is built around real campaign projects — SEO, paid ads, content, and '
-            'automation — so you finish with a portfolio, not just theory. Career paths and ideal '
-            'roles are covered in the curriculum below.'
-        ),
-    },
-    {
-        'q': 'What if I have questions before enrolling?',
-        'a': 'Message us on WhatsApp using the button on this page — a mentor will reply directly, no bots.',
-    },
-    {
-        'q': 'Is payment secure?',
-        'a': 'Yes — checkout is powered by Razorpay with card, UPI, netbanking, and wallet support. No card details are stored on our servers.',
+        'q': 'What do I need to join?',
+        'a': 'A laptop or desktop, an internet connection, and the willingness to practice.',
     },
 ]

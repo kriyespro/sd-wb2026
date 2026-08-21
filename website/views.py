@@ -347,7 +347,7 @@ LP_AI_DM_SOURCE = 'meta_ads_ai_digital_marketing'
 
 def lp_ai_digital_marketing(request):
     """Standalone, distraction-free landing page for Meta Ads traffic.
-    Backed by the existing 'Quick Start Digital Marketing' course
+    Backed by the existing 'Winning Blueprints Digital Launchpad' course
     listing — price stays the single source of truth, editable in
     /ops/courses/, instead of forking a duplicate catalog row."""
     course = CourseListing.objects.filter(slug=LP_AI_DM_SLUG, is_active=True).first()
@@ -355,10 +355,10 @@ def lp_ai_digital_marketing(request):
         raise Http404('Course not found')
     mentor = next((m for m in TEAM_CORE if m['role'] == 'Marketing Expert'), None)
     return render(request, 'pages/lp/ai_digital_marketing.jinja', {
-        'page_title': 'Quick Start Digital Marketing — 4 Weeks, ₹999',
+        'page_title': 'Winning Blueprints Digital Launchpad — 4 Weeks, ₹999',
         'meta_description': (
-            'Learn AI-powered digital marketing in just 4 weeks for ₹999: SEO, paid ads, '
-            'content, and automation. Hands-on projects, mentor support, verified certificate.'
+            'Vibe Coding + Meta Ads + Google Ads + Client Handling in 4 weeks for ₹999. '
+            '12 live online classes, practical assignments, beginner-friendly.'
         ),
         'course': course,
         'faqs': LP_AI_DM_FAQS,

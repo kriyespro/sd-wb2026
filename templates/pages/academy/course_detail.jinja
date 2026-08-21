@@ -14,7 +14,11 @@
             {% if course.salary_range %}
             <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ course.salary_range }} potential</span>
             {% endif %}
+            {% if 'live' in course.format|lower %}
+            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ course.format }}</span>
+            {% else %}
             <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">Lifetime Access</span>
+            {% endif %}
         </div>
         <p class="text-sm text-slate-400">
             <a href="{{ url('academy:courses') }}" class="hover:text-gold-300">Courses</a> / {{ course.level }}
