@@ -1,5 +1,9 @@
+from django.conf import settings
+from django.http import Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
+
+from academy.models import CourseListing
 
 from .data import (
     ACADEMY_PROCESS,
@@ -12,6 +16,8 @@ from .data import (
     GENERAL_FAQS,
     HERO_POINTS,
     INDUSTRIES,
+    LP_AI_DM_COMPARISON,
+    LP_AI_DM_FAQS,
     MODEL_STEPS,
     PRICING_FAQS,
     PRICING_TIERS,
@@ -331,5 +337,51 @@ def lead_submit(request):
     return render(request, 'partials/_lead_form.jinja', {
         'form': form,
         'source_page': source,
+        'show_errors': request.method == 'POST',
+    })
+
+
+LP_AI_DM_SLUG = 'quick-start-digital-marketing'
+LP_AI_DM_SOURCE = 'meta_ads_ai_digital_marketing'
+
+
+def lp_ai_digital_marketing(request):
+    """Standalone, distraction-free landing page for Meta Ads traffic.
+    Backed by the existing 'Quick Start Digital Marketing' course
+    listing — price stays the single source of truth, editable in
+    /ops/courses/, instead of forking a duplicate catalog row."""
+    course = CourseListing.objects.filter(slug=LP_AI_DM_SLUG, is_active=True).first()
+    if not course:
+        raise Http404('Course not found')
+    mentor = next((m for m in TEAM_CORE if m['role'] == 'Marketing Expert'), None)
+    return render(request, 'pages/lp/ai_digital_marketing.jinja', {
+        'page_title': 'Quick Start Digital Marketing — 4 Weeks, ₹999',
+        'meta_description': (
+            'Learn AI-powered digital marketing in just 4 weeks for ₹999: SEO, paid ads, '
+            'content, and automation. Hands-on projects, mentor support, verified certificate.'
+        ),
+        'course': course,
+        'faqs': LP_AI_DM_FAQS,
+        'comparison': LP_AI_DM_COMPARISON,
+        'mentor': mentor,
+        'contact_info': CONTACT_INFO,
+        'meta_pixel_id': settings.META_PIXEL_ID,
+        'lead_source': LP_AI_DM_SOURCE,
+        'form': LeadForm(),
+    })
+
+
+@require_http_methods(['GET', 'POST'])
+def lp_ai_digital_marketing_lead(request):
+    form = LeadForm(request.POST or None)
+    dom_id = request.POST.get('dom_id') or 'lp-lead-form-container'
+    if request.method == 'POST' and form.is_valid():
+        create_lead(form, source_page=LP_AI_DM_SOURCE)
+        return render(request, 'partials/_lp_lead_success.jinja', {'dom_id': dom_id})
+
+    return render(request, 'partials/_lp_lead_form.jinja', {
+        'form': form,
+        'lead_source': LP_AI_DM_SOURCE,
+        'dom_id': dom_id,
         'show_errors': request.method == 'POST',
     })

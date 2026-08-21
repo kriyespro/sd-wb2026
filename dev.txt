@@ -24,6 +24,58 @@
     - Dashboard navy/gold theme aligned with public site
     - Home why-choose + featured case study
 
+[x] Meta Ads landing page — AI Digital Marketing Course
+    - /ai-digital-marketing-course/ — standalone conversion page, own minimal layout (no site nav/footer)
+    - Backed by existing CourseListing 'digital-marketing-with-ai' — price stays editable only in /ops/courses/
+    - Compact lead form (name/phone/email) posts to /ai-digital-marketing-course/lead/, reuses Lead model + notifications
+    - Meta Pixel (PageView/ViewContent/Lead/InitiateCheckout) gated on META_PIXEL_ID env var — no-op until set
+    - WhatsApp click-to-chat CTA, sticky mobile CTA bar, FAQ, testimonials, curriculum accordion
+    - Buy Now CTA goes to existing Razorpay checkout flow (academy:checkout)
+    - Upgrade: scroll-reveal animations, comparison table (free tutorials vs course), career salary
+      bars (entry/senior), mentor bio section (real TEAM_CORE data), exit-intent lead popup, hero
+      floating certificate badge, trust-icon rows — no fabricated guarantee/refund claims added
+    - Fix: static/css/app.css was stale (built before this page's templates existed) — Tailwind
+      purge scan skipped any utility class only used here, so several sections rendered unstyled/
+      missing. Ran `npx tailwindcss -i static/src/input.css -o static/css/app.css --minify` to
+      rebuild. Remember to rerun this (or `npm run build:css`) after adding new templates.
+    - Also swapped all emoji trust/check/x icons (🔒🏆♾️🔥✓✕) for inline SVG — emoji don't take
+      Tailwind text-color classes (silently ignored the gold/emerald tint) and render inconsistently
+      across OS/browsers; bumped several text-sm → text-base + slate-400 → slate-300 on dark
+      sections for readability
+    - Split into two DISTINCT CourseListing rows (was wrongly sharing one row with the landing page
+      — editing price/name for the ad page leaked onto the real academy catalog course):
+        - 'digital-marketing-with-ai' — original, reverted: AI-Powered Digital Marketing Mastery,
+          ₹16,999, 12 weeks, full curriculum. Untouched by the landing page from now on.
+        - 'quick-start-digital-marketing' — new, landing-page-only: Quick Start Digital Marketing,
+          ₹999, 4 weeks, own 4-module curriculum/gains/includes/career data (deliberately lighter
+          tier than the ₹16,999 course — fewer live-support perks, honest value ladder). Also has
+          its own /academy/courses/quick-start-digital-marketing/ page + checkout since CourseListing
+          has no catalog-hidden flag — accepted as a real, separately purchasable course.
+        - enrolled=0, rating=0, reviews=[] on the new course (honest — no fake social proof for a
+          brand-new offer). Template (ai_digital_marketing.jinja) now branches on
+          course.enrolled/course.reviews_count: shows real numbers when present, else "Just
+          launched" / "Beginner friendly" / "Certified" fallbacks instead of "0 rated · 0 learners"
+        - website/views.py LP_AI_DM_SLUG now points at 'quick-start-digital-marketing'
+    - Removed the exit-intent popup modal (kept the inline enroll-section lead form). Added more
+      SVG icons throughout: stats strip, career-path chips, testimonial quote marks, etc.
+    - Upgraded /academy/courses/quick-start-digital-marketing/ (shared course_detail.jinja, same
+      site theme — no template redesign). Course has no real students yet, so instead of fabricating
+      fake student reviews: added an 'aggregate trust' fallback section (course_detail.jinja,
+      academy/views.py) that shows when course.reviews is empty — real company-wide STATS +
+      real mentor (TEAM_CORE) bio, honestly framed as 'just launched, be an early learner' rather
+      than fake social proof. Original course (has real reviews) is unaffected — still shows its
+      normal per-course review section. Also wrote fuller overview copy (3 paragraphs) and an
+      honest mentor-authored quote (not a fake customer testimonial) for the new course.
+
+[x] Ops course listing form (/ops/courses/<id>/edit/, /ops/courses/ add form) — readability upgrade
+    - Widened scope to CourseListingForm only (academy/forms.py) — this form isn't shared with any
+      other ops screen, so bumped .ops-select/.ops-textarea to text-base + py-2.5 + border-slate-300
+      here without touching the shared classes used in tables/filters elsewhere in /ops/
+    - Labels: text-xs text-slate-600 → text-sm font-semibold text-slate-800 (darker, bigger)
+    - Field grids gap-3 → gap-4, form wrapper gap-4 → gap-6 for more breathing room
+    - Verified with a temp superuser session (created + deleted after test) against
+      /ops/courses/11/edit/ — 200, correct classes rendered, no template artifacts
+
 ## Ops Portal Modules (/ops/)
 - /ops/                       Overview + stats
 - /ops/quality-check/         Approve/reject deliverables

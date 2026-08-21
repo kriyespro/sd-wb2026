@@ -21,7 +21,7 @@
 
 <div class="dash-panel mb-6 p-6">
     <h3 class="font-display text-lg font-bold text-ink-900">Add a course</h3>
-    <form method="post" action="{{ url('operations:course_listing_add') }}" class="mt-4 grid gap-4">
+    <form method="post" action="{{ url('operations:course_listing_add') }}" class="mt-4 grid gap-6">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         {% include "partials/ops/_course_listing_form_fields.jinja" %}
         <div>

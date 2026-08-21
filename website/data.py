@@ -948,3 +948,51 @@ TESTIMONIALS = [
         'photo': '',
     },
 ]
+
+# Comparison grid for the /ai-digital-marketing-course/ landing page
+LP_AI_DM_COMPARISON = [
+    {'point': 'Structured, project-based curriculum', 'free': False, 'course': True},
+    {'point': 'Verified certificate on completion', 'free': False, 'course': True},
+    {'point': 'Live mentor Q&A + feedback on your work', 'free': False, 'course': True},
+    {'point': 'Real campaign portfolio to show employers/clients', 'free': False, 'course': True},
+    {'point': 'Up-to-date AI tools & workflows for 2026 marketing', 'free': None, 'course': True},
+    {'point': 'Lifetime access, learn at your own pace', 'free': True, 'course': True},
+]
+
+# FAQ for the /ai-digital-marketing-course/ Meta Ads landing page
+LP_AI_DM_FAQS = [
+    {
+        'q': 'Do I need any prior marketing or tech background?',
+        'a': (
+            'No. The course starts from digital marketing fundamentals and builds up to AI tools, '
+            'ads, and automation. Most students join with zero prior experience.'
+        ),
+    },
+    {
+        'q': 'Is this live or self-paced?',
+        'a': (
+            'Self-paced video lessons you can watch anytime, plus live mentor Q&A sessions for '
+            'doubts and project feedback. Fits around a job, college, or business.'
+        ),
+    },
+    {
+        'q': 'Will I get a certificate?',
+        'a': 'Yes — a verified Winning Blueprints certificate on completion, plus portfolio-ready campaign projects for job or freelance applications.',
+    },
+    {
+        'q': 'Can I get a job or freelance clients after this?',
+        'a': (
+            'The course is built around real campaign projects — SEO, paid ads, content, and '
+            'automation — so you finish with a portfolio, not just theory. Career paths and ideal '
+            'roles are covered in the curriculum below.'
+        ),
+    },
+    {
+        'q': 'What if I have questions before enrolling?',
+        'a': 'Message us on WhatsApp using the button on this page — a mentor will reply directly, no bots.',
+    },
+    {
+        'q': 'Is payment secure?',
+        'a': 'Yes — checkout is powered by Razorpay with card, UPI, netbanking, and wallet support. No card details are stored on our servers.',
+    },
+]

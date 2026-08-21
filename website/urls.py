@@ -22,4 +22,6 @@ urlpatterns = [
     path('join/', views.join, name='join'),
     path('contact/', views.contact, name='contact'),
     path('lead/submit/', views.lead_submit, name='lead_submit'),
+    path('ai-digital-marketing-course/', views.lp_ai_digital_marketing, name='lp_ai_digital_marketing'),
+    path('ai-digital-marketing-course/lead/', views.lp_ai_digital_marketing_lead, name='lp_ai_digital_marketing_lead'),
 ]

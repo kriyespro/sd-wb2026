@@ -1,0 +1,407 @@
+{% extends "layouts/landing_base.jinja" %}
+
+{% block content %}
+
+<!-- URGENCY BAR -->
+<div class="flex items-center justify-center gap-2 bg-ink-900 py-2 text-center text-xs font-semibold text-gold-300 sm:text-sm">
+    <svg class="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2c-1.5 3-4 4.5-4 8a4 4 0 008 0c0-1-.3-1.8-.7-2.5.4 1 .2 2-.5 2.5-.3-2-1.5-3-1.5-5.5-.5 1-1.3 1.7-1.3 3 0 .8.3 1.3.3 2a2 2 0 01-2-2c0-2.5 1.7-4 1.7-5.5z"/></svg>
+    <span>New cohort forming now — mentor seats are limited per batch. Early enrollment locks today's price.</span>
+</div>
+
+<!-- HERO -->
+<section class="relative overflow-hidden bg-brand-900 py-14 text-white sm:py-20">
+    <div class="mesh absolute inset-0 opacity-60"></div>
+    <div class="relative mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-5 lg:items-center lg:gap-8">
+        <div class="lg:col-span-3">
+            {% if course.reviews_count %}
+            <span class="eyebrow !text-gold-300 before:!bg-gold-400">
+                <span class="flex text-gold-400">
+                    {% for _ in range(5) %}<svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L1.3 7.3l6.1-.7z"/></svg>{% endfor %}
+                </span>
+                {{ course.rating }} Rated &middot; {{ course.enrolled }}+ learners
+            </span>
+            {% else %}
+            <span class="eyebrow !text-gold-300 before:!bg-gold-400">
+                <svg class="h-3.5 w-3.5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Just launched &middot; foundational fast-track
+            </span>
+            {% endif %}
+            <h1 class="mt-5 font-display text-3xl font-bold leading-tight sm:text-5xl">
+                Master Digital Marketing<br>
+                <span class="font-serif text-gradient-gold">In Just 4 Weeks</span>
+            </h1>
+            <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg">
+                {{ course.goal }}
+            </p>
+            <ul class="mt-6 space-y-2.5 text-sm text-slate-200 sm:text-base">
+                <li class="flex items-center gap-2.5"><svg class="h-5 w-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ course.modules_count }} modules &middot; {{ course.topics_count }} hands-on topics</li>
+                <li class="flex items-center gap-2.5"><svg class="h-5 w-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Verified certificate + real campaign portfolio</li>
+                {% if course.salary_range %}
+                <li class="flex items-center gap-2.5"><svg class="h-5 w-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ course.salary_range }} career earning potential</li>
+                {% endif %}
+            </ul>
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+                <a href="#enroll" class="btn-gold">Get Free Curriculum →</a>
+                <div>
+                    <span class="font-display text-2xl font-bold text-gold-300">{{ course.price }}</span>
+                    <span class="ml-1 text-xs text-slate-300">one-time &middot; lifetime access</span>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2.5 text-xs text-slate-300 sm:text-sm">
+                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Secure Razorpay checkout</span>
+                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified certificate</span>
+                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m-3.536-3.536a4 4 0 010-5.656M4 12a8 8 0 0016 0 8 8 0 00-16 0z"/></svg>Lifetime access</span>
+            </div>
+        </div>
+        <div class="relative lg:col-span-2">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                <img src="{{ course.image }}" alt="{{ course.title }}" class="h-56 w-full rounded-2xl object-cover sm:h-72">
+            </div>
+            <div class="absolute -bottom-5 -left-5 hidden items-center gap-3 rounded-2xl border border-white/10 bg-white p-4 text-ink-900 shadow-2xl sm:flex">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </span>
+                <div>
+                    <div class="text-sm font-bold leading-tight">Verified Certificate</div>
+                    <div class="text-xs text-slate-500">On completion</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<section class="border-b border-slate-200 bg-white py-8">
+    <div class="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 text-center sm:grid-cols-4 sm:px-6">
+        <div>
+            {% if course.enrolled %}
+            <svg class="mx-auto h-6 w-6 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-5.13a4 4 0 100-8 4 4 0 000 8zm7 0a4 4 0 10-3-6.65"/></svg>
+            <div class="mt-2 font-display text-2xl font-bold text-ink-900">{{ course.enrolled }}+</div>
+            <div class="text-xs text-slate-500">Learners enrolled</div>
+            {% else %}
+            <svg class="mx-auto h-6 w-6 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="mt-2 font-display text-2xl font-bold text-ink-900">100%</div>
+            <div class="text-xs text-slate-500">Beginner friendly</div>
+            {% endif %}
+        </div>
+        <div>
+            {% if course.reviews_count %}
+            <svg class="mx-auto h-6 w-6 text-brand-700" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L1.3 7.3l6.1-.7z"/></svg>
+            <div class="mt-2 font-display text-2xl font-bold text-ink-900">{{ course.rating }}/5</div>
+            <div class="text-xs text-slate-500">{{ course.reviews_count }} reviews</div>
+            {% else %}
+            <svg class="mx-auto h-6 w-6 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="mt-2 font-display text-2xl font-bold text-ink-900">Certified</div>
+            <div class="text-xs text-slate-500">On completion</div>
+            {% endif %}
+        </div>
+        <div>
+            <svg class="mx-auto h-6 w-6 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="mt-2 font-display text-2xl font-bold text-ink-900">{{ course.duration }}</div>
+            <div class="text-xs text-slate-500">Fast-track format</div>
+        </div>
+        <div>
+            <svg class="mx-auto h-6 w-6 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.25v13.5m0-13.5C10.5 5 8 4.25 6 4.25c-1 0-1.5.1-2 .25v13.5c.5-.15 1-.25 2-.25 2 0 4.5.75 6 2m0-13.5c1.5-1.25 4-2 6-2 1 0 1.5.1 2 .25v13.5c-.5-.15-1-.25-2-.25-2 0-4.5.75-6 2"/></svg>
+            <div class="mt-2 font-display text-2xl font-bold text-ink-900">{{ course.modules_count }}</div>
+            <div class="text-xs text-slate-500">Practical modules</div>
+        </div>
+    </div>
+</section>
+
+<!-- PAIN POINTS -->
+<section class="reveal bg-slate-50 py-16">
+    <div class="mx-auto max-w-4xl px-4 text-center sm:px-6">
+        <h2 class="font-display text-2xl font-bold text-ink-900 sm:text-3xl">Sound familiar?</h2>
+        <div class="mt-8 grid gap-4 text-left sm:grid-cols-2">
+            {% for pain in [
+                'Running ads or posting content with no real leads or sales to show for it',
+                'Watching AI reshape marketing and worrying your skills are falling behind',
+                'Stuck applying for jobs with no portfolio or hands-on campaign experience',
+                'Paying for courses that teach theory but never a real, sellable skill',
+            ] %}
+            <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                <p class="text-base leading-relaxed text-slate-600">{{ pain }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="mt-8 text-base font-semibold text-ink-900">This course fixes that — with AI tools, real campaigns, and a mentor in your corner.</p>
+    </div>
+</section>
+
+{% if comparison %}
+<!-- COMPARISON -->
+<section class="reveal py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+        <div class="mb-8 text-center">
+            <span class="eyebrow justify-center">Why this, not free tutorials</span>
+            <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">What you actually get here</h2>
+        </div>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div class="grid grid-cols-[1fr_auto_auto] items-center gap-2 border-b border-slate-100 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:gap-4">
+                <span></span>
+                <span class="w-16 text-center sm:w-24">Free YouTube</span>
+                <span class="w-16 text-center text-brand-700 sm:w-24">This course</span>
+            </div>
+            {% for row in comparison %}
+            <div class="grid grid-cols-[1fr_auto_auto] items-center gap-2 border-b border-slate-100 px-5 py-4 text-sm last:border-0 sm:gap-4">
+                <span class="text-slate-700">{{ row.point }}</span>
+                <span class="flex w-16 justify-center sm:w-24">
+                    {% if row.free == true %}
+                    <svg class="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    {% elif row.free == false %}
+                    <svg class="h-5 w-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    {% else %}
+                    <svg class="h-5 w-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 12h12"/></svg>
+                    {% endif %}
+                </span>
+                <span class="flex w-16 justify-center sm:w-24">
+                    {% if row.course %}
+                    <svg class="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    {% else %}
+                    <svg class="h-5 w-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    {% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- WHAT YOU'LL GAIN -->
+<section class="reveal py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="mb-10 text-center">
+            <span class="eyebrow justify-center">Outcomes</span>
+            <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">What you'll walk away with</h2>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-3">
+            {% for gain in course.gains %}
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-100 font-display text-sm font-bold text-gold-700">0{{ loop.index }}</span>
+                <p class="mt-4 text-base leading-relaxed text-slate-600">{{ gain }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CURRICULUM -->
+<section id="curriculum" class="reveal border-t border-slate-200 bg-slate-50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+        <div class="mb-8 text-center">
+            <span class="eyebrow justify-center">Curriculum</span>
+            <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">What you'll learn, module by module</h2>
+            <p class="mt-2 text-sm text-slate-500">{{ course.modules_count }} modules &middot; {{ course.topics_count }} topics &middot; first modules free to preview</p>
+        </div>
+        <div class="space-y-3" x-data="{ open: 1 }">
+            {% for mod in course.curriculum %}
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <button type="button" @click="open = open === {{ loop.index }} ? 0 : {{ loop.index }}"
+                        class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left">
+                    <div class="flex items-center gap-4">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">{{ loop.index }}</span>
+                        <div class="font-semibold text-ink-900">{{ mod.title }}</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        {% if mod.free_preview %}
+                        <span class="hidden rounded-full bg-gold-100 px-2.5 py-0.5 text-xs font-semibold text-gold-700 sm:inline">Free preview</span>
+                        {% endif %}
+                        <svg class="h-4 w-4 shrink-0 text-slate-400 transition" :class="open === {{ loop.index }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </button>
+                <div x-show="open === {{ loop.index }}" x-cloak x-transition class="border-t border-slate-100 px-5 py-4">
+                    <ol class="space-y-2 text-sm text-slate-600">
+                        {% for topic in mod.topics %}
+                        <li class="flex gap-2"><span class="text-slate-300">{{ loop.index }}.</span>{{ topic }}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% if course.career_min and course.career_max %}
+<!-- CAREER OUTCOMES -->
+<section class="reveal py-16">
+    <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
+        <span class="eyebrow justify-center">Career outcomes</span>
+        <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">{{ course.career_label|default('Entry to senior roles') }}</h2>
+        <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-8">
+            <div class="font-display text-3xl font-bold text-brand-700">{{ course.salary_range }}</div>
+            <p class="mt-1 text-sm text-slate-500">Per annum &middot; India market</p>
+            <div class="mx-auto mt-6 flex max-w-xs items-end justify-between">
+                <div class="text-center">
+                    <div class="mx-auto h-14 w-10 rounded-t-lg bg-brand-300"></div>
+                    <div class="mt-2 text-sm font-bold text-ink-900">{{ course.career_min }}</div>
+                    <div class="text-xs text-slate-500">Entry</div>
+                </div>
+                <div class="text-center">
+                    <div class="mx-auto h-24 w-10 rounded-t-lg bg-brand-700"></div>
+                    <div class="mt-2 text-sm font-bold text-ink-900">{{ course.career_max }}</div>
+                    <div class="text-xs text-slate-500">Senior</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if course.ideal_paths %}
+<!-- WHO IT'S FOR -->
+<section class="reveal border-t border-slate-200 bg-slate-50 py-16">
+    <div class="mx-auto max-w-4xl px-4 text-center sm:px-6">
+        <span class="eyebrow justify-center">Career paths</span>
+        <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">Where this skill takes you</h2>
+        <div class="mt-6 flex flex-wrap justify-center gap-2">
+            {% for role in course.ideal_paths %}
+            <span class="flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-3 py-1.5 text-sm text-brand-800">
+                <svg class="h-3.5 w-3.5 shrink-0 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                {{ role }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if mentor %}
+<!-- MENTOR -->
+<section class="reveal py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+        <div class="mb-8 text-center">
+            <span class="eyebrow justify-center">Meet your mentor</span>
+            <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">Learn from someone who does this daily</h2>
+        </div>
+        <div class="flex flex-col items-center gap-5 rounded-3xl border border-slate-200 bg-white p-8 text-center sm:flex-row sm:text-left">
+            <img src="{{ mentor.image }}" alt="{{ mentor.name }}" class="h-20 w-20 shrink-0 rounded-full object-cover">
+            <div>
+                <h3 class="font-display text-lg font-bold text-ink-900">{{ mentor.name }}</h3>
+                <p class="text-sm font-semibold text-brand-700">{{ mentor.role }}</p>
+                <p class="mt-2 text-base leading-relaxed text-slate-600">{{ mentor.bio }}</p>
+                <div class="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
+                    {% for tag in mentor.tags %}
+                    <span class="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ENROLL / PRICING + LEAD FORM -->
+<section id="enroll" class="reveal border-t border-slate-200 bg-brand-900 py-16 text-white sm:py-20">
+    <div class="mx-auto grid max-w-5xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:items-start">
+        <div>
+            <span class="eyebrow !text-gold-300 before:!bg-gold-400">Enroll today</span>
+            <h2 class="mt-3 font-display text-2xl font-bold sm:text-3xl">{{ course.title }}</h2>
+            <div class="mt-4 flex items-baseline gap-2">
+                <span class="font-display text-4xl font-bold text-gold-300">{{ course.price }}</span>
+                <span class="text-sm text-slate-400">one-time payment</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-sm text-slate-200 sm:text-base">
+                {% for item in course.includes %}
+                <li class="flex items-center gap-2.5"><svg class="h-5 w-5 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ item }}</li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url('academy:checkout', kwargs={'slug': course.slug}) }}"
+               onclick="window.wbTrackCheckout && window.wbTrackCheckout()"
+               class="btn-gold mt-8 w-full text-center sm:w-auto">Buy Now — {{ course.price }} →</a>
+            <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-300">
+                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Secure Razorpay checkout</span>
+                <span class="flex items-center gap-1.5"><svg class="h-4 w-4 shrink-0 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>UPI, cards, netbanking, wallets</span>
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-white p-6 text-ink-900 shadow-2xl sm:p-8">
+            <h3 class="font-display text-lg font-bold">Not ready to pay yet?</h3>
+            <p class="mt-1 text-sm text-slate-500">Get the free curriculum PDF and a callback from a mentor — no cost, no obligation.</p>
+            <div class="mt-5">
+                {% include "partials/_lp_lead_form.jinja" %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if course.reviews %}
+<!-- TESTIMONIALS -->
+<section class="reveal py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="mb-10 text-center">
+            <span class="eyebrow justify-center">Success stories</span>
+            <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">{{ course.rating }} / 5.0 from {{ course.reviews_count }} students</h2>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-3">
+            {% for review in course.reviews %}
+            <blockquote class="rounded-2xl border border-slate-200 bg-white p-6">
+                <svg class="h-6 w-6 text-gold-300" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 8c-3.3 0-6 2.7-6 6 0 2.8 2 5.2 4.6 5.8-.3 1.6-1.4 2.9-3.1 3.6l.6 1.9c3.6-1 6-4 6-8.3V8h-2.1zm14 0c-3.3 0-6 2.7-6 6 0 2.8 2 5.2 4.6 5.8-.3 1.6-1.4 2.9-3.1 3.6l.6 1.9c3.6-1 6-4 6-8.3V8H24z"/></svg>
+                <p class="mt-2 text-base leading-relaxed text-slate-600">{{ review.quote }}</p>
+                <footer class="mt-4 flex items-center gap-3">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-700 text-sm font-bold text-gold-300">{{ review.name[0] }}</span>
+                    <div>
+                        <div class="text-sm font-semibold text-ink-900">{{ review.name }}</div>
+                        <div class="text-xs text-slate-500">{{ review.role }} &middot; {{ review.city }}</div>
+                    </div>
+                </footer>
+            </blockquote>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- FAQ -->
+<section class="reveal border-t border-slate-200 bg-slate-50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+        <div class="mb-8 text-center">
+            <span class="eyebrow justify-center">FAQ</span>
+            <h2 class="mt-3 font-display text-2xl font-bold text-ink-900 sm:text-3xl">Common questions</h2>
+        </div>
+        <div class="space-y-3" x-data="{ open: 0 }">
+            {% for faq in faqs %}
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <button type="button" @click="open = open === {{ loop.index }} ? 0 : {{ loop.index }}"
+                        class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-ink-900">
+                    {{ faq.q }}
+                    <svg class="h-4 w-4 shrink-0 text-slate-400 transition" :class="open === {{ loop.index }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="open === {{ loop.index }}" x-cloak x-transition class="border-t border-slate-100 px-5 py-4 text-base leading-relaxed text-slate-600">
+                    {{ faq.a }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="reveal bg-ink-900 py-16 text-white">
+    <div class="mx-auto max-w-2xl px-4 text-center sm:px-6">
+        <h2 class="font-display text-2xl font-bold sm:text-3xl">Seats fill up every batch. Start today.</h2>
+        <p class="mt-3 text-base leading-relaxed text-slate-200">Enroll in {{ course.title }} and get instant, lifetime access.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+            <a href="{{ url('academy:checkout', kwargs={'slug': course.slug}) }}"
+               onclick="window.wbTrackCheckout && window.wbTrackCheckout()"
+               class="btn-gold">Buy Now — {{ course.price }}</a>
+            <a href="#enroll" class="btn-outline !border-white/30 !text-white hover:!bg-white/10">Get free curriculum</a>
+        </div>
+    </div>
+</section>
+
+<!-- STICKY MOBILE CTA -->
+<div class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-3 backdrop-blur sm:hidden">
+    <div class="flex items-center justify-between gap-3">
+        <div>
+            <div class="text-[11px] text-slate-500">One-time</div>
+            <div class="font-display text-lg font-bold text-ink-900">{{ course.price }}</div>
+        </div>
+        <a href="#enroll" class="btn-gold !px-6 !py-2.5 text-sm">Enroll Now →</a>
+    </div>
+</div>
+<div class="h-16 sm:hidden"></div>
+
+{% endblock %}

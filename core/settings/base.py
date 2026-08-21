@@ -199,6 +199,10 @@ LEAD_NOTIFICATION_EMAIL = os.environ.get('LEAD_NOTIFICATION_EMAIL', 'winningblue
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
 RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
 
+# Meta Pixel ID for the paid ad landing pages — blank in dev, real ID set
+# via env in prod. Pages must render no pixel script when this is empty.
+META_PIXEL_ID = os.environ.get('META_PIXEL_ID', '')
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()

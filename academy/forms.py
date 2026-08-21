@@ -193,24 +193,24 @@ class CourseListingForm(forms.ModelForm):
     no nested formset builder, matches what the user asked for."""
 
     gains = forms.CharField(required=False, widget=forms.Textarea(attrs={
-        'class': 'ops-textarea', 'rows': 4, 'placeholder': 'One per line',
+        'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 4, 'placeholder': 'One per line',
     }))
     includes = forms.CharField(required=False, widget=forms.Textarea(attrs={
-        'class': 'ops-textarea', 'rows': 4, 'placeholder': 'One per line',
+        'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 4, 'placeholder': 'One per line',
     }))
     learn_modules = forms.CharField(required=False, widget=forms.Textarea(attrs={
-        'class': 'ops-textarea', 'rows': 4, 'placeholder': 'One per line',
+        'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 4, 'placeholder': 'One per line',
     }))
     ideal_paths = forms.CharField(required=False, widget=forms.Textarea(attrs={
-        'class': 'ops-textarea', 'rows': 3, 'placeholder': 'One per line',
+        'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 3, 'placeholder': 'One per line',
     }))
     overview = forms.CharField(required=False, widget=forms.Textarea(attrs={
-        'class': 'ops-textarea', 'rows': 5, 'placeholder': 'One paragraph per line',
+        'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 5, 'placeholder': 'One paragraph per line',
     }))
     curriculum = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
-            'class': 'ops-textarea', 'rows': 8,
+            'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 8,
             'placeholder': 'Module Title | free | topic1; topic2; topic3\nAnother Module | | topic1; topic2',
         }),
         help_text='One module per line: Title | free (write "free" for a preview module, else blank) | topics separated by ;',
@@ -218,7 +218,7 @@ class CourseListingForm(forms.ModelForm):
     reviews = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
-            'class': 'ops-textarea', 'rows': 5, 'placeholder': 'Quote | Name | Role | City',
+            'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 5, 'placeholder': 'Quote | Name | Role | City',
         }),
         help_text='One review per line: Quote | Name | Role | City',
     )
@@ -233,26 +233,26 @@ class CourseListingForm(forms.ModelForm):
             'starts_with', 'is_active', 'sort_order',
         ]
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. AI Automation Engineering Pro'}),
-            'goal': forms.Textarea(attrs={'class': 'ops-textarea', 'rows': 3, 'placeholder': 'One or two sentence course goal'}),
-            'level': forms.Select(attrs={'class': 'ops-select'}),
-            'duration': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. 12 weeks'}),
-            'format': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. Self-paced'}),
-            'modules_count': forms.NumberInput(attrs={'class': 'ops-select'}),
-            'topics_count': forms.NumberInput(attrs={'class': 'ops-select'}),
-            'price': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. ₹16,999'}),
-            'salary_range': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. ₹4–12 LPA (optional)'}),
-            'enrolled': forms.NumberInput(attrs={'class': 'ops-select'}),
-            'rating': forms.NumberInput(attrs={'class': 'ops-select', 'step': '0.1'}),
-            'reviews_count': forms.NumberInput(attrs={'class': 'ops-select'}),
-            'image': forms.URLInput(attrs={'class': 'ops-select', 'placeholder': 'https://... (course card image)'}),
-            'career_label': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. Entry to senior roles'}),
-            'career_min': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. ₹3L'}),
-            'career_max': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. ₹12L'}),
-            'highlight_quote': forms.Textarea(attrs={'class': 'ops-textarea', 'rows': 2, 'placeholder': 'Short testimonial quote'}),
-            'highlight_author': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'e.g. Name, Role'}),
-            'starts_with': forms.TextInput(attrs={'class': 'ops-select', 'placeholder': 'First module title'}),
-            'sort_order': forms.NumberInput(attrs={'class': 'ops-select'}),
+            'title': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. AI Automation Engineering Pro'}),
+            'goal': forms.Textarea(attrs={'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 3, 'placeholder': 'One or two sentence course goal'}),
+            'level': forms.Select(attrs={'class': 'ops-select text-base py-2.5 border-slate-300'}),
+            'duration': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. 12 weeks'}),
+            'format': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. Self-paced'}),
+            'modules_count': forms.NumberInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300'}),
+            'topics_count': forms.NumberInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300'}),
+            'price': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. ₹16,999'}),
+            'salary_range': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. ₹4–12 LPA (optional)'}),
+            'enrolled': forms.NumberInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300'}),
+            'rating': forms.NumberInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'step': '0.1'}),
+            'reviews_count': forms.NumberInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300'}),
+            'image': forms.URLInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'https://... (course card image)'}),
+            'career_label': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. Entry to senior roles'}),
+            'career_min': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. ₹3L'}),
+            'career_max': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. ₹12L'}),
+            'highlight_quote': forms.Textarea(attrs={'class': 'ops-textarea text-base py-2.5 border-slate-300 leading-relaxed', 'rows': 2, 'placeholder': 'Short testimonial quote'}),
+            'highlight_author': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'e.g. Name, Role'}),
+            'starts_with': forms.TextInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300', 'placeholder': 'First module title'}),
+            'sort_order': forms.NumberInput(attrs={'class': 'ops-select text-base py-2.5 border-slate-300'}),
             'featured': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded border-slate-300 text-brand-600'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded border-slate-300 text-brand-600'}),
         }

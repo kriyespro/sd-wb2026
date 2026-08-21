@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods, require_POST
 
-from website.data import ACADEMY_PROCESS
+from website.data import ACADEMY_PROCESS, STATS, TEAM_CORE
 
 from .forms import AdmissionApplicationForm
 from .models import AdmissionApplication
@@ -40,11 +40,14 @@ def course_detail(request, slug):
     if not course:
         raise Http404('Course not found')
     other_courses = get_active_courses().exclude(slug=slug)[:3]
+    mentor = next((m for m in TEAM_CORE if m['role'] == 'Marketing Expert'), None)
     return render(request, 'pages/academy/course_detail.jinja', {
         'page_title': course.title,
         'meta_description': course.goal[:160],
         'course': course,
         'other_courses': other_courses,
+        'mentor': mentor,
+        'academy_stats': STATS,
     })
 
 

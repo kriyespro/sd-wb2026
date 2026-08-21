@@ -1,0 +1,53 @@
+{% set dom_id = dom_id|default('lp-lead-form-container') %}
+<div id="{{ dom_id }}">
+    <form hx-post="{{ url('website:lp_ai_digital_marketing_lead') }}"
+          hx-target="#{{ dom_id }}"
+          hx-swap="outerHTML"
+          hx-disabled-elt="button[type='submit']"
+          class="space-y-3"
+          onsubmit="window.wbTrackLead && window.wbTrackLead()">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <input type="hidden" name="service_interest" value="Quick Start Digital Marketing">
+        <input type="hidden" name="dom_id" value="{{ dom_id }}">
+
+        {% if form_error %}
+        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ form_error }}
+        </div>
+        {% endif %}
+
+        <div>
+            <input type="text" name="name" value="{{ form.name.value() or '' }}" placeholder="Your full name *" required
+                   class="wb-input w-full">
+            {% if show_errors and form.name.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.name.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div>
+            <input type="tel" name="phone" value="{{ form.phone.value() or '' }}" placeholder="WhatsApp number *" required
+                   class="wb-input w-full">
+            {% if show_errors and form.phone.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.phone.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div>
+            <input type="email" name="email" value="{{ form.email.value() or '' }}" placeholder="Email address *" required
+                   class="wb-input w-full">
+            {% if show_errors and form.email.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.email.errors[0] }}</p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-gold w-full text-center !py-3.5 text-base">
+            <span class="htmx-request-hide">Get Free Curriculum + Callback →</span>
+            <span class="htmx-indicator inline-flex items-center justify-center gap-2">
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Sending…
+            </span>
+        </button>
+        <p class="text-center text-xs text-slate-400">No spam. A mentor calls you within 24 hours.</p>
+    </form>
+</div>
