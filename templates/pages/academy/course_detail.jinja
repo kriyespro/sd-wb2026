@@ -6,7 +6,11 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-6 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
             <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-gold-300">Verified Curriculum</span>
+            {% if course.reviews_count %}
             <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ course.rating }} Rated</span>
+            {% else %}
+            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">Just Launched</span>
+            {% endif %}
             {% if course.salary_range %}
             <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ course.salary_range }} potential</span>
             {% endif %}
@@ -30,8 +34,14 @@
                     {% endif %}
                 </ul>
                 <div class="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                    {% if course.enrolled %}
                     <span>{{ course.enrolled }}+ learners enrolled</span>
+                    {% endif %}
+                    {% if course.reviews_count %}
                     <span>{{ course.rating }} ({{ course.reviews_count }} reviews)</span>
+                    {% else %}
+                    <span>Newly launched — be among the first to enroll</span>
+                    {% endif %}
                 </div>
 
                 <div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
