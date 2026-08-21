@@ -111,6 +111,22 @@
       'Winning Blueprints Academy' — content now spans coding + 2 ad platforms + sales, not just
       one person's specialty
 
+[x] Perf fixes from live Lighthouse/PSI report
+    - Razorpay checkout.js (~60KB+, "Legacy JavaScript"/"unused JS" in the report) was loaded
+      sitewide via components/head_assets.jinja on every page (home, about, services, ...) even
+      though `new Razorpay(...)` only ever runs on the academy checkout flow. Moved the script tag
+      out of head_assets.jinja into templates/pages/academy/checkout.jinja's extra_head block —
+      confirmed via grep it's the only page that needs it (partials/dashboard/_checkout_launch.jinja
+      is only ever rendered from academy:enroll_pay, reached only from that checkout page).
+    - nginx.conf /static/ cache bumped 30d -> 1y — safe because whitenoise's
+      CompressedManifestStaticFilesStorage content-hashes filenames, so any content change already
+      gets a new URL; no reason to under-cache.
+    - website/data.py img() helper (used for all Unsplash-sourced images site-wide: hero, team,
+      case studies, etc.) quality 70 -> 65 — meaningfully smaller payloads, still high visual
+      quality, auto=format still lets Unsplash serve WebP/AVIF where supported.
+    - Did NOT touch static/img/logo.png (explicitly asked not to compress it), despite it being
+      the single largest flagged item (~118KB estimated savings) in the report.
+
 ## Ops Portal Modules (/ops/)
 - /ops/                       Overview + stats
 - /ops/quality-check/         Approve/reject deliverables

@@ -6,8 +6,10 @@ def ph(w, h, label, bg='EEF2F9', fg='1E3A6E'):
 
 
 def img(photo, w=1200, h=800):
-    """Free Unsplash stock image (https://unsplash.com/license)."""
-    return f'https://images.unsplash.com/{photo}?auto=format&fit=crop&w={w}&h={h}&q=70'
+    """Free Unsplash stock image (https://unsplash.com/license). q=65 keeps
+    visual quality high while trimming payload — auto=format still lets
+    Unsplash serve WebP/AVIF to browsers that support it."""
+    return f'https://images.unsplash.com/{photo}?auto=format&fit=crop&w={w}&h={h}&q=65'
 
 
 SITE_IMAGES = {
