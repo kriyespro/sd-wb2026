@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.utils import timezone
 
 from academy.models import AdmissionApplication
@@ -46,6 +46,24 @@ def status_counts_for(queryset, status_choices, field='status'):
         queryset.values_list(field).annotate(n=Count('id')).values_list(field, 'n'),
     )
     return {status: counts.get(status, 0) for status, _ in status_choices}
+
+
+def filter_job_applications(queryset, *, status='', application_type='', role='', q=''):
+    if status:
+        queryset = queryset.filter(status=status)
+    else:
+        # Rejected candidates stay out of the default view — still
+        # reachable via the Rejected chip, not deleted.
+        queryset = queryset.exclude(status=JobApplication.STATUS_REJECTED)
+    if application_type:
+        queryset = queryset.filter(application_type=application_type)
+    if role:
+        queryset = queryset.filter(role=role)
+    if q:
+        queryset = queryset.filter(
+            Q(name__icontains=q) | Q(email__icontains=q) | Q(phone__icontains=q),
+        )
+    return queryset
 
 
 def get_pending_deliverables():

@@ -215,6 +215,8 @@ See test_user.txt
 source venv/bin/activate
 python durga.py
 
+[DONE] Ops - Job Applications page: CSV export button (top, filter-aware), /ops/job-applications/export/
+
 ## Optional Next
 [ ] Phase 8: Analytics exports, advanced ROI dashboards
 [ ] Payment gateway (Razorpay/Stripe)

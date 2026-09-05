@@ -1,5 +1,6 @@
+import csv
+
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
@@ -64,6 +65,7 @@ from .services import (
     OPS_NAV,
     OPS_NAV_SUPERUSER,
     approve_deliverable,
+    filter_job_applications,
     get_mission_control_context,
     get_ops_stats,
     get_pending_deliverables,
@@ -524,27 +526,15 @@ class JobApplicationsView(SuperAdminRequiredMixin, OpsBaseMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         all_applications = JobApplication.objects.all()
-        applications = all_applications
 
         status = self.request.GET.get('status', '').strip()
         application_type = self.request.GET.get('type', '').strip()
         role = self.request.GET.get('role', '').strip()
         q = self.request.GET.get('q', '').strip()
 
-        if status:
-            applications = applications.filter(status=status)
-        else:
-            # Rejected candidates stay out of the default view — still
-            # reachable via the Rejected chip, not deleted.
-            applications = applications.exclude(status=JobApplication.STATUS_REJECTED)
-        if application_type:
-            applications = applications.filter(application_type=application_type)
-        if role:
-            applications = applications.filter(role=role)
-        if q:
-            applications = applications.filter(
-                Q(name__icontains=q) | Q(email__icontains=q) | Q(phone__icontains=q),
-            )
+        applications = filter_job_applications(
+            all_applications, status=status, application_type=application_type, role=role, q=q,
+        )
 
         ctx['page_title'] = 'Job Applications'
         ctx['status_choices'] = JobApplication.STATUS_CHOICES
@@ -585,6 +575,35 @@ class JobApplicationStatusUpdateView(SuperAdminRequiredMixin, View):
             'app': application,
             'status_choices': JobApplication.STATUS_CHOICES,
         })
+
+
+class JobApplicationsExportView(SuperAdminRequiredMixin, View):
+    def get(self, request):
+        status = request.GET.get('status', '').strip()
+        application_type = request.GET.get('type', '').strip()
+        role = request.GET.get('role', '').strip()
+        q = request.GET.get('q', '').strip()
+
+        applications = filter_job_applications(
+            JobApplication.objects.all(),
+            status=status, application_type=application_type, role=role, q=q,
+        )
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="job-applications.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'Name', 'Email', 'Phone', 'Role', 'Type', 'Experience',
+            'Portfolio URL', 'LinkedIn URL', 'Status', 'Applied At', 'Cover Letter',
+        ])
+        for app in applications:
+            writer.writerow([
+                app.name, app.email, app.phone, app.role,
+                app.get_application_type_display(), app.experience,
+                app.portfolio_url, app.linkedin_url, app.get_status_display(),
+                app.created_at.strftime('%Y-%m-%d %H:%M'), app.cover_letter,
+            ])
+        return response
 
 
 def _job_openings_context(form=None):

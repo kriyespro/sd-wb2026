@@ -50,6 +50,11 @@ urlpatterns = [
     path('invoices/', views.OpsInvoicesView.as_view(), name='invoices'),
     path('job-applications/', views.JobApplicationsView.as_view(), name='job_applications'),
     path(
+        'job-applications/export/',
+        views.JobApplicationsExportView.as_view(),
+        name='job_applications_export',
+    ),
+    path(
         'job-applications/<int:pk>/status/',
         views.JobApplicationStatusUpdateView.as_view(),
         name='job_application_status',
